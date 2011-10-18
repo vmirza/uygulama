@@ -1,0 +1,3 @@
+var theme = {
+    initialize: function(){}
+};

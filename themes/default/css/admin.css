@@ -1,0 +1,130 @@
+/*--------------------------------------------------*/
+/*      RESET ( Thanks HTML5 ✰ Boilerplate )
+/*--------------------------------------------------*/
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp,
+small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  vertical-align: baseline;
+}
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+/*--------------------------------------------------*/
+/*      DEFAULT
+/*--------------------------------------------------*/
+body {
+    color:#333;
+    font: 81.25%/1 arial,helvetica,sans-serif;
+}
+.clear { display: block; clear: both; }
+.none { display: none; }
+.block { display: block; }
+.left { float: left; }
+.right { float: right; }
+a, a:visited { color: #555; text-decoration: none; cursor: pointer; }
+a:hover, a:focus, a.selected { color: #333; text-decoration: none; }
+img.left { margin: 0 5px 5px 0; }
+img.right { margin: 0 0 5px 5px; }
+p { margin-bottom:.5em; }
+ul li { list-style-type:square; }
+dl { margin-bottom: 1em; }
+dt { font-weight: bold;}
+dd { margin: 0 0 0.5em 0.5em; }
+ul, ol { margin:1em 0 1em 20px; }
+li ul, li ol { margin:0 0 0 30px; }
+td, th { padding: 0.2em; }
+pre { margin:1em; padding:1em; }
+blockquote { margin: 1em; }
+/*--------------------------------------------------*/
+/*      SITE
+/*--------------------------------------------------*/
+#site {
+    position: relative;
+    margin: 0 auto;
+    border: 0;
+    background: transparent;
+}
+header, nav, footer { display: none; }
+#page {
+    border: 0;
+    background: transparent;
+}
+/*--------------------------------------------------*/
+/*      RESULT
+/*--------------------------------------------------*/
+#result {
+    position: fixed;
+    top: 35%;
+    width: 100%;
+    z-index: 9000;
+}
+#result .pop {
+    display: block;
+    margin: 0 auto;
+    padding:8px;
+    width: 400px;
+    border-radius:3px;
+    box-shadow: #111 0 0 2px;
+    background: url(/themes/default/images/mask.png);
+}
+#result .close, #result .approve, #result .cancel {
+    position: absolute;
+    bottom: 8px;
+    display: inline-block;
+    padding: 5px 10px;
+    color: #fff;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-shadow: #444 1px 1px 2px;
+    border-radius:3px;
+    box-shadow: #111 0 0 2px;
+    background:#222;
+    cursor: pointer;
+}
+#result .close, #result .approve { right: 8px; }
+#result .cancel { left: 8px;}
+#result .approve { border-color: #711; background: #911; }
+#result h1 {
+    padding: 7px 30px;
+    font-size: 16px;
+    border-style: solid;
+    border-width: 0;
+    border-bottom-width: 1px;
+}
+#result.error h1 {
+    color: #fee;
+    border-color: #661100;
+    background: #881100 url(/themes/default/images/warning-icons.png) 7px 10px no-repeat;
+}
+#result.alert h1 {
+    color: #ffe;
+    border-color: #b88800;
+    background: #e8af00 url(/themes/default/images/warning-icons.png) 7px -22px no-repeat;
+}
+#result.success h1 {
+    color: #efe;
+    border-color: #336611;
+    background: #558811 url(/themes/default/images/warning-icons.png) 7px -55px no-repeat;
+}
+#result .container {
+    position: relative;
+    padding-bottom: 30px;
+    border: 1px solid #666;
+    background: #fff;
+}
+#result .container p {
+    padding: 13px;
+    font-size: 12px;
+}

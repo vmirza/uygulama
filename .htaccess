@@ -1,0 +1,53 @@
+ServerSignature Off
+FileETag None
+
+AddDefaultCharset utf-8
+# force utf-8 for a number of file formats
+AddCharset utf-8 .html .css .js .xml .json .rss
+
+ErrorDocument 404 /data/404.html
+
+# ------------------------------------------------------------------------------
+
+RewriteEngine on
+
+#  SUB DOMAINS
+RewriteCond %{http_host}  !www\.([a-z0-9-]+)\.([a-z0-9-]{2,5})$ [NC]
+RewriteCond %{http_host}  ^(www.)?([a-z0-9-]+)\.([a-z0-9-]+)\.([a-z0-9-]{2,5})$ [NC]
+RewriteRule (.*)          /clients/%2/$1 [L]
+
+# Google Apps
+RewriteCond %{http_host}                                    ^(mail|docs|calendar)\.
+RewriteRule ^.*$                                            %{http_host} [C]
+RewriteRule ^(mail|docs|calendar)\.(([^/]+)\.([a-z]{2,5}))  http://$1.google.com/a/$2 [R=301,L]
+
+# ://www to :// redirection (wwwless)
+RewriteCond %{http_host}                                    ^www\.
+RewriteRule ^.*$                                            %{http_host}%1 [C]
+RewriteRule ^www\.([^/]+)\.([a-z]{2,5})(.*)                 http://$1.$2%{request_uri} [R=301,L]
+
+# domain.com/foo to domain.com/foo/ redirection
+#RewriteCond %{request_filename}                             !-f
+#RewriteCond %{request_uri}                                  !(\.[a-zA-Z0-9]{1,5}|/|#(.*))$
+#RewriteRule ^(.*)$                                          /$1/ [R=301,L]
+
+# block access to "hidden" directories 
+RewriteRule "(^|/)\." - [F]
+
+# http to https redirection
+#RewriteCond %{https}                                        !=on
+#RewriteRule .*                                              https://%{server_name}%{request_uri} [R=301,L]
+
+RewriteCond %{request_uri} (json|admin) [NC]
+RewriteRule ^((json)/)?([_0-9A-z-]+)(/([_0-9A-z-,]+))?$     ?FORMAT=$2&TEMPLATE=$3&PARAMS=$5&%{query_string} [L]
+RewriteRule ^(upload)/([_0-9A-z-]+)?(/(.*))?$               ?FORMAT=json&TEMPLATE=admin&TOKEN=$2&PARAMS=$4&%{query_string} [L]
+
+RewriteCond %{request_uri} !\. [NC]
+RewriteRule ^((page)/)?(([A-z]{2})/)?([_0-9A-z-]+)(/(.*))?$ ?FORMAT=$2&LANG=$4&PAGE=$5&PARAMS=$7&%{query_string} [L]
+
+RewriteRule ^(.+).thm$                                      ?THEME=$1 [L]
+RewriteRule ^(logo.png|favicon.ico|robots.txt|humans.txt)$  data/$1 [L]
+RewriteRule ^(captcha).png$                                 ?FORMAT=captcha [L]
+RewriteRule ^([^/]+).(js|css)$                              ?FORMAT=$2&GET=$1 [L]
+RewriteRule ^(.+).zip$                                      ?FORMAT=archive&GET=$1 [L]
+RewriteRule ^(sitemap|sitemapindex).xml$                    data/$1.xml [L]

@@ -1,0 +1,46 @@
+/*--------------------------------------------------*/
+/*      RESET
+/*--------------------------------------------------*/
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,
+form,fieldset,legend,input,textarea,p,blockquote,th,td
+header,hgroup,nav,menu,section,article,aside,footer{margin:0;padding:0;}
+table{border-collapse:collapse;border-spacing:0;}
+fieldset,img{border:0;}
+:focus, a{outline:none;}
+header,hgroup,nav,menu,section,article,aside,footer{display:block;}
+/*--------------------------------------------------*/
+/*      DEFAULT
+/*--------------------------------------------------*/
+body {
+    color:#333;
+    font: normal 13px helvetica, arial, sans-serif;
+    line-height:1.4em;
+}
+input, select, option, textarea {
+    color:#333;
+    font: normal 12px helvetica, arial, sans-serif;
+}
+.clear { display: block; clear: both; }
+.none { display: none; }
+.block { display: block; }
+.left { float: left; }
+.right { float: right; }
+a, a:visited { color: #555; text-decoration: none; cursor: pointer; }
+a:hover, a:focus, a.selected { color: #333; text-decoration: none; }
+img.left { margin: 0 5px 5px 0; }
+img.right { margin: 0 0 5px 5px; }
+p { margin-bottom:.5em; }
+ul li { list-style-type:square; }
+dl { margin-bottom: 1em; }
+dt { font-weight: bold;}
+dd { margin: 0 0 0.5em 0.5em; }
+ul, ol { margin:1em 0 1em 20px; }
+li ul, li ol { margin:0 0 0 30px; }
+td, th { padding: 0.2em; }
+pre { margin:1em; padding:1em; }
+blockquote { margin: 1em; }
+h1, h2, h3, h4 {color: #000;}
+h1 { font-size: 20px; }
+h2 { font-size: 18px; }
+h3 { font-size: 16px; }
+h4 { font-size: 14px; }
