@@ -1,4 +1,4 @@
-form, button, label, input, select, option, textarea {
+form, button, label, input, select, option, textarea, p.file .info, p.file .progress {
     -moz-box-sizing: border-box; /* ff2 */
     -ms-box-sizing: border-box; /* ie8 */
     -webkit-box-sizing: border-box; /* safari3 */
@@ -19,11 +19,13 @@ form {
 }
 label { display:block; margin: 0 0 10px; }
 label b, label i , .label b , .label i { display: block;margin: 0 0 6px; }
-.label {
+label i.error , .label i.error { color: #911; text-align: right; font-size: smaller; }
+.label label {
+    display:inline;
     line-height: 26px;
     vertical-align: text-bottom;
 }
-.label label { display:inline; }
+.label p { margin:0; }
 
 label .loader, .label loader { display:none; }
 input { display: inline-block; }
@@ -72,7 +74,7 @@ input[type="checkbox"], input[type="radio"], input[type="file"] {
     display: inline-block;
     opacity: 0;
 }
-p.checkbox, p.radio {
+p.checkbox, p.radio, p.switch {
     position: relative;
     display: inline-block;
     width: 24px;
@@ -104,23 +106,69 @@ p.radio.checked.focus {
     background-position: -240px -300px;
 } 
 
-
-p.file {
-    position: relative;
-    background: url(forma-sprite.png), url(forma-sprite.png), url(forma-sprite.png), url(forma-sprite.png);
-    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;  
-    background-position: right -500px, left -500px, -1800px -700px, left -650px;  
+p.switch {
+    width: 100px;
+    height: 35px;
+    background: url(forma-sprite.png),url(forma-sprite.png);
+    background-repeat: no-repeat,no-repeat;  
+    background-position: -330px -300px, -595px -300px;
+    transition:all .3s ease-out;
+    -moz-transition:all .3s ease-out;
+    -webkit-transition:all .3s ease-out;
 }
-p.file span {
+p.switch.checked {
+    width: 100px;
+    height: 35px;
+    background: url(forma-sprite.png),url(forma-sprite.png);
+    background-repeat: no-repeat,no-repeat;  
+    background-position: -330px -300px, -550px -300px;
+}
+
+
+p.file  {
+    position: relative;
+    background: url(forma-sprite.png);
+    background-repeat: no-repeat;  
+    background-position: left -650px;  
+}
+p.file .info, p.file .progress {
+    display: inline-block;
+    width: 100%;
+    height: 45px;
+}
+p.file .info {
+    color: #333;
+    text-align: right;
+    background: url(forma-sprite.png), url(forma-sprite.png);
+    background-repeat: no-repeat, no-repeat;  
+    background-position: right -500px, left -500px;  
+}
+p.file .progress {
+    width: 0;
+    background: url(forma-sprite.png);
+    background-repeat: no-repeat;  
+    background-position: 0 -700px;  
+}
+p.file b {
     position: absolute;
-    padding: 17px;
+    padding: 15px 17px;
     color: #fff;
 }
-p.file.focus, p.file.hover { 
+p.file.focus .info, p.file.hover .info { 
     background-position: right -550px, left -550px, -1800px -700px, left -650px;  
 }
-p.file.error { 
+p.file.error .info { 
     background-position: right -600px, left -600px, -1800px -700px, left -650px;  
+}
+u.attachment {
+    display: block;
+    padding: 0 22px;
+    height: 24px;
+    line-height: 24px;
+    text-decoration:none;
+    font-size: smaller;
+    background: url(forma-sprite.png) -700px -300px no-repeat;
+    overflow: hidden;
 }
 
 

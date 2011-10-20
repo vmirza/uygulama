@@ -29,12 +29,10 @@
         <a href="/admin/logout" id="logout"><?=u::translate('Logout')?></a>
         <div id="nav-admin">
             <?if(ACCESS>=3):?>
-            <a href="/admin/options" class="<?=$params[0]=='default'||$params[0]=='options'?' selected':''?>"><?=u::translate('Project')?></a>
-            <a href="/admin/seo" class="<?=$params[0]=='seo'?' selected':''?>"><?=u::translate('SEO')?></a>
+            <a href="/admin/project" class="<?=$params[0]=='default'||$params[0]=='project'?' selected':''?>"><?=u::translate('Project')?></a>
             <a href="/admin/languages" class="<?=$params[0]=='languages'?' selected':''?>"><?=u::translate('Language Settings')?></a>
             <a href="/admin/themes" class="<?=$params[0]=='themes'?' selected':''?>"><?=u::translate('Themes')?></a>
             <a href="/admin/templates" class="<?=$params[0]=='templates'?' selected':''?>"><?=u::translate('Page Templates')?></a>
-            <!--<a href="/admin/info" class="<?=$params[0]=='info'?' selected':''?>"><?=u::translate('Project Info')?></a>-->
             <?endif;?>
             <a href="/admin/pages" class="<?=$params[0]=='pages'||$params[0]=='page'?' selected':''?>"><?=u::translate('Pages')?></a>
         </div>
@@ -92,9 +90,60 @@ if(!is_writable('data/config.php')){?>
 // =============================================================================
 // =============================================================================
 default:
-case 'options':?>
+case 'project':
+switch ($params[1]):
+default:
+?>
+<div id="content">
+    <form method="post" action="/json/<?=TEMPLATE?>/project">
+        <h3><?=u::translate('Settings')?></h3>
+        <div class="label">
+            <label>
+                <input type="checkbox" class="switch" name="ajax" value="1" <?=AJAX?'checked':''?>>
+                       <?=u::translate('AJAX Mode')?>
+            </label>
+            <i><?=u::translate('If AJAX mode is activated, system work with XHTTP request.')?></i>
+        </div>
+        <div class="label">
+            <label>
+                <input type="checkbox" class="switch" name="development" value="1" <?=DEVELOPMENT?'checked':''?>>
+                       <?=u::translate('Development Mode')?>
+            </label>
+            <i><?=u::translate('If development mode is activated, system does not compress js, css, html files.')?></i>
+        </div>
+        <label>
+            <b>Analytics:</b> 
+            <input type="text" name="analytics" value="<?=ANALYTICS?>" />
+            <i><a href="http://www.google.com/analytics/" target="_blank"><?=u::translate('Google Analytics Code')?></a>
+                <?=u::translate('[ex: #UA-012346]')?></i> 
+        </label>
+        <label>
+            <b><?=u::translate('Cookieless Domain:')?></b> 
+            <input type="text" name="cookieless" value="<?=COOKIELESS?>" />
+            <i><a href="http://cookieless.org/" target="_blank">http://cookieless.org</a> <?=u::translate('[ex: uygulama.cookieless.org]')?></i>
+        </label>
+        <label>
+            <img class="loader" src="/themes/<?=THEME?>/images/loader.gif" alt="loader" />
+            <input type="submit" value="<?=u::translate('Save')?>" />
+        </label>
+ </form>
+</div>
+<script>
+    $(document).ready(function() { tool.form(1); });
+    function developmentmode(el){
+        if(el.checked){
+            $('development').set('value',1);
+        } else {
+            $('development').set('value',0);
+        }
+    }
+</script>
+<?
+break;
+case 'accounts':
+?>
     <div id="content">
-        <form id="form" method="POST" action="/json/<?=TEMPLATE?>/options">
+        <form method="post" action="/json/<?=TEMPLATE?>/project">
             <h3><?=u::translate('Project Admin')?></h3>
             <p>The user access and change all project data.</p>
             <label>
@@ -137,142 +186,11 @@ case 'options':?>
                     <input name="erepassword" type="password"/>
                 </label> 
             </div>
-            <!--
-            <h3><?=u::translate('Project Settings')?></h3>
-            
-                <label><?=u::translate('Domain name')?>:</label> <input id="domain" name="domain" type="text" value="<?=DOMAIN?>" />
-                <i><?=u::translate('[eg: example.com]')?></div>
-            </div>
-            
-                <label>Cookieless:</label> <input id="cookieless" class="wide" name="cookieless" type="text" value="<?=COOKIELESS?>" />
-                <span class="desc"><a href="http://cookieless.org/" target="_blank">http://cookieless.org</a> <?=u::translate('[ex: uygulama.cookieless.org]')?></span>
-            </div>
-            
-                <label>Analytics:</label> <input id="analytics" class="wide" name="analytics" type="text" value="<?=ANALYTICS?>" />
-                <span class="desc"><a href="http://www.google.com/analytics/" target="_blank"><?=u::translate('Google Analytics Code')?></a> <?=u::translate('[ex: #UA-012346]')?></span>
-            </div>
-            <h3><?=u::translate('AJAX / Lower Bandwidth')?></h3>
-            
-                <label><?=u::translate('AJAX')?>:</label>
-                <a class="checkboxItem" title="ajax"><span class="check"><span>&nbsp;</span></span></a>
-                <input id="ajax" name="ajax" type="hidden" value="<?=AJAX?>" />
-                <span class="desc"><?=u::translate('If AJAX mode is activated, system work with XHTTP request.')?></span>
-            </div>
-            <h3><?=u::translate('Developemet Mode / Compress Data')?></h3>
-            
-                <label><?=u::translate('Development')?>:</label>
-                <a class="checkboxItem" title="development"><span class="check"><span>&nbsp;</span></span></a>
-                <input id="development" name="development" type="hidden" value="<?=DEVELOPMENT?>" />
-                <span class="desc"><?=u::translate('If development mode is activated, system does not compress js, css, html files.')?></span>
-            </div>
-            
-                <label class="formLabel"><?=u::translate('Logo')?>:</label>
-                <div class="uploader">
-                    <object id="logoUploader" type="application/x-shockwave-flash" data="/lib/f4/uploader.swf" width="80" height="26">
-                        <param name="movie" value="/lib/f4/uploader.swf" />
-                        <param name="quality" value="high" />
-                        <param name="wmode" value="window" />
-                        <param name="allowScriptAccess" value="sameDomain" />
-                        <param name="flashVars" value="callback=logoUploader
-                               &uploadurl=/upload/<?=TOKEN?>/logo
-                               &filetypes=*.png;
-                               &typetext=Logo (.png;)
-                               &labeltext=<?=u::translate('Browse')?>
-                               &fontcolor=#ffffff
-                               &bgcolor=0x111111
-                               &autoupload=1"/>
-                    </object>
-                    <div class="uploaderLabel"><?=u::translate('Select a new logo image')?></div>
-                    <div id="logoprogress" class="progress"></div>
-                    <script>
-                        logoUploader = function(a, m){
-                            switch(a){
-                                case 'ioerror':
-                                case 'securityerror':
-                                    tool.result(600, m.type, m.text);
-                                    break;
-                                case 'progress':
-                                    $('#logoprogress').css('width',(m.bytesLoaded / m.bytesTotal *100 >> 0)+'%');
-                                    break;
-                                case 'complete':
-                                    m = eval('(' + m + ')')
-                                    if(m.code == 200) $('#prelogo').attr('src','/logo.png?'+Math.random());
-                                    else tool.result(m.code,m.status,m.message,m.fields,m.redirect,m.debug);
-                                    break;
-                            }
-                        }
-                    </script>
-                </div>
-                <i><img id="prelogo" src="/logo.png" alt="logo" /></div>
-            </div>
-            
-                <label class="formLabel"><?=u::translate('Favicon')?>:</label>
-                <div class="uploader">
-                    <object id="myUploader" type="application/x-shockwave-flash" data="/lib/f4/uploader.swf" width="80" height="26">
-                        <param name="movie" value="/lib/f4/uploader.swf" />
-                        <param name="quality" value="high" />
-                        <param name="wmode" value="window" />
-                        <param name="allowScriptAccess" value="sameDomain" />
-                        <param name="flashVars" value="callback=faviconUploader
-                               &uploadurl=/upload/<?=TOKEN?>/favicon
-                               &filetypes=*.ico;
-                               &typetext=Favicon (.ico;)
-                               &labeltext=<?=u::translate('Browse')?>
-                               &fontcolor=#ffffff
-                               &bgcolor=0x111111
-                               &autoupload=1"/>
-                    </object>
-                    <div class="uploaderLabel"><?=u::translate('Select a new favicon')?></div>
-                    <div id="faviconprogress" class="progress"></div>
-                    <script>
-                        faviconUploader = function(a, m){
-                            switch(a){
-                                case 'ioerror':
-                                case 'securityerror':
-                                    tool.result(600, m.type, m.text);
-                                    break;
-                                case 'progress':
-                                    $('#faviconprogress').css('width',(m.bytesLoaded / m.bytesTotal *100 >> 0)+'%');
-                                    break;
-                                case 'complete':
-                                    m = eval('(' + m + ')')
-                                    if(m.code == 200) $('#favicon').attr('src','/favicon.ico?'+Math.random());
-                                    else tool.result(m.code,m.status,m.message,m.fields,m.redirect,m.debug);
-                                    break;
-                            }
-                        }
-                    </script>
-                </div>
-                <i><img id="favicon" src="/favicon.ico" alt="favicon" /></div>
-            </div>
-            -->
             <label>
                 <img class="loader" src="/themes/<?=THEME?>/images/loader.gif" alt="loader" />
                 <input type="submit" value="<?=u::translate('Save')?>" />
             </label>
         </form>
-    </div>
-    <div id="aside">
-        <!--<h3><?=u::translate('Site Maps')?></h3>
-        
-            <label><?=u::translate('Sitemap')?>:</label><a class="formLink" href="http://<?=DOMAIN?>/sitemap.xml" target="_blank">http://<?=DOMAIN?>/sitemap.xml</a>
-            <span class="desc"><?=u::translate('Project sitemap url')?></span>
-        </div>
-        
-            <label><?=u::translate('Sitemap index')?>:</label><a class="formLink" href="http://<?=DOMAIN?>/sitemapindex.xml" target="_blank">http://<?=DOMAIN?>/sitemapindex.xml</a>
-            <span class="desc"><?=u::translate('Project sitemap index url for subpages')?></span>
-        </div>
-        
-            <label><?=u::translate('Sitemap ping')?>:</label>
-            <a class="formLink" href="http://www.google.com/webmasters/tools/ping?sitemap=http://<?=DOMAIN?>/sitemap.xml" target="_blank"><?=u::translate('Google sitemap ping')?></a>
-            <a class="formLink" href="http://search.yahooapis.com/SiteExplorerService/V1/ping?sitemap=http://<?=DOMAIN?>/sitemap.xml" target="_blank"><?=u::translate('Yahoo sitemap ping')?></a>
-            <a class="formLink" href="http://webmaster.live.com/webmaster/ping.aspx?siteMap=http://<?=DOMAIN?>/sitemap.xml" target="_blank"><?=u::translate('Bing sitemap ping')?></a>
-            <a class="formLink" href="http://www.google.com/webmasters/tools/ping?sitemap=http://<?=DOMAIN?>/sitemapindex.xml" target="_blank"><?=u::translate('Google sitemap index ping')?></a>
-            <a class="formLink" href="http://search.yahooapis.com/SiteExplorerService/V1/ping?sitemap=http://<?=DOMAIN?>/sitemapindex.xml" target="_blank"><?=u::translate('Yahoo sitemap index ping')?></a>
-            <a class="formLink" href="http://webmaster.live.com/webmaster/ping.aspx?siteMap=http://<?=DOMAIN?>/sitemapindex.xml" target="_blank"><?=u::translate('Bing sitemap index ping')?></a>
-            <span class="desc"><?=u::translate('Search Engine\'s sitemap ping links')?></span>
-        </div> 
-        -->
     </div>
     <script>
         $(document).ready(function(){ 
@@ -282,7 +200,67 @@ case 'options':?>
             });
         });
     </script>
-<?break;
+<?
+break;
+case 'seo':
+?>
+<div id="content">
+    <form method="post" action="/json/<?=TEMPLATE?>/project">
+        <h3><?=u::translate('Search Engine Optimization')?></h3>
+        <label>
+            <b><?=u::translate('Additional Meta Tags')?></b> 
+            <textarea name="meta"><?=$page->meta?></textarea>
+            <i><a href="http://www.google.com/webmasters/" target="_blank">http://www.google.com/webmasters/</a></i>
+            <i><a href="http://siteexplorer.search.yahoo.com/" target="_blank">http://siteexplorer.search.yahoo.com/</a></i>
+            <i><a href="http://www.alexa.com/siteowners" target="_blank">http://www.alexa.com/siteowners</a></i>
+        </label>
+        <label>
+            <b>robots.txt:</b> 
+            <textarea name="robots"><?=$page->robots?></textarea>
+            <i><a href="http://www.google.com/support/webmasters/bin/answer.py?hl=en&answer=156449&from=35237&rd=1" target="_blank">robots.txt</a></i>
+        </label>
+        <label>
+            <b>humans.txt:</b> 
+            <textarea name="robots"><?=$page->humans?></textarea>
+            <i><a  href="http://humanstxt.org/" target="_blank">humans.txt</a></i>
+        </label>
+        <label>
+            <img class="loader" src="/themes/<?=THEME?>/images/loader.gif" alt="loader" />
+            <input type="submit" value="<?=u::translate('Save')?>" />
+        </label>
+        <h3><?=u::translate('Site Maps')?></h3>
+        <label>
+        <b><?=u::translate('Sitemap')?>:</b>
+        <a class="formLink" href="http://<?=DOMAIN?>/sitemap.xml" target="_blank">http://<?=DOMAIN?>/sitemap.xml</a>
+        <i><?=u::translate('Project sitemap url')?></i>
+        <b><?=u::translate('Sitemap index')?>:</b>
+        <a class="formLink" href="http://<?=DOMAIN?>/sitemapindex.xml" target="_blank">http://<?=DOMAIN?>/sitemapindex.xml</a>
+        <i><?=u::translate('Project sitemap index url for subpages')?></i>
+        <b><?=u::translate('Sitemap ping')?>:</b>
+        <a class="formLink" href="http://www.google.com/webmasters/tools/ping?sitemap=http://<?=DOMAIN?>/sitemap.xml" target="_blank"><?=u::translate('Google sitemap ping')?></a>
+        <a class="formLink" href="http://search.yahooapis.com/SiteExplorerService/V1/ping?sitemap=http://<?=DOMAIN?>/sitemap.xml" target="_blank"><?=u::translate('Yahoo sitemap ping')?></a>
+        <a class="formLink" href="http://webmaster.live.com/webmaster/ping.aspx?siteMap=http://<?=DOMAIN?>/sitemap.xml" target="_blank"><?=u::translate('Bing sitemap ping')?></a>
+        <a class="formLink" href="http://www.google.com/webmasters/tools/ping?sitemap=http://<?=DOMAIN?>/sitemapindex.xml" target="_blank"><?=u::translate('Google sitemap index ping')?></a>
+        <a class="formLink" href="http://search.yahooapis.com/SiteExplorerService/V1/ping?sitemap=http://<?=DOMAIN?>/sitemapindex.xml" target="_blank"><?=u::translate('Yahoo sitemap index ping')?></a>
+        <a class="formLink" href="http://webmaster.live.com/webmaster/ping.aspx?siteMap=http://<?=DOMAIN?>/sitemapindex.xml" target="_blank"><?=u::translate('Bing sitemap index ping')?></a>
+        <i><?=u::translate('Search Engine\'s sitemap ping links')?></i>
+        </label>
+    </form>
+</div>
+<?
+break;
+endswitch;?>
+    <div id="aside">
+        <div id="menu-admin">
+            <?if(ACCESS>=1):?>
+            <a href="/admin/project" class="<?=!$params[1]?' selected':''?>"><?=u::translate('Settings')?></a>
+            <a href="/admin/project,accounts" class="<?=$params[1]=='accounts'?' selected':''?>"><?=u::translate('Accounts')?></a>
+            <a href="/admin/project,seo" class="<?=$params[1]=='seo'?' selected':''?>"><?=u::translate('SEO')?></a>
+            <?endif;?>
+        </div>
+    </div>
+<?
+break;
 // LANGUAGES 
 // =============================================================================
 // =============================================================================
@@ -419,97 +397,79 @@ case 'themes':?>
         <a class="button" href="http://<?=DOMAIN?>/themes/<?=$i?>.zip"><?=u::translate('Download')?></a>
     </div>
     <?endforeach;?>
-    <script>
-        $('a.theme').bind('click',function(e){
-            var item = $(this);
-            tool.post({'url':'/json/<?=TEMPLATE?>/theme','data':'page=<?=$params[1]?>&theme='+item.attr('rel'),'onComplete':function(r){
-                    if(r.code == 200) {
-                        $('#selected').empty();
-                        var theme = $('<div>').addClass('theme').appendTo($('#selected'));
-                        $('<img>').attr({'class':'theme','src':item.parent().find('img').attr('src')}).appendTo(theme);
-                        $('<span>').html(item.parent().find('span').html()).appendTo(theme);
-                        $('#selected').hide().fadeIn();
-                    } else tool.result(r.code,r.status,r.message,r.fields,r.redirect,r.debug);
-                }
-            });
-        });
-    </script>
 </div>
 <div id="aside">
     <form>
-    <h3 class="top"><?=u::translate('Current Theme')?></h3>
-    <div id="selected">
-        <div class="theme">
-            <img class="theme" src="/themes/<?=THEME?>/thumb.png" alt="active theme" >
-            <span><?=THEME?></span>
+        <h3 class="top"><?=u::translate('Current Theme')?></h3>
+        <div id="selected">
+            <div class="theme">
+                <img class="theme" src="/themes/<?=THEME?>/thumb.png" alt="active theme" >
+                <span><?=THEME?></span>
+            </div>
         </div>
-    </div>
-    <br>
-    <h3><?=u::translate('Upload New Theme')?></h3>
-    <label>
-        <b><?=u::translate('Theme')?>:</b>
-        <input type="file" name="theme" data-post="/upload/<?=TOKEN?>/<?=$params[0]?>,<?=$params[1]?>,theme" title="<?=u::translate('Browse')?>" >
-    </label>
+        <br>
+        <h3><?=u::translate('Upload New Theme')?></h3>
+        <label>
+            <b><?=u::translate('Theme')?>:</b>
+            <input type="file" name="theme" 
+                   data-post="/json/admin/<?=$params[0]?>,<?=$params[1]?>" 
+                   data-complete="complete(result, file, input, area)" 
+                   data-type="zip"
+                   title="<?=u::translate('Browse')?>" 
+                   multiple>
+        </label>
+        <h3><?=u::translate('Logo and Icons')?></h3>
+        
+        <label>
+            <b><?=u::translate('Logo')?>:</b>
+            <img src="/logo.png" alt="logo" />
+            <input type="file" name="logo" 
+                   data-post="/json/admin/<?=$params[0]?>,logo" 
+                   data-complete="reload(result, file, input, area)" 
+                   data-type="jpg,png,gif"
+                   title="<?=u::translate('Browse')?>" 
+                   multiple>
+        </label>
+        <label>
+            <b><?=u::translate('Favicon')?>:</b>
+            <img src="/favicon.ico" alt="favicon" />
+            <input type="file" name="favicon" 
+                   data-post="/json/admin/<?=$params[0]?>?>,favicon" 
+                   data-complete="reload(result, file, input, area)" 
+                   data-type="ico"
+                   title="<?=u::translate('Browse')?>" 
+                   multiple>
+        </label>
     </form>
-    <!--
-    <div class="uploader">
-        <object id="themeUploader" type="application/x-shockwave-flash" data="/lib/f4/uploader.swf" width="80" height="26">
-            <param name="movie" value="/lib/f4/uploader.swf" />
-            <param name="quality" value="high" />
-            <param name="wmode" value="window" />
-            <param name="allowScriptAccess" value="sameDomain" />
-            <param name="flashVars" value="callback=themeUploader
-                   &uploadurl=/upload/<?=TOKEN?>/<?=$params[0]?>,<?=$params[1]?>,theme
-                   &filetypes=*.zip;
-                   &typetext=Theme (.zip;)
-                   &labeltext=<?=u::translate('Browse')?>
-                   &fontcolor=#ffffff
-                   &bgcolor=0x111111
-                   &autoupload=1"/>
-        </object>
-        <span class="uploaderLabel"><?=u::translate('Select a theme')?></span>
-        <span id="themeprogress" class="progress"></span>
-        <script>
-            themeUploader = function(a, m){
-                switch(a){
-                    case 'ioerror':
-                    case 'securityerror':
-                        tool.result(600, m.type, m.text);
-                        break;
-                    case 'progress':
-                        $('themeprogress').css('width',(m.bytesLoaded / m.bytesTotal *100 >> 0)+'%');
-                        break;
-                    case 'complete':
-                        m = eval('(' + m + ')')
-                        if(m.code == 200) location.href = location.href;
-                        else tool.result(m.code,m.status,m.message,m.fields,m.redirect,m.debug);
-                        break;
-                }
-            }
-        </script>
-    </div>
-    -->
-    <div class="clear"></div>
-</div>
 </div>
 <script>
-    $('.droparea').droparea({
-        'instructions': 'drop a file or click to here',
-        'init' : function(result){
-        },
-        'start' : function(result){
-        },
-        'error' : function(result, input, area){
-            $('<div>').html(result.error).prependTo(area); 
-            return 0;
-        },
-        'complete' : function(result, file, input, area){
-            location.href = location.href;
-        }
+    $('a.theme').click(function(e){
+        var item = $(this);
+        tool.post({'url':'/json/<?=TEMPLATE?>/theme','data':'page=<?=$params[1]?>&theme='+item.attr('rel'),'onComplete':function(r){
+                if(r.code == 200) {
+                    $('#selected').empty();
+                    var theme = $('<div>').addClass('theme').appendTo($('#selected'));
+                    $('<img>').attr({'class':'theme','src':item.parent().find('img').attr('src')}).appendTo(theme);
+                    $('<span>').html(item.parent().find('span').html()).appendTo(theme);
+                    $('#selected').hide().fadeIn();
+                } else tool.result(r.code,r.status,r.message,r.fields,r.redirect,r.debug);
+            }
+        });
     });
+    var complete = function(result, file, input, area){
+        //console.log(result, file, input, area);
+        location.href = location.href;
+    };
+    var reload = function(result, file, input, area){
+        console.log(area.prev());
+        area.prev().attr('src',area.prev().attr('src')+'?'+Math.random());
+    };
 </script>
 <?break;
-// TEMPLATES ===================================================================
+// TEMPLATES 
+// =============================================================================
+// =============================================================================
+// =============================================================================
 case 'templates':?>
 <div id="content" class="templates">
     <h3 class="top"><?=u::translate('Page Templates')?></h3>
@@ -521,54 +481,28 @@ case 'templates':?>
     </div>
     <?endforeach;?>
 </div>
-<div id="aside" class="templates">
-    <?if(TEMPLATEUPLOAD):?>
-    <h3 class="top"><?=u::translate('Upload New Page Template')?></h3>
-
-    <label class="formLabel" style="width:55px;">
+<div id="aside">
+<?if(TEMPLATEUPLOAD):?>
+    <form>
+        <h3><?=u::translate('Upload New Page Template')?></h3>
+        <label>
         <b><?=u::translate('Template')?>:</b>
-        <input type="file" class="droparea spot" name="template" data-post="/upload/<?=TOKEN?>/<?=$params[0]?>,<?=$params[1]?>,template">
-    </label>
-    <div class="uploader">
-        <object id="templateUploader" type="application/x-shockwave-flash" data="/lib/f4/uploader.swf" width="80" height="26">
-            <param name="movie" value="/lib/f4/uploader.swf" />
-            <param name="quality" value="high" />
-            <param name="wmode" value="window" />
-            <param name="allowScriptAccess" value="sameDomain" />
-            <param name="flashVars" value="callback=templateUploader
-                   &uploadurl=/upload/<?=TOKEN?>/<?=$params[0]?>,<?=$params[1]?>,template,
-                   &filetypes=*.zip;
-                   &typetext=Page template (.zip;)
-                   &labeltext=<?=u::translate('Browse')?>
-                   &fontcolor=#ffffff
-                   &bgcolor=0x111111
-                   &autoupload=1"/>
-        </object>
-        <span class="uploaderLabel"><?=u::translate('Select a page template')?></span>
-        <span id="templateprogress" class="progress"></span>
-        <script>
-            templateUploader = function(a, m){
-                switch(a){
-                    case 'ioerror':
-                    case 'securityerror':
-                        tool.result(600, m.type, m.text);
-                        break;
-                    case 'progress':
-                        $('templateprogress').css('width',(m.bytesLoaded / m.bytesTotal *100 >> 0)+'%');
-                        break;
-                    case 'complete':
-                        m = eval('(' + m + ')')
-                        if(m.code == 200) location.href = location.href;
-                        else tool.result(m.code,m.status,m.message,m.fields,m.redirect,m.debug);
-                        break;
-                }
-            }
-        </script>
-    </div>
-    <div class="clear"></div>
-</div>
+        <input type="file" name="template" 
+               data-post="/json/admin/<?=$params[0]?>,<?=$params[1]?>" 
+               data-complete="complete(result, file, input, area)" 
+               data-type="zip"
+               title="<?=u::translate('Browse')?>" 
+               multiple>
+        </label>
+    </form>
 <? endif; ?>
 </div>
+<script>
+    var complete = function(result, file, input, area){
+        //console.log(result, file, input, area);
+        location.href = location.href;
+    };
+</script>
 <?break;
 // INFO ========================================================================
 case 'info':?>
@@ -754,79 +688,7 @@ case 'page':?>
 <?break;
 // SEO =========================================================================
 case 'seo':?>
-<div id="content">
-    <form id="form" method="POST" action="/json/<?=TEMPLATE?>/options">
-        <h3><?=u::translate('AJAX / Lower Bandwidth')?></h3>
 
-        <label><?=u::translate('AJAX')?>:</label>
-        <a class="checkboxItem" title="ajax"><span class="check"><span>&nbsp;</span></span></a>
-        <input id="ajax" name="ajax" type="hidden" value="<?=AJAX?>" />
-        <span class="desc"><?=u::translate('If AJAX mode is activated, system work with XHTTP request.')?></span>
-</div>
-<h3><?=u::translate('Developemet Mode / Compress Data')?></h3>
-
-<label><?=u::translate('Development')?>:</label>
-<a class="checkboxItem" title="development"><span class="check"><span>&nbsp;</span></span></a>
-<input id="development" name="development" type="hidden" value="<?=DEVELOPMENT?>" />
-<span class="desc"><?=u::translate('If development mode is activated, system does not compress js, css, html files.')?></span>
-</div>
-<h3><?=u::translate('Search Engine Optimization')?></h3>
-
-
-<label>Alexa:</label> <input id="alexa" class="wide" name="alexa" type="text" value="<?=ALEXA?>" />
-<span class="desc"><a href="http://www.alexa.com/siteowners" target="_blank">http://www.alexa.com/siteowners</a></span>
-</div>
-
-<label>Webmaster:</label> <input id="webmaster" class="wide" name="webmaster" type="text" value="<?=WEBMASTER?>" />
-<span class="desc"><a href="http://www.google.com/webmasters/" target="_blank">http://www.google.com/webmasters/</a></span>
-</div>
-
-<label>Siteexplorer:</label> <input id="siteexplorer" class="wide" name="siteexplorer" type="text" value="<?=SITEEXPLORER?>" />
-<span class="desc"><a href="http://siteexplorer.search.yahoo.com/" target="_blank">http://siteexplorer.search.yahoo.com/</a></span>
-</div>
-
-<label>robots.txt:</label> <textarea id="robots" class="wide" name="robots"><?=$page->robots?></textarea>
-<span class="desc"><a href="http://www.google.com/support/webmasters/bin/answer.py?hl=en&answer=156449&from=35237&rd=1" target="_blank">robots.txt</a></span>
-</div>
-
-<label>humans.txt:</label> <textarea id="humans" class="wide" name="humans"><?=$page->humans?></textarea>
-<span class="desc"><a href="http://humanstxt.org/" target="_blank">humans.txt</a></span>
-</div>
-<h3><?=u::translate('GEO TAGS')?></h3>
-
-<label><?=u::translate('Place Name')?>:</label> <input id="geoplacename" class="wide" name="geoplacename" type="text" value="<?=GEOPLACENAME?>" />
-<span class="desc"></span>
-</div>
-
-<label><?=u::translate('GEO Region')?>:</label> <input id="georegion" name="georegion" type="text" value="<?=GEOREGION?>" />
-<span class="desc"><?=u::translate('[ex: TR-22]')?></span>
-</div>
-
-<label><?=u::translate('Latitude')?>:</label> <input id="geolatitude" name="geolatitude" type="text" value="<?=GEOLATITUDE?>" />
-<span class="desc"></span>
-</div>
-
-<label><?=u::translate('Longitude')?>:</label> <input id="geolongitude" name="geolongitude" type="text" value="<?=GEOLONGITUDE?>" />
-<span class="desc"><a href="http://en.wikipedia.org/wiki/Geotagging" target="_blank">http://en.wikipedia.org/wiki/Geotagging</a></span>
-</div>
-<div class="formSubmit">
-    <span id="loader" class="loader"><img src="/themes/<?=THEME?>/images/loader.gif" alt="loader" /></span>
-    <input type="submit" value="<?=u::translate('Save')?>" />
-</div>
-</form>
-
-</div>
-<div id="aside"></div>
-<script>
-    $(document).ready(function() { tool.form(1); });
-    function developmentmode(el){
-        if(el.checked){
-            $('development').set('value',1);
-        } else {
-            $('development').set('value',0);
-        }
-    }
-</script>
 <?break;?>
 <?endswitch;?>
 <?endif;

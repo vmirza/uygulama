@@ -41,9 +41,9 @@ switch (@$_GET['FORMAT']) {
         $project = u::initialize();
         //die('<pre>'.print_r($_REQUEST,1).'</pre>');
         // SETUP ?
-        if (!ADMIN && !APASSWORD && ($_GET['TEMPLATE'] != 'admin' || ($_GET['PARAMS'] != 'options' && $_GET['PARAMS'] != 'language'))) {
+        if (!ADMIN && !APASSWORD && ($_GET['TEMPLATE'] != 'admin' || ($_GET['PARAMS'] != 'project,accounts' && $_GET['PARAMS'] != 'languages'))) {
             $_SESSION['ACCESS'] = 3;
-            header('Location: /admin/options');
+            header('Location: /admin/project,accounts');
             exit();
         }
         $project->page = u::page($project);

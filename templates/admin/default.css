@@ -120,7 +120,7 @@ h2 {
 #menu-admin a {
     display:block;
     margin: 0 -1px;
-    padding: 10px;
+    padding: 10px 20px;
     border-bottom: 1px solid #e5e5e5;
     background:url(/templates/admin/images/link-arrow.png) -30px center no-repeat;
     transition:all .3s ease-out;

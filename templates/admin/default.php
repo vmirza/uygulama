@@ -7,7 +7,10 @@ if (!ACCESS && $params[0] != 'language')
     $params[0] = 'login';
 switch ($params[0]) {
 
-// LOGIN =======================================================================
+// LOGIN 
+// =============================================================================
+// =============================================================================
+// =============================================================================
 
     case 'login':
         if ($_POST['username'] == ADMIN && sha1($_POST['password']) == APASSWORD) {
@@ -59,7 +62,7 @@ switch ($params[0]) {
                     $project->alexa = isset($_POST['alexa']) ? $_POST['alexa'] : ALEXA;
                     $project->webmaster = isset($_POST['webmaster']) ? $_POST['webmaster'] : WEBMASTER;
                     $project->siteexplorer = isset($_POST['siteexplorer']) ? $_POST['siteexplorer'] : SITEEXPLORER;
-                    
+
                     $project->geoplacename = isset($_POST['geoplacename']) ? $_POST['geoplacename'] : GEOPLACENAME;
                     $project->georegion = isset($_POST['georegion']) ? $_POST['georegion'] : GEOREGION;
                     $project->geolatitude = isset($_POST['geolatitude']) ? $_POST['geolatitude'] : GEOLATITUDE;
@@ -100,9 +103,9 @@ switch ($params[0]) {
                             . "?>";
                     file_put_contents('data/config.php', $config);
 
-                    if($_POST['robots'])
+                    if ($_POST['robots'])
                         file_put_contents('data/robots.txt', $_POST['robots']);
-                    if($_POST['humans'])
+                    if ($_POST['humans'])
                         file_put_contents('data/humans.txt', $_POST['humans']);
 
                     $page = u::result('200', u::translate('Options saved!'));
@@ -111,34 +114,18 @@ switch ($params[0]) {
             // }
         }
         break;
-
-// LOGO ========================================================================
-
-    case 'logo':
-        if (u::upload($_FILES['Filedata']['tmp_name'], 'data/logo.png')) {
-            $page = u::result('200', u::translate('Upload succesful!'));
-        } else
-            $page = u::result('400', u::translate('Upload failed!'));
-        break;
-
-// FAVICON =====================================================================
-
-    case 'favicon':
-        if (u::upload($_FILES['Filedata']['tmp_name'], 'data/favicon.ico')) {
-            $page = u::result('200', u::translate('Upload succesful!'));
-        } else
-            $page = u::result('400', u::translate('Upload failed!'));
-        break;
-
-// LANGUAGE ====================================================================
-
+// LANGUAGE 
+// =============================================================================
+// =============================================================================
+// =============================================================================
     case 'language':
         $_SESSION['LANG'] = $_POST['lang'];
         $page = u::result('200');
         break;
-
-// TRANSLARIONS ================================================================
-
+// TRANSLATIONS 
+// =============================================================================
+// =============================================================================
+// =============================================================================
     case 'translations':
         if (in_array($_POST['type'], array('lib', 'templates'))) {
             $path = $_POST['type'] == 'lib' ? 'lib/' : $_POST['type'] . '/' . $_POST['part'] . '/';
@@ -149,28 +136,48 @@ switch ($params[0]) {
         } else
             $page = u::result('400', u::translate('Undefined type!'));
         break;
-
-// THEMES ======================================================================
-
+// THEMES 
+// =============================================================================
+// =============================================================================
+// =============================================================================
     case 'themes':
-        if (u::upload($_FILES['Filedata']['tmp_name'], 'themes/' . $_FILES['Filedata']['name'])) {
-            u::extract('themes/' . $_FILES['Filedata']['name'], 'themes/' . basename($_FILES['Filedata']['name'], '.zip'));
-            unlink('themes/' . $_FILES['Filedata']['name']);
-            $page = u::result('200', u::translate('Upload succesful!'));
-        } else
-            $page = u::result('400', sprintf(u::translate('Upload failed! Please check %s folder writing permission.'), '<b>themes/</b>'));
+        switch ($params[1]) {
+            default:
+                if (u::upload($_FILES['theme']['tmp_name'], 'themes/' . $_FILES['theme']['name'])) {
+                    u::extract('themes/' . $_FILES['theme']['name'], 'themes/' . basename($_FILES['theme']['name'], '.zip'));
+                    unlink('themes/' . $_FILES['theme']['name']);
+                    $page = u::result('200', u::translate('Upload succesful!'));
+                } else
+                    $page = u::result('400', sprintf(u::translate('Upload failed! Please check %s folder writing permission.'), '<b>themes/</b>'));
+                break;
+// LOGO ========================================================================
+            case 'logo':
+                if (u::upload($_FILES['logo']['tmp_name'], 'data/logo.png')) {
+                    $page = u::result('200', u::translate('Upload succesful!'));
+                } else
+                    $page = u::result('400', u::translate('Upload failed!'));
+                break;
+// FAVICON =====================================================================
+            case 'favicon':
+                if (u::upload($_FILES['favicon']['tmp_name'], 'data/favicon.ico')) {
+                    $page = u::result('200', u::translate('Upload succesful!'));
+                } else
+                    $page = u::result('400', u::translate('Upload failed!'));
+                break;
+        }
         break;
-
-// TEMPLATES ===================================================================
-
+// TEMPLATES 
+// =============================================================================
+// =============================================================================
+// =============================================================================
     case 'templates':
         if (TEMPLATEUPLOAD)
-            if (u::upload($_FILES['Filedata']['tmp_name'], 'templates/' . $_FILES['Filedata']['name'])) {
-                u::extract('templates/' . $_FILES['Filedata']['name'], 'templates/' . basename($_FILES['Filedata']['name'], '.zip'));
-                unlink('templates/' . $_FILES['Filedata']['name']);
+            if (u::upload($_FILES['template']['tmp_name'], 'templates/' . $_FILES['template']['name'])) {
+                u::extract('templates/' . $_FILES['template']['name'], 'templates/' . basename($_FILES['template']['name'], '.zip'));
+                unlink('templates/' . $_FILES['template']['name']);
                 $page = u::result('200', u::translate('Upload succesful!'));
             } else
-                $page = u::result('400', sprintf(u::translate('Upload failed! Please check %s folder writing permission.'), '<b>themes/</b>'));
+                $page = u::result('400', sprintf(u::translate('Upload failed! Please check %s folder writing permission.'), '<b>templates/</b>'));
         else
             $page = u::result('600', u::translate('Template upload not allowed'));
         break;
