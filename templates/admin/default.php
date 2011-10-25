@@ -43,7 +43,7 @@ switch ($params[0]) {
             $project->development = isset($_POST['development']) ? ($_POST['development'] ? 1 : 0) : DEVELOPMENT;
             $project->ajax = isset($_POST['ajax']) ? ($_POST['ajax'] ? 1 : 0) : AJAX;
             $project->editorial = isset($_POST['editorial']) ? ($_POST['editorial'] ? 1 : 0) : EDITORIAL;
-            $project->domain = $_POST['domain'] ? $_POST['domain'] : DOMAIN;
+            //$project->domain = $_POST['domain'] ? $_POST['domain'] : DOMAIN;
             $project->cookieless = isset($_POST['cookieless']) ? ($_POST['cookieless'] ? $_POST['cookieless'] : DOMAIN ) : (COOKIELESS ? COOKIELESS : $project->domain);
             $project->admin = $_POST['admin'] ? $_POST['admin'] : ADMIN;
             $project->editor = $_POST['editor'] ? $_POST['editor'] : EDITOR;
@@ -54,12 +54,12 @@ switch ($params[0]) {
             } else {
                 $project->apassword = $_POST['apassword'] ? sha1($_POST['apassword']) : APASSWORD;
                 $project->epassword = $_POST['epassword'] ? sha1($_POST['epassword']) : EPASSWORD;
-                if (!$project->admin || !$project->apassword || ($project->editorial && (!$project->editor || !$project->epassword)) || !$project->domain) {
-                    $page = u::result('400', u::translate('Admin and Domain name fields must not be null!'));
+                if (!$project->admin || !$project->apassword || ($project->editorial && (!$project->editor || !$project->epassword))) {
+                    $page = u::result('400', u::translate('Admin fields must not be null!'));
                 } else {
                     $project->theme = ($_SESSION['THEME'] = ($_POST['theme'] ? $_POST['theme'] : THEME));
                     $project->analytics = $_POST['analytics'] ? $_POST['analytics'] : ANALYTICS;
-                    $project->alexa = isset($_POST['alexa']) ? $_POST['alexa'] : ALEXA;
+                    /*$project->alexa = isset($_POST['alexa']) ? $_POST['alexa'] : ALEXA;
                     $project->webmaster = isset($_POST['webmaster']) ? $_POST['webmaster'] : WEBMASTER;
                     $project->siteexplorer = isset($_POST['siteexplorer']) ? $_POST['siteexplorer'] : SITEEXPLORER;
 
@@ -67,7 +67,7 @@ switch ($params[0]) {
                     $project->georegion = isset($_POST['georegion']) ? $_POST['georegion'] : GEOREGION;
                     $project->geolatitude = isset($_POST['geolatitude']) ? $_POST['geolatitude'] : GEOLATITUDE;
                     $project->geolongitude = isset($_POST['geolongitude']) ? $_POST['geolongitude'] : GEOLONGITUDE;
-
+                    */
                     $project->multilingual = isset($_POST['multilingual']) ? $_POST['multilingual'] : MULTILINGUAL;
                     $project->defaultlang = $_POST['defaultlang'] ? $_POST['defaultlang'] : DEFLANG;
                     if ($_POST['defaultlang']) {
@@ -80,7 +80,7 @@ switch ($params[0]) {
                     $config = "<?php" . "\n"
                             . "define('DEVELOPMENT', $project->development);" . "\n"
                             . "define('AJAX', $project->ajax);" . "\n"
-                            . "define('DOMAIN', '$project->domain');" . "\n"
+                            //. "define('DOMAIN', '$project->domain');" . "\n"
                             . "define('COOKIELESS', '$project->cookieless');" . "\n"
                             . "define('ADMIN', '$project->admin');" . "\n"
                             . "define('APASSWORD', '$project->apassword');" . "\n"
@@ -89,13 +89,15 @@ switch ($params[0]) {
                             . "define('EPASSWORD', '$project->epassword');" . "\n"
                             . "define('DEFTHEME', '$project->theme');" . "\n"
                             . "define('ANALYTICS', '$project->analytics');" . "\n"
-                            . "define('ALEXA', '$project->alexa');" . "\n"
+                            /*. "define('ALEXA', '$project->alexa');" . "\n"
                             . "define('WEBMASTER', '$project->webmaster');" . "\n"
                             . "define('SITEEXPLORER', '$project->siteexplorer');" . "\n"
                             . "define('GEOPLACENAME', '$project->geoplacename');" . "\n"
                             . "define('GEOREGION', '$project->georegion');" . "\n"
                             . "define('GEOLATITUDE', '$project->geolatitude');" . "\n"
                             . "define('GEOLONGITUDE', '$project->geolongitude');" . "\n"
+                             * 
+                             */
                             . "define('MULTILINGUAL', $project->multilingual);" . "\n"
                             . "define('SUPPORTEDLANGS', '$project->supportedlangs');" . "\n"
                             . "define('DEFLANG', '$project->defaultlang');" . "\n"
@@ -190,8 +192,8 @@ switch ($params[0]) {
         $project = u::get('data/project');
         if (POST) {
             $project->title->$lang = $_POST['title'] ? $_POST['title'] : $project->$lang->title;
-            $project->description->$lang = $_POST['description'] ? $_POST['description'] : $project->$lang->description;
-            $project->keywords->$lang = $_POST['keywords'] ? $_POST['keywords'] : $project->$lang->keywords;
+            //$project->description->$lang = $_POST['description'] ? $_POST['description'] : $project->$lang->description;
+            //$project->keywords->$lang = $_POST['keywords'] ? $_POST['keywords'] : $project->$lang->keywords;
             $project->copyright->$lang = $_POST['copyright'] ? $_POST['copyright'] : $project->$lang->copyright;
             u::set('data/project', $project);
             $page = u::result('200', u::translate('Project info saved!'));
@@ -199,8 +201,10 @@ switch ($params[0]) {
             $page = $project;
         break;
 
-// PAGES =======================================================================
-
+// PAGES
+// =============================================================================
+// =============================================================================
+// =============================================================================
     case 'pages':
         $page = new stdClass();
         $page->navigator = u::get('data/project');
@@ -212,13 +216,13 @@ switch ($params[0]) {
                     foreach ($project->pages as $k => $i)
                         $pages[] = $k;
                     if (!preg_match('/([0-9a-z_-]+)/', $_POST['url'])) {
-                        $page = u::result('600', u::translate('Url can only contain english characters, - _ and numbers!'));
+                        $page = u::result('600', u::translate('Url can only contain english characters, - _ and numbers!'), 'url');
                     } elseif (in_array($_POST['url'], $pages)) {
-                        $page = u::result('600', u::translate('Page already exists!'));
+                        $page = u::result('600', u::translate('Page already exists!'), 'url');
                     } else {
                         $project->pages->$_POST['url'] = null;
                         u::set('data/project', $project);
-                        $page = u::result('200', u::translate('Page added!'));
+                        $page = u::result('200', array('url'=>$_POST['url']));
                     }
                     break;
                 case 'set':

@@ -16,13 +16,11 @@
             </a>
         </div>
         <div id="language-bar">
-            <span><?=u::translate('Current language')?>: <?=LOCALE?> | <?=LANG?></span>
-            <?if(MULTILINGUAL):?>
-            <select onchange="changeLang(this)">
+            <i><?=u::translate('Current language')?>: <?=LOCALE?> . <?=LANG?></i>
+            <?if(MULTILINGUAL):?> ||
                 <?foreach (u::languages() as $k=>$i):?>
-                <option value="<?=$k?>"<?=$k==LANG?'selected="selected"':''?>><?=$i?></option>
+                <a onclick="changeLang('<?=$k?>')" title="<?=$i?>" <?=$k==LANG?'class="selected"':''?>><?=$k?></a>
                 <?endforeach;?>
-            </select>
             <?endif;?>
         </div>
         <?if(ACCESS>=1):?>
@@ -40,8 +38,8 @@
     </div>
 </div>
 <script>
-    function changeLang(el){
-        tool.post({'url':'/json/<?=TEMPLATE?>/language','data':'lang='+$(el).val(),'onComplete':function(){ location.href = location.href;}});
+    function changeLang(i){
+        tool.post({'url':'/json/<?=TEMPLATE?>/language','data':'lang='+i,'onComplete':function(){ location.href = location.href;}});
     }
 </script>
 <div id="page-admin">
@@ -81,8 +79,7 @@ if(!ACCESS):
 // =============================================================================
 if(!is_writable('data/config.php')){?>
     <div id="content">
-        <h3><?=u::translate('Setup')?></h3>
-        <h2><?=u::translate('Error: <u>data/</u> folder is not writable. Please set <u>data/</u> folder writing permission.')?></h2>
+        <h3><?=u::translate('Error: <u>data/</u> folder is not writable. Please set <u>data/</u> folder writing permission.')?></h3>
     </div>
 <? } else switch ($params[0]):
 // PROJECT 
@@ -93,6 +90,27 @@ default:
 case 'project':
 switch ($params[1]):
 default:
+?>
+<div id="content" class="dashboard">
+    <a href="/admin/project,accounts"><?=u::translate('Accounts')?></a>
+    <a href="/admin/themes"><?=u::translate('Themes')?></a>
+    <a href="/admin/templates"><?=u::translate('Page Templates')?></a>
+    <a href="/admin/pages"><?=u::translate('Pages')?></a>
+    <a href="/admin/languages"><?=u::translate('Languages')?></a>     
+    <a href="/admin/languages,translations"><?=u::translate('Translations')?></a>     
+    <a href="/admin/project,settings"><?=u::translate('Settings')?></a>     
+    <a href="/admin/project,seo"><?=u::translate('SEO')?></a>     
+</div>
+<script>
+    $('#content a').each(function(i){
+        $('<b>').css({
+            'background-position': '-'+(i%4*64)+'px -'+(Math.floor(i/4)*64)+'px'
+        }).prependTo(this);
+    });
+</script>
+<?
+break;
+case 'settings':
 ?>
 <div id="content">
     <form method="post" action="/json/<?=TEMPLATE?>/project">
@@ -253,8 +271,8 @@ endswitch;?>
     <div id="aside">
         <div id="menu-admin">
             <?if(ACCESS>=1):?>
-            <a href="/admin/project" class="<?=!$params[1]?' selected':''?>"><?=u::translate('Settings')?></a>
             <a href="/admin/project,accounts" class="<?=$params[1]=='accounts'?' selected':''?>"><?=u::translate('Accounts')?></a>
+            <a href="/admin/project,settings" class="<?=$params[1]=='settings'?' selected':''?>"><?=u::translate('Settings')?></a>
             <a href="/admin/project,seo" class="<?=$params[1]=='seo'?' selected':''?>"><?=u::translate('SEO')?></a>
             <?endif;?>
         </div>
@@ -504,95 +522,83 @@ case 'templates':?>
     };
 </script>
 <?break;
-// INFO ========================================================================
-case 'info':?>
-<div id="content">
-    <h3><?=u::translate('Info')?></h3>
-    <form id="form" method="POST" action="/json/<?=TEMPLATE?>/info">
-
-        <label><?=u::translate('Title')?>:</label> <input id="title" name="title" type="text" class="wide" value="<?=$page->title->$lang?>" />
-        <div class="clear"></div>
-</div>
-
-<label><?=u::translate('Description')?>:</label> <input id="description" name="description" class="wide" type="text" value="<?=$page->description->$lang?>" />
-<div class="clear"></div>
-</div>
-
-<label><?=u::translate('Keywords')?>:</label> <input id="keywords" name="keywords" class="wide" type="text" value="<?=$page->keywords->$lang?>" />
-<div class="clear"></div>
-</div>
-
-<label><?=u::translate('Copyright')?>:</label> <input id="copyright" name="copyright" class="wide" type="text" value="<?=$page->copyright->$lang?>" />
-<div class="clear"></div>
-</div>
-<div class="formSubmit">
-    <span id="loader" class="loader"><img src="/themes/<?=THEME?>/images/loader.gif" alt="loader" /></span>
-    <input type="submit" value="<?=u::translate('Save')?>" />
-</div>
-</form>
-<script>$(document).ready(function() { tool.form(); });</script>
-</div>
-<div id="aside"></div>
-<?break;
-// PAGES =======================================================================
+// PAGES 
+// =============================================================================
+// =============================================================================
+// =============================================================================
 case 'pages':?>
 <div id="content">
-    <h3 class="top"><?=u::translate('Pages')?></h3>
-    <form id="form" method="POST" action="/json/<?=TEMPLATE?>/pages,set">
+    <form method="post" action="/json/<?=TEMPLATE?>/pages,set">
+        <h3><?=u::translate('Pages')?></h3>
         <div id="pages">
             <? if($page->navigator->pages): foreach ($page->navigator->pages as $page=>$name): $lang = LANG; ?>
-            <div id="<?=$page?>" class="formItem">
-                <span class="handler">::</span>
-                <input name="name[<?=$page?>]" type="text" value="<?=$name->$lang?>" />
-                <input class="disabled link" type="text" value="<?=$page?>" disabled="disabled" />
-                <a class="button" href="/admin/page,<?=$page?>"><?=u::translate('Edit')?></a>
-                <?if(ACCESS >= 3):?><a class="button" href="javascript:del('<?=$page?>');"><?=u::translate('Delete')?></a><?endif;?>
+            <div id="<?=$page?>">
+                <b class="handler">&nbsp;</b>
+                <input type="text" name="name[<?=$page?>]" value="<?=$name->$lang?>" />
+                <a href="/admin/page,<?=$page?>"><?=u::translate('Edit')?></a>
+                <?if(ACCESS >= 3):?><a class="del" href="javascript:del('<?=$page?>');"><?=u::translate('Delete')?></a><?endif;?>
                 <a id="def<?=$page?>" class="select<?=$page==DEFPAGE?' selected':''?>" href="javascript:def('<?=$page?>');"><?=$page==DEFPAGE ? u::translate('Main Page') : u::translate('Set as Main Page')?></a>
-                <div class="clear"></div>
+                <i class="clear">url: <?=$page?></i>
             </div>
             <? endforeach; else: ?>
             <div id="nopage" class="formItem formMesssage"><?=u::translate('Any pages have created yet')?></div>
             <? endif; ?>
         </div>
-        <div class="formSubmit">
-            <span id="loader" class="loader"><img src="/themes/<?=THEME?>/images/loader.gif" alt="loader" /></span>
+        <label>
+            <img class="loader" src="/themes/<?=THEME?>/images/loader.gif" alt="loader" />
             <input type="submit" value="<?=u::translate('Save')?>" />
-        </div>
+        </label>
+    </form>
+    <form method="post" action="/json/<?=TEMPLATE?>/pages,add" data-complete="add(r)">
+        <h3><?=u::translate('New Page')?></h3>
+        <label>
+            <input type="text" name="url" value="" />
+            <i><?=u::translate('Write a page name what do you want to add.')?></i>
+        </label>
+        <label>
+            <img class="loader" src="/themes/<?=THEME?>/images/loader.gif" alt="loader" />
+            <input type="submit" value="<?=u::translate('Add')?>" />
+        </label>
     </form>
 </div>
 <div id="aside">
     <?if(ACCESS >= 3):?>
-    <h3 class="top"><?=u::translate('New Page')?></h3>
-    <div id="addPage">
-
-        <label><?=u::translate('Link')?></label>
-        <input id="url" name="url" type="text" value="" />
-        <a id="urlpost" href="javascript:post();" class="button">[+] <?=u::translate('Add')?></a>
-        <div class="clear"></div>
+    <form method="post" action="/json/<?=TEMPLATE?>/info">
+        <h3><?=u::translate('Project Info')?></h3>
+        <label>
+            <b><?=u::translate('Title')?>:</b> 
+            <input type="text" name="title" value="<?=$page->title->$lang?>" />
+        </label>
+        <label>
+            <b><?=u::translate('Copyright')?>:</b> 
+            <input type="text" name="copyright" value="<?=$page->copyright->$lang?>" />
+        </label>
+        <label>
+            <img class="loader" src="/themes/<?=THEME?>/images/loader.gif" alt="loader" />
+            <input type="submit" value="<?=u::translate('Save')?>" />
+        </label>
+    </form>
+    <?endif;?>
+    <div class="clear"></div>
+    <div id="menu-admin">
+        <a href="/data.zip"><?=sprintf(u::translate('Click here to backup the %s folder.'),'<b>/data</b>')?></a>
     </div>
-    <script>$(document).ready(function() { tool.form(); });</script>
-</div>
-<?endif;?>
-<h3><?=u::translate('Backup')?></h3>
-<div id="backup">
-    <a class="button" href="/data.zip"><?=u::translate('Click here to backup the data/ folder')?></a>
-</div>
 </div>
 <script>
     var linksort;function 
-    add(url){
+    add(r){
+        var url = r.message.url;
         if($('#nopage'))$('#nopage').remove();
-        var item = $('<div>',{'id':url,'class':'formItem'});
-        $('<span>',{'class':'handler','text':'::'}).appendTo(item);
+        var item = $('<div>',{'id':url});
+        $('<b class="handler">').html('&nbsp;').appendTo(item);
         $('<input>',{'name':'name['+url+']','type':'text'}).appendTo(item);
-        $('<input>',{'class':'disabled','type':'text','value':url,'disabled':'disabled'}).appendTo(item);
-        $('<a>',{'class':'button','href':'/admin/page,'+url})
+        $('<a>',{'href':'/admin/page,'+url})
         .html("<?=u::translate('Edit')?>").appendTo(item);
-        $('<a>',{'class':'button','href':'javascript:del(\''+url+'\')'})
+        $('<a>',{'class':'del','href':'javascript:del(\''+url+'\')'})
         .html("<?=u::translate('Delete')?>").appendTo(item);
         $('<a>',{'id':'def'+url,'class':'select','href':'javascript:def(\''+url+'\')'})
         .html("<?=u::translate('Set as Main Page')?>").appendTo(item);
-        $('<div>',{'class':'clear'}).appendTo(item);
+        $('<i class="clear">').html(url).appendTo(item);
         //linksort.addItems(item);
         item.appendTo('#pages');
     }
@@ -613,7 +619,7 @@ case 'pages':?>
             +'});';
         tool.confirm("<?=u::translate('Delete Page')?>", "<?=u::translate('Are you sure to delete the page? You will lose all data!')?>", func);
     }
-    function post(){
+    /*function post(){
         $('#urlpost').attr('disabled','disabled');
         var val = $('#url').val().toLowerCase();
         tool.post({'url':'/json/<?=TEMPLATE?>/pages,add','data':'url='+val,'onComplete':function(r){
@@ -622,9 +628,9 @@ case 'pages':?>
                 $('#urlpost').removeAttr('disabled');
             }
         });
-    }
+    }*/
     $(document).ready(function() { 
-        linksort = tool.sortable('pages','span',{'url':'/json/<?=TEMPLATE?>/pages,sort'});
+        linksort = tool.sortable('pages','b',{'url':'/json/<?=TEMPLATE?>/pages,sort'});
         $('#url').keydown(function(e){
             if((e.keyCode == 13) && $('#url').val() && $('#url').val() != $('#url').attr('data-value')) { // enter
                 if(e) e.preventDefault();

@@ -233,7 +233,7 @@ class u {
     public static function locale($locale, $lang, $multilingual) {
         $locale = strtolower($locale);
         $locales = self::locales();
-        $deflocale = array_search(DEFLANG, $locales['index']);
+        $deflocale = array_search((DEFLANG || 'en'), $locales['index']);
         if ($lang)
             $locale = array_search($lang, $locales['index']);
         return strstr(SUPPORTEDLANGS, $locales['index'][$locale]) && $multilingual ? array($locales['locales'][$locale]['locale'], $locales['index'][$locale]) : array($locales['locales'][$deflocale]['locale'], $locales['index'][$deflocale]);
@@ -531,21 +531,17 @@ class u {
     }
 
     public static function initialize() {
-
-
-
-
-        if (DOMAIN && (DOMAIN != $_SERVER['HTTP_HOST'] && COOKIELESS != $_SERVER['HTTP_HOST'])) {
+        /*if (DOMAIN && (DOMAIN != $_SERVER['HTTP_HOST'] && COOKIELESS != $_SERVER['HTTP_HOST'])) {
             header('location: http://' . DOMAIN);
             exit;
-        }
+        }*/
         $headers = getallheaders();
         define('POST', count($_POST));
         define('FILE', (count($_FILES) || $headers['x-file-name']) ? 1 : 0);
         define('CAPTCHA', $_SESSION['CAPTCHA']);
         define('ACCESS', $_SESSION['ACCESS']);
         // THEME SESSION for THEME PREVIEW
-        $_SESSION['THEME'] = $_GET['THEME'] ? $_GET['THEME'] : ($_SESSION['THEME'] ? $_SESSION['THEME'] : DEFTHEME);
+        $_SESSION['THEME'] = $_GET['THEME'] ? $_GET['THEME'] : ($_SESSION['THEME'] ? $_SESSION['THEME'] : (DEFTHEME || 'default'));
         define('THEME', $_SESSION['THEME']);
         define('FORMAT', $_GET['FORMAT'] ? $_GET['FORMAT'] : 'html');
         // LANGUAGES / LOCALES
@@ -559,7 +555,7 @@ class u {
         $project = @self::get('data/project');
         // supported language list
         $project->languages = self::languages();
-        define('PAGE', $_GET['PAGE'] ? $_GET['PAGE'] : DEFPAGE);
+        define('PAGE', $_GET['PAGE'] ? $_GET['PAGE'] : (DEFPAGE || 'home'));
         define('PARAMS', $_GET['PARAMS'] ? $_GET['PARAMS'] : 'default');
         return $project;
     }
