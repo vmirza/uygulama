@@ -531,7 +531,7 @@ case 'pages':?>
     <form method="post" action="/json/<?=TEMPLATE?>/pages,set">
         <h3><?=u::translate('Pages')?></h3>
         <div id="pages">
-            <? if($page->navigator->pages): foreach ($page->navigator->pages as $page=>$name): $lang = LANG; ?>
+            <? if($page->pages): foreach ($page->pages as $page=>$name): $lang = LANG; ?>
             <div id="<?=$page?>">
                 <b class="handler">&nbsp;</b>
                 <input type="text" name="name[<?=$page?>]" value="<?=$name->$lang?>" />
@@ -649,52 +649,49 @@ case 'pages':?>
     });
 </script>
 <?break;
-// PAGE ========================================================================
+// PAGE 
+// =============================================================================
+// =============================================================================
+// =============================================================================
 case 'page':?>
 <?if($page->page->template):?>
-<h3>
-    <a href="/admin/pages"><?=u::translate('Pages')?></a> >
-    <?=u::translate('Page Edit')?> :: '<?=$params[1]?>' | <?=u::translate('Template')?> :: '<?=$page->page->template?>'</h3>
+<i id="page-info">( URI = <?=$params[1]?>, <?=u::translate('Page Template')?> = <?=$page->page->template?> )</i>
 <? include 'templates/'.$page->page->template.'/admin.html'; ?>
 <?else:?>
-<div id="content">
+<div id="content" class="templates">
     <h3><?=u::translate('Choose Page Template')?></h3>
     <?foreach (u::templates() as $i):?>
     <div class="template">
         <img src="/templates/<?=$i?>/thumb.png" alt="<?=$i?>" class="template" />
         <span><?=$i?></span>
-        <?/*<a href="/<?=$i?>.thm" target="_blank"><?=u::translate('Preview')?></a>*/?>
-        <a class="button template" rel="<?=$i?>"><?=u::translate('Choose')?></a>
+        <a data-value="<?=$i?>"><?=u::translate('Choose')?></a>
     </div>
     <?endforeach;?>
-    <script>
-        $('a.template').click(function(e){
-            var item = $(this);
-            $('#selected').empty().append($('<div>',{'class':'template'})
-            .append($('<img>',{'class':'template','src':item.parent().find('img').attr('src')})));
-            $('<a>',{'class':'button','href':'/admin/page,<?=$params[1]?>'})
-            .html("<?=u::translate('Apply Template >')?>")
-            .click(function(e){
-                tool.post({'url':'/json/<?=TEMPLATE?>/template','data':'page=<?=$params[1]?>&template='
-                        +item.attr('rel'),'onComplete':function(r){
-                        if(r.code == 200) {
-                            location.href = location.href;
-                        } else tool.result(r.code,r.status,r.message,r.fields,r.redirect,r.debug);
-                    }});
-            }).appendTo($('#selected'));
-        });
-    </script>
 </div>
-<div id="aside">
+<div id="aside" class="selected-template">
+    <form methot="post" action="/json/<?=TEMPLATE?>/template" data-complete="complete()">
     <h3><?=u::translate('Page Template')?></h3>
     <div id="selected"></div>
-    <?=u::translate('To chage the template after applied, the page must be deleted and recreated entirely.')?>
+    <input type="hidden" name="page" value="<?=$params[1]?>" >
+    <input type="hidden" name="template">
+    <label>
+        <img class="loader" src="/themes/<?=THEME?>/images/loader.gif" alt="loader" />
+        <input type="submit" value="<?=u::translate('Apply Template >')?>" >
+        <i>* <?=u::translate('To chage the template after applied, the page must be deleted and recreated entirely.')?></i>
+    </label>
+    </form>
 </div>
+<script>
+    var complete = function(){ location.href = location.href; };
+    $('.template a').click(function(){
+        $('#selected').empty()
+        .append($('<div class="template">')
+            .append($('<img>',{'class':'template','src':$(this).parent().find('img').attr('src')})));
+        $('input[name=template]').val($(this).data('value'));
+        $('input[type=submit]').fadeIn();
+    });
+</script>
 <?endif;?>
-<?break;
-// SEO =========================================================================
-case 'seo':?>
-
 <?break;?>
 <?endswitch;?>
 <?endif;

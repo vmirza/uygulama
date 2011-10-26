@@ -19,7 +19,8 @@ form {
 }
 label { display:block; margin: 0 0 10px; }
 label b, label i , .label b , .label i { display: block;margin: 0 0 6px; }
-form i.error { padding: 5px 0; color: #911; text-align: right; }
+form i.success { padding: 5px 0; color: #191; }
+form i.error { padding: 5px 0; color: #911; }
 label i.error , .label i.error { padding: 0; text-align: right; font-size: smaller; }
 .label label {
     display:inline;

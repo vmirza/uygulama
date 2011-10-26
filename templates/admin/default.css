@@ -177,14 +177,14 @@ label.translation b {
     -khtml-box-sizing: border-box; /* konqueror */
     margin-bottom: 20px !important;    
     box-sizing: border-box; /* css3 rec */
-    padding: 20px 0 20px 25px;
+    padding: 20px 0 0 25px;
     border: 1px solid #e5e5e5 !important;
     background: #f3f3f3;
 }
 div.theme, div.template {
     float:left;
     padding-bottom:2px;
-    margin:25px 25px 0 0;
+    margin:0 25px 25px 0;
     width:176px;
     border:1px solid #ddd;
     border-radius:2px;
@@ -292,4 +292,22 @@ b.handler {
 }
 form {
     margin-bottom: 20px !important;    
+}
+
+.selected-template { 
+position: absolute;
+right: 0;
+}
+.selected-template [type=submit] { 
+    display:none; 
+    margin: 10px 0;
+    width: 100%;
+}
+
+#page-info {
+    position: absolute;
+    top:-16px;
+    right:0;
+    color: #666;
+    font-size: smaller;
 }

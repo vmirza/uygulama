@@ -59,15 +59,15 @@ switch ($params[0]) {
                 } else {
                     $project->theme = ($_SESSION['THEME'] = ($_POST['theme'] ? $_POST['theme'] : THEME));
                     $project->analytics = $_POST['analytics'] ? $_POST['analytics'] : ANALYTICS;
-                    /*$project->alexa = isset($_POST['alexa']) ? $_POST['alexa'] : ALEXA;
-                    $project->webmaster = isset($_POST['webmaster']) ? $_POST['webmaster'] : WEBMASTER;
-                    $project->siteexplorer = isset($_POST['siteexplorer']) ? $_POST['siteexplorer'] : SITEEXPLORER;
+                    /* $project->alexa = isset($_POST['alexa']) ? $_POST['alexa'] : ALEXA;
+                      $project->webmaster = isset($_POST['webmaster']) ? $_POST['webmaster'] : WEBMASTER;
+                      $project->siteexplorer = isset($_POST['siteexplorer']) ? $_POST['siteexplorer'] : SITEEXPLORER;
 
-                    $project->geoplacename = isset($_POST['geoplacename']) ? $_POST['geoplacename'] : GEOPLACENAME;
-                    $project->georegion = isset($_POST['georegion']) ? $_POST['georegion'] : GEOREGION;
-                    $project->geolatitude = isset($_POST['geolatitude']) ? $_POST['geolatitude'] : GEOLATITUDE;
-                    $project->geolongitude = isset($_POST['geolongitude']) ? $_POST['geolongitude'] : GEOLONGITUDE;
-                    */
+                      $project->geoplacename = isset($_POST['geoplacename']) ? $_POST['geoplacename'] : GEOPLACENAME;
+                      $project->georegion = isset($_POST['georegion']) ? $_POST['georegion'] : GEOREGION;
+                      $project->geolatitude = isset($_POST['geolatitude']) ? $_POST['geolatitude'] : GEOLATITUDE;
+                      $project->geolongitude = isset($_POST['geolongitude']) ? $_POST['geolongitude'] : GEOLONGITUDE;
+                     */
                     $project->multilingual = isset($_POST['multilingual']) ? $_POST['multilingual'] : MULTILINGUAL;
                     $project->defaultlang = $_POST['defaultlang'] ? $_POST['defaultlang'] : DEFLANG;
                     if ($_POST['defaultlang']) {
@@ -89,13 +89,13 @@ switch ($params[0]) {
                             . "define('EPASSWORD', '$project->epassword');" . "\n"
                             . "define('DEFTHEME', '$project->theme');" . "\n"
                             . "define('ANALYTICS', '$project->analytics');" . "\n"
-                            /*. "define('ALEXA', '$project->alexa');" . "\n"
-                            . "define('WEBMASTER', '$project->webmaster');" . "\n"
-                            . "define('SITEEXPLORER', '$project->siteexplorer');" . "\n"
-                            . "define('GEOPLACENAME', '$project->geoplacename');" . "\n"
-                            . "define('GEOREGION', '$project->georegion');" . "\n"
-                            . "define('GEOLATITUDE', '$project->geolatitude');" . "\n"
-                            . "define('GEOLONGITUDE', '$project->geolongitude');" . "\n"
+                            /* . "define('ALEXA', '$project->alexa');" . "\n"
+                              . "define('WEBMASTER', '$project->webmaster');" . "\n"
+                              . "define('SITEEXPLORER', '$project->siteexplorer');" . "\n"
+                              . "define('GEOPLACENAME', '$project->geoplacename');" . "\n"
+                              . "define('GEOREGION', '$project->georegion');" . "\n"
+                              . "define('GEOLATITUDE', '$project->geolatitude');" . "\n"
+                              . "define('GEOLONGITUDE', '$project->geolongitude');" . "\n"
                              * 
                              */
                             . "define('MULTILINGUAL', $project->multilingual);" . "\n"
@@ -183,34 +183,14 @@ switch ($params[0]) {
         else
             $page = u::result('600', u::translate('Template upload not allowed'));
         break;
-
-// INFO ========================================================================
-
-    case 'info':
-        $lang = LANG;
-        $project = new stdClass();
-        $project = u::get('data/project');
-        if (POST) {
-            $project->title->$lang = $_POST['title'] ? $_POST['title'] : $project->$lang->title;
-            //$project->description->$lang = $_POST['description'] ? $_POST['description'] : $project->$lang->description;
-            //$project->keywords->$lang = $_POST['keywords'] ? $_POST['keywords'] : $project->$lang->keywords;
-            $project->copyright->$lang = $_POST['copyright'] ? $_POST['copyright'] : $project->$lang->copyright;
-            u::set('data/project', $project);
-            $page = u::result('200', u::translate('Project info saved!'));
-        } else
-            $page = $project;
-        break;
-
 // PAGES
 // =============================================================================
 // =============================================================================
 // =============================================================================
     case 'pages':
-        $page = new stdClass();
-        $page->navigator = u::get('data/project');
+        $project = u::get('data/project');
         if (POST) {
             $_POST['url'] = strtolower($_POST['url']);
-            $project = u::get('data/project');
             switch ($params[1]) {
                 case 'add':
                     foreach ($project->pages as $k => $i)
@@ -222,7 +202,7 @@ switch ($params[0]) {
                     } else {
                         $project->pages->$_POST['url'] = null;
                         u::set('data/project', $project);
-                        $page = u::result('200', array('url'=>$_POST['url']));
+                        $page = u::result('200', array('url' => $_POST['url']));
                     }
                     break;
                 case 'set':
@@ -251,9 +231,21 @@ switch ($params[0]) {
                     break;
             }
             unset($project);
+        } else {
+            $page = $project;
         }
         break;
-
+// INFO 
+// =============================================================================
+    case 'info':
+        if (POST) {
+            $project = u::get('data/project');
+            $project->title->$lang = isset ($_POST['title']) ? $_POST['title'] : $project->$lang->title;
+            $project->copyright->$lang = isset($_POST['copyright']) ? $_POST['copyright'] : $project->$lang->copyright;
+            u::set('data/project', $project);
+            $page = u::result('200', u::translate('Project info saved!'));
+        }
+        break;
 // TEMPLATE ====================================================================
 
     case 'template':

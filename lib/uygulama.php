@@ -541,7 +541,7 @@ class u {
         define('CAPTCHA', $_SESSION['CAPTCHA']);
         define('ACCESS', $_SESSION['ACCESS']);
         // THEME SESSION for THEME PREVIEW
-        $_SESSION['THEME'] = $_GET['THEME'] ? $_GET['THEME'] : ($_SESSION['THEME'] ? $_SESSION['THEME'] : (DEFTHEME || 'default'));
+        $_SESSION['THEME'] = $_GET['THEME'] ? $_GET['THEME'] : ($_SESSION['THEME'] ? $_SESSION['THEME'] : DEFTHEME);
         define('THEME', $_SESSION['THEME']);
         define('FORMAT', $_GET['FORMAT'] ? $_GET['FORMAT'] : 'html');
         // LANGUAGES / LOCALES
