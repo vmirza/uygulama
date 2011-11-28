@@ -1,13 +1,17 @@
-/*--------------------------------------------------*/
-/*      ADMIN
-/*--------------------------------------------------*/
+/*------------------------------------------------------------------------------
+    ADMIN
+============================--------------------------------------------------*/
 #header-admin, #footer-admin {
+    position: absolute;
+    top:0;
+    left:0;
+    width:100%;
     background:none repeat scroll 0 0 #f5f5f5;
     border-bottom:1px solid #e5e5e5;
 }
 #footer-admin {
+    top: auto;
     bottom:0;
-    width:100%;
     border:0;
     border-top:1px solid #e5e5e5;
 }
@@ -94,9 +98,9 @@
 #nav-admin a.selected {
     color:#15c;
 }
-#page-admin {
-    position:relative;
-    margin:20px auto;
+#page {
+    margin:0 auto;
+    padding: 95px 0 45px;
     width:960px;
 }
 #content, #aside {
@@ -112,7 +116,11 @@ h2, h3 {
     height:16px;
     line-height:16px;
 }
-
+hr {
+    margin: 15px 0;
+    border:0;    
+    border-top: 1px dashed #ccc;
+}
 
 
 .dashboard a {
@@ -248,9 +256,15 @@ span.checkbox label {
     line-height:20px;
     cursor:pointer;
 }
-#pages div { margin-bottom: 8px; }
-b.handler {
-    display: inline-block;
+
+
+.item {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #ddd;
+}
+.item .handler {
+    float:left;
     width: 16px;
     height: 43px;
     line-height: 45px;
@@ -259,23 +273,58 @@ b.handler {
     background-position: top left, bottom left;
     cursor:s-resize;
 }
-#pages input { width:300px; }
-#pages i { 
+.item img {
+    float:left;
+    margin: 0 5px;
+    padding: 1px;
+    border: 1px solid #ddd;
+    background: #fff;
+}
+.item label { 
+    float:left;
+    margin-right: 5px;
+}
+.item input[type=text] {
+    width: 300px;
+}
+.item i { 
     display: block;
     padding-left: 20px; 
     font-size: smaller; 
 }
-#pages a { 
+.item a, .tool a { 
     display: inline-block;
-    margin: 8px 5px;
+    margin: 0 5px;
     padding-left: 20px;
     height: 16px;
     line-height: 16px;
+    font-size: smaller;
     background: url(/templates/admin/images/pages-sprite.png) -16px 0 no-repeat;
 }
-#pages a.del { background-position: -16px -16px; }
-#pages a.select { background-position: -16px -32px; }
-#pages a.selected { background-position: -16px -48px; }
+.item a.select { background-position: -16px -32px; }
+.item a.selected { background-position: -16px -48px; }
+.tool { 
+    margin-top: -30px;
+}
+.tool a { 
+    margin: 0 20px 0 0;
+}
+.item a.remove, a.removeall { background-position: -16px -16px; }
+.removeall:hover { color: #921; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .ui-state-highlight { background:#ffe; }
 
@@ -310,4 +359,51 @@ right: 0;
     right:0;
     color: #666;
     font-size: smaller;
+}
+
+
+#submenu {
+    margin-bottom: 10px;
+    padding: 0 20px;
+    border: 1px solid #ddd;
+    background: #f5f5f5;
+}
+#submenu a {
+    display:inline-block;
+    margin-bottom:-1px;
+    margin-right:25px;
+    height:32px;
+    line-height:32px;
+    color:#444;
+    background:url(/templates/admin/images/link-arrow.png) top center no-repeat;
+    transition:all .3s ease-out;
+    -moz-transition:all .3s ease-out;
+    -webkit-transition:all .3s ease-out;
+}
+#submenu a:hover, #submenu a.selected {
+    color:#111;
+    background-position:bottom center;
+}
+#submenu a.selected {
+    color:#15c;
+}
+
+.sitemaps a {
+    display: block;
+    margin: 3px 0;
+    padding: 8px;
+    border: 1px solid #ddd;
+    background: #fff;
+}
+.sitemaps a:hover { border-color: #888; }
+
+
+
+.defaultSkin table.mceLayout, 
+.defaultSkin table.mceLayout tr.mceFirst td,
+.defaultSkin .mceIframeContainer {
+    border:0 !important;    
+}
+.defaultSkin .mceIframeContainer {
+    padding-top: 8px !important;
 }

@@ -108,9 +108,10 @@ g,this._uiHash(this))}}.call(this,this.containers[e]));c.push(function(f){return
 0}}this._storedCursor&&d("body").css("cursor",this._storedCursor);this._storedOpacity&&this.helper.css("opacity",this._storedOpacity);if(this._storedZIndex)this.helper.css("zIndex",this._storedZIndex=="auto"?"":this._storedZIndex);this.dragging=false;if(this.cancelHelperRemoval){if(!b){this._trigger("beforeStop",a,this._uiHash());for(e=0;e<c.length;e++)c[e].call(this,a);this._trigger("stop",a,this._uiHash())}return false}b||this._trigger("beforeStop",a,this._uiHash());this.placeholder[0].parentNode.removeChild(this.placeholder[0]);
 this.helper[0]!=this.currentItem[0]&&this.helper.remove();this.helper=null;if(!b){for(e=0;e<c.length;e++)c[e].call(this,a);this._trigger("stop",a,this._uiHash())}this.fromOutside=false;return true},_trigger:function(){d.Widget.prototype._trigger.apply(this,arguments)===false&&this.cancel()},_uiHash:function(a){var b=a||this;return{helper:b.helper,placeholder:b.placeholder||d([]),position:b.position,originalPosition:b.originalPosition,offset:b.positionAbs,item:b.currentItem,sender:a?a.element:null}}});
 d.extend(d.ui.sortable,{version:"1.8.6"})})(jQuery);
-/* -------------------          ------------------- */
-/* -------------------   TOOL   ------------------- */
-/* -------------------          ------------------- */
+//==============================================================================
+//==============================================================================
+//  TOOL
+//==============================================================================
 var tool = {
     empty: function(){},
     post: function(a, form){
@@ -200,13 +201,14 @@ var tool = {
         $(el).parent().addClass('marked');
     },
     pop: function(content){
-        $('#result').removeAttr('class');
-        $('#result').html('<div class="pop rounded">'
+        console.log('pop');
+        $('<div id="result">')
+        .html('<div class="pop rounded">'
             +'<div class="container">'+ content +'<div class="clear"></div>'
-            +'</div></div>');
+            +'</div></div>').prependTo('body');
         $(document).bind('keydown',function(e){
             if(e.keyCode == 27){ // esc
-                $('#result').empty();
+                $('#result').remove();
                 $(document).unbind();
             }
         });
@@ -226,7 +228,7 @@ var tool = {
         });*/
         var content = '<h1>'+ status +'</h1><p>'+ message +'</p>'
         +(debug?'<p class="debug">'+ debug +'</p><div class="clear"></div>':'')
-        +'<div class="close" onclick="$(\'#result\').html(\'\');">'+_lang.close+'</div>';
+        +'<div class="close" onclick="$(\'#result\').remove();">'+_lang.close+'</div>';
         this.pop(content);
         $('#result').addClass(code>=400 ? (code>=600 ? 'error' : 'alert') : 'success');
         if(redirect) location.href = redirect;
@@ -235,13 +237,13 @@ var tool = {
     },
     confirm: function(header, msg, func){
         var content = '<h1>'+ header +'</h1><p>'+ msg +'</p>'
-        +'<div class="approve" onclick="$(\'#result\').html(\'\'); '+func+';">'+_lang.ok+'</div>'
-        +'<div class="cancel" onclick="$(\'#result\').html(\'\');">'+_lang.cancel+'</div>'
+        +'<div class="approve" onclick="$(\'#result\').remove(); '+func+';">'+_lang.ok+'</div>'
+        +'<div class="cancel" onclick="$(\'#result\').remove();">'+_lang.cancel+'</div>'
         +'';
         $(document).bind('keydown',function(e){
             if(e.keyCode == 32){ // space
                 eval(func);
-                $('#result').empty();
+                $('#result').remove();
                 $(document).unbind();
             }
         });
@@ -348,3 +350,66 @@ var tool = {
         .html(c);
     }
 };
+
+
+
+
+
+
+
+
+(function( $ ){
+
+  var methods = {
+     init : function( options ) {
+
+       return this.each(function(){
+         $(window).bind('resize.tooltip', methods.reposition);
+       });
+
+     },
+     // ITEM MANAGEMENT
+     item : function( ) {
+
+       return this.each(function(){
+         $(window).unbind('.tooltip');
+       })
+
+     },
+     // SORTABLE
+     sortable : function(el, handler, a){
+        $(function() {
+            $(el).sortable({
+                handle: handler || 'b',
+                forcePlaceholderSize: true,
+                placeholder: 'ui-state-highlight',
+                update: function() {
+                    var order = $(this).sortable('toArray').toString();
+                    a.data = (a.data || '') +'&order='+ order
+                    if(a.url) tool.post(a); else a.onComplete(order);
+                }
+            });
+            $('#'+ID).disableSelection();
+        });
+     },
+     show : function( ) { 
+       // ... 
+     },
+     hide : function( ) {
+       // ... 
+     },
+     update : function( content ) { 
+       // ...
+     }
+  };
+
+  $.fn.u = function( method ) {
+    if (methods[method]) {
+      return methods[method].apply( this, Array.prototype.slice.call(arguments, 1));
+    } else if (typeof method === 'object' || ! method) {
+      return methods.init.apply(this, arguments);
+    } else {
+      $.error( 'Method ' +  method + ' does not exist on jQuery.u' );
+    }    
+  };
+})(jQuery);
