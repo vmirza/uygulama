@@ -1,0 +1,20 @@
+/*--------------------------------------------------*/
+/*      CONTACT
+/*--------------------------------------------------*/
+#captchaImg {
+    margin: 2px 5px 2px 0;
+    vertical-align: top;
+}
+input[name=captcha] {
+    width: 100px !important;
+}
+#links a {
+display:block;
+line-height: 22px;
+font-size: 100%;
+text-decoration: none;
+}
+#links img {
+margin-right:3px;
+vertical-align:-25%;
+}

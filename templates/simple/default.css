@@ -1,0 +1,19 @@
+/*--------------------------------------------------*/
+/*      SIMPLE
+/*--------------------------------------------------*/
+menu {
+    margin: 10px 0 6px;
+}
+menu a {
+    display: block;
+    padding: 0 10px 4px;
+    line-height: 20px;
+}
+#content h2,#content h3,#content p,#content li,#content div {padding: 0 0 10px 0;}
+
+#aside.left {
+    float:left !important;
+}
+#aside.right {
+    float:right !important;
+}

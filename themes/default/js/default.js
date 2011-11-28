@@ -23,7 +23,7 @@ var theme = {
                     duration: 200*(ID+1)
                 });
             });
-        }
+        };
         this.menu();
         // LANGUAGES
         $('#languages a').click(function(){
@@ -34,11 +34,11 @@ var theme = {
             });
         });
         // LOGO - NAV
-        $('#logo img').load(function(){
-            $('nav').css({
-                'left':$(this).width()
-            });
-        });
+        /*$('nav a:first').css({
+            //'margin-left': '-'+$('nav a:first').css('padding-left'),
+            'border-left': 0,
+            'background-image': 'none'
+        });*/
         // RESIZE + MEDIA QUERY FIXED
         var normal = function(){
             // LOGO - NAV
@@ -54,11 +54,12 @@ var theme = {
             $('#content').width($('#page').width()-$('#aside').width()-10);
         };
         var mobile = function(){
+            setTimeout(function() { window.scrollTo(0, 1) }, 100);
         };
         var layout = function(){
             var w = $(document).width();
             if(w <= 610){
-                mobile()
+                mobile();
             } else if(w > 610 && w < 960){
                 tablet();
             } else {
@@ -68,7 +69,7 @@ var theme = {
         $(window).resize(function(){
             layout();
         });
-        layout();
+        layout();            
     },
     // PAGE MENU LINKS CLICK EVENT
     menu: function(){
@@ -83,4 +84,42 @@ var theme = {
         $('menu a').fadeIn();
     }
 };
-$(document).ready(function() {});
+
+// ANALYTICS
+var pageTracker = 0;
+var href;
+// DOMREADY
+$(document).ready(function() {
+    // THEME
+    theme.initialize();
+    // LOCATION HASH LISTENER :: PAGE LOADER
+    if(AJAX)
+        window.onhashchange = function() {
+            href = location.hash.replace('#!','');
+            if(!href) href = '/'+REQUESTURI;
+            var loader = $('a[href="'+href+'"]').addClass('loader');
+            $('#page, footer').fadeOut('fast',function(){
+                $('#page').load('/page'+href,function(){
+                    $('#page, footer').fadeIn('fast');
+                    loader.removeClass('loader');
+                    if(ANALYTICS && pageTracker) pageTracker._trackPageview(href);
+                    theme.menu();
+                });
+            });
+            if(ANALYTICS){
+                if(!pageTracker) pageTracker = _gat._createTracker(ANALYTICS);
+                pageTracker._trackPageview(href);
+            }
+        };
+        
+    if(ANALYTICS){
+        var _gaq=[["_setAccount",ANALYTICS],['_setDomainName', '.' + DOMAIN],["_trackPageview"]];
+        (function(d,t){
+            var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.async=1;
+            g.src=("https:"==location.protocol?'//ssl':'//www')+".google-analytics.com/ga.js";
+            s.parentNode.insertBefore(g,s)
+        }(document,"script"));
+    }
+        
+});

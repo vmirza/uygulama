@@ -5,31 +5,18 @@ AddDefaultCharset utf-8
 # force utf-8 for a number of file formats
 AddCharset utf-8 .html .css .js .xml .json .rss
 
-ErrorDocument 404 /data/404.html
-
 # ------------------------------------------------------------------------------
 
 RewriteEngine on
-
-#  SUB DOMAINS
-RewriteCond %{http_host}  !www\.([a-z0-9-]+)\.([a-z0-9-]{2,5})$ [NC]
-RewriteCond %{http_host}  ^(www.)?([a-z0-9-]+)\.([a-z0-9-]+)\.([a-z0-9-]{2,5})$ [NC]
-RewriteRule (.*)          /clients/%2/$1 [L]
-
-# Google Apps
-RewriteCond %{http_host}                                    ^(mail|docs|calendar)\.
-RewriteRule ^.*$                                            %{http_host} [C]
-RewriteRule ^(mail|docs|calendar)\.(([^/]+)\.([a-z]{2,5}))  http://$1.google.com/a/$2 [R=301,L]
 
 # ://www to :// redirection (wwwless)
 RewriteCond %{http_host}                                    ^www\.
 RewriteRule ^.*$                                            %{http_host}%1 [C]
 RewriteRule ^www\.([^/]+)\.([a-z]{2,5})(.*)                 http://$1.$2%{request_uri} [R=301,L]
 
-# domain.com/foo to domain.com/foo/ redirection
-#RewriteCond %{request_filename}                             !-f
-#RewriteCond %{request_uri}                                  !(\.[a-zA-Z0-9]{1,5}|/|#(.*))$
-#RewriteRule ^(.*)$                                          /$1/ [R=301,L]
+# domain.com/foo/ to domain.com/foo redirection
+RewriteCond %{request_uri}                                   \/$
+RewriteRule ^(.*)/$                                          /$1 [R=301,L]
 
 # block access to "hidden" directories 
 RewriteRule "(^|/)\." - [F]

@@ -1,0 +1,210 @@
+<div id="submenu">
+    <a href="/<?=TEMPLATE.'/'.$params[0].','.$params[1]?>,content"><?=u::translate("Content")?></a>
+    <a href="/<?=TEMPLATE.'/'.$params[0].','.$params[1]?>,contactform"><?=u::translate("Contact Form")?></a>
+    <a href="/<?=TEMPLATE.'/'.$params[0].','.$params[1]?>,map"><?=u::translate("Map")?></a>
+    <a href="/<?=TEMPLATE.'/'.$params[0].','.$params[1]?>,layout"><?=u::translate("Layout")?></a>
+</div>
+<script>
+    var LANG = '<?=LANG?>';
+    var THEME = '<?=THEME?>';
+    var TEMPLATE = '<?=TEMPLATE?>';
+    var url = '/json/<?=TEMPLATE?>/<?=$params[0]?>,<?=$params[1]?>,<?=$params[2]?>';
+    var lang = ({
+        'position':'<?=u::translate("Position")?>',
+        'size':'<?=u::translate("Size")?>',
+        'thumbnail':'<?=u::translate("Thumbnail")?>',
+        'original_size':'<?=u::translate("Orginal size")?>',
+        'left':'<?=u::translate("Left")?>',
+        'right':'<?=u::translate("Right")?>',
+        'none':'<?=u::translate("None")?>',
+        'add':'<?=u::translate("ADD")?>',
+        'delete':'<?=u::translate("Delete")?>',
+        'edit':'<?=u::translate("Edit")?>',
+        'delete_image':'<?=u::translate("Delete Image")?>',
+        'are_you_sure':'<?=u::translate("Are you sure delete the imege?")?>'
+    });
+</script>
+<?
+switch($params[2]):
+// =============================================================================
+// CONTENT
+// =============================================================================
+case 'content':?>
+<form method="post" action="/json/<?=TEMPLATE.'/'.implode(',',$params)?>,update">
+    <label>
+        <b><?=u::translate('Title')?>:</b>
+        <input type="text" name="title" value="<?=$page->page->title?>" />
+        <i>urn: <?=$page->page->urn?></i>
+    </label>
+    <label>
+        <b><?=u::translate('Description')?>:</b>
+        <input type="text" name="description" value="<?=$page->page->description?>" />
+    </label>
+    <label>
+        <b><?=u::translate('Keywords')?>:</b>
+        <input type="text" name="keywords" value="<?=$page->page->keywords?>" />
+    </label>
+    <label>
+        <b><?=u::translate('Content')?>:</b>
+        <textarea id="pagecontent" class="wysiwyg" name="content"><?=($page->page->content)?></textarea>
+    </label>
+    <!-- MEDIA -->
+    <label>
+        <b><?=u::translate('Media')?>:</b>
+        <input type="file" name="media" 
+               data-post="/json/<?=TEMPLATE.'/'.implode(',',$params)?>,upload"
+               data-complete="complete(result, file, input, area)" 
+               data-type="jpg,gif,png"
+               title="<?=u::translate('Browse')?>" 
+               multiple>
+    </label>
+    <div id="items"></div>
+    <div class="clearfix"></div>
+    <!-- SUBMIT -->
+    <label>
+        <img class="loader" src="/themes/<?=THEME?>/images/loader.gif" alt="loader" />
+        <input type="submit" value="<?=u::translate('Save')?>" />
+    </label>
+</form>
+<script>
+    var media;
+    var mediaInsert = function(options){
+        if(options){
+            var content = ''
+                +'<div id="mediaalign"><h4>'+lang.position+'</h4>'
+                +'<a class="mediaalign left" data-value="left"><b></b>'+lang.left+'</a>'
+                +'<a class="mediaalign right" data-value="right"><b></b>'+lang.right+'</a>'
+                +'<a class="mediaalign default" data-value="default"><b></b>'+lang.none+'</a>'
+                +'</div><div id="mediasize"><h4>'+lang.size+'</h4>'
+                +'<a class="mediasize thumb" data-value="thumb"><b></b>'+lang.thumbnail+'</a>'
+                +'<a class="mediasize original" data-value="original"><b></b>'+lang.original_size+'</a>'
+                +'</div><button id="media">'+lang.add+'</button>'
+                +'<div class="clearfix"></div></form>';
+            $(document).keydown(function(e){
+                if(e.keyCode == 32){
+                    mediaInsert();
+                    $('#result').empty();
+                    $(document).removeEvents();
+                }
+            });
+            tool.pop(content);
+            $('a.mediaalign, a.mediasize').click(function(){
+                if($(this).hasClass('mediaalign')){
+                    $('a.mediaalign').removeClass('selected');  
+                    $('#media').data('align',$(this).data('value'));
+                } else {
+                    $('a.mediasize').removeClass('selected');  
+                    $('#media').data('size',$(this).data('value'));
+                }                 
+                $(this).addClass('selected');
+            });
+            $('#media').click(function(){
+                mediaInsert();
+            });
+        } else {
+            var content = ($('#media').data('size') == 'original')
+                ? '<img src="/'+media.src+'" alt="'+media.alt+'"/>'
+            : '<a href="/'+media.src+'" class="thumb" title="'+media.alt+'">'
+                +'<img src="/'+media.thumb+'" alt="'+media.alt+'" class="'+$('#media').data('align')+'" />'
+                +'</a>';
+            //editor.selection.insertContent(content);
+            $('#pagecontent').wysiwyg('insertHtml', content);
+            $('#result').empty();
+        }
+    };
+    var item = function(i){
+        $('<div id="'+i.ID+'" class="item">').append(
+        '<b class="handler">&nbsp;</b>'
+        ,'<img src="/'+ i.thumb +'" alt="'+ i.alt +'">'
+        ,'<label>'
+            +'<b><?=u::translate("Title")?></b>'
+            +'<input type="text" name="alt['+i.ID+']" value="'+ i.alt +'">'
+            +'<i>'+i.ID+'</i>'
+            +'</label>'
+        ,$('<a class="remove">').html('<?=u::translate("Remove")?>')
+        .click(function(){
+            remove(0,i.ID)
+        })
+        ,$('<a class="add">').html('<?=u::translate("Add in the content")?>')
+        .click(function(){
+            media = i;
+            mediaInsert(1);
+            $('form').forma();
+        })
+        ,'<div class="clearfix"></div>'
+    ).appendTo('#items');
+    };
+    var complete = function(result, file, input, area){
+        item(result);
+    };
+    var remove = function(confirm, ID){
+        if(confirm == 1){
+            $.ajax({
+                url     : '/json/<?=TEMPLATE."/".implode(",",$params)?>,remove',
+                type    : 'post',
+                data    : 'ID='+ID,
+                dataType: 'json',
+                success : function(r){
+                    if(r.code == 200) $('#'+ID).fadeOut();
+                }
+            }); 
+        } else tool.confirm('<?=u::translate("Confirmation")?>',
+        '<?=u::translate("You lose the item\'s all data!")?>','remove(1,\''+ID+'\')');
+    };
+    var removeall = function(confirm){
+        if(confirm == 1){
+            $.ajax({
+                url     : '/json/<?=TEMPLATE."/".implode(",",$params)?>,removeall',
+                type    : 'post',
+                data    : 'removeall=true',
+                dataType: 'json',
+                success : function(r){
+                    if(r.code == 200) $('.item').fadeOut();
+                }
+            }); 
+        } else tool.confirm('<?=u::translate("Confirmation")?>',
+        '<?=u::translate("You lose all items data!")?>','removeall(1)');
+    };
+    $('a[class=removeall]').click(removeall);
+    $(document).ready(function(){
+        $('#title').bind('keyup', 'blur',function(){
+            var u = urn($(this).val());
+            $('input[name=urn]').val(u);
+            $('#urn').html(u);
+        });
+        var items = $.parseJSON('<?=$page->page->media?>');
+        for(var i in items){
+            items[i].ID = i;
+            item(items[i]);
+        };
+        tool.sortable('items','b',{'url':'/json/<?=TEMPLATE."/".implode(",",$params)?>,sort'});
+    });        
+</script>
+<?
+break;
+// =============================================================================
+// CONTACT FORM
+// =============================================================================
+case 'contactform':?>
+<form method="post" action="/json/<?=TEMPLATE.'/'.implode(',',$params)?>,update">
+    <label>
+        <b><?=u::translate('Recipient Email')?>:</b>
+        <input type="text" name="recipient" value="<?=$page->page->recipient?>" />
+    </label>
+    <!-- SUBMIT -->
+    <label>
+        <img class="loader" src="/themes/<?=THEME?>/images/loader.gif" alt="loader" />
+        <input type="submit" value="<?=u::translate('Save')?>" />
+    </label>
+</form>
+<?
+break;
+// =============================================================================
+// LAYOUT
+// =============================================================================
+case 'layout':
+?>
+<?
+break;
+endswitch;
+?>

@@ -1,0 +1,219 @@
+/*------------------------------------------------------------------------------
+    HOME
+------------------------------------------------------------------------------*/
+
+/* SLIDEZONE
+------------------------------------------------------------------------------*/
+.slidezone { 
+    position: relative; 
+    margin: 10px 0; 
+    height: 325px;
+    overflow: hidden;
+}
+.slidezone a {
+    display: block;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+.slidezone-container {
+    height: 300px;
+}
+.slidezone-nav {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    z-index: 100;
+}
+.slidezone-title {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    text-align: right;
+    line-height: 20px;
+    z-index: 99;
+}
+.slidezone-index {
+    position: absolute;
+    padding-right: 10px;
+    height: 100%;
+}
+.slidezone-index a {
+    position: relative;
+    display: inline-block;
+    margin: 2px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    background: url(/themes/default/images/slidezone-sprite.png) top center no-repeat;
+    opacity: .6;
+}
+.slidezone-index a.active, .slidezone-index a:hover {
+    background-position: center bottom;
+    opacity: 1;
+}
+a.slidezone-next, a.slidezone-next:hover {
+    background-position: right center;
+}
+a.slidezone-prev, a.slidezone-prev:hover {
+    background-position: left center;
+}
+/* SLIDEZONE CONTEXTMENU
+------------------------------------------------------------------------------*/
+#contextmenu {
+    min-width: 160px;
+    font-size: smaller;
+    border: 1px solid #ddd;
+    background: #f7f7f7;
+    cursor: pointer;
+}
+#contextmenu a, #contextmenu a:visited {
+    display: block;
+    margin: 0 5px;
+    padding: 8px 10px;
+    color: #555;
+    border-top: 1px solid #fff;
+    border-bottom: 1px solid #e3e3e3;
+    text-decoration: none;  
+}
+#contextmenu a:first-child {
+    border-top: 0;
+}
+#contextmenu a:last-child {
+    border-bottom: 0;
+}
+#contextmenu a:hover, #contextmenu a:focus {
+    color: #333;
+} 
+
+
+
+
+.carousel {
+    height: 220px;
+}
+.carousel-header {
+    margin-bottom: 10px;
+}
+.carousel-left, .carousel-right {
+    float:left;
+    width: 10px;
+    height: 160px;
+    background: url(/lib/js/slidezone-sprite.png) no-repeat;
+    background-position: left center;
+    cursor:pointer;
+    opacity: .6;
+}
+.carousel-right {
+    float:right;
+    background-position: right center;
+}
+.carousel-left:hover, .carousel-right:hover {
+    opacity: 1;
+}
+.carousel-rail {
+    position: relative;
+    float:left;   
+    width: 920px;
+    height: 220px;
+    overflow: hidden;
+}
+.carousel-wagon {
+    position: absolute;
+    height: 220px;
+    margin-right: -15px; 
+}
+.carousel-item {
+    float: left; 
+    width: 230px;
+}
+.carousel-container {
+    margin: 0 6px;
+    padding: 4px;
+    border: 1px solid #cecece;
+    background: #f5f5f5;
+    cursor: pointer;
+}
+.carousel-item article {
+    padding: 4px;
+    height: 190px;
+    background: #fff;
+}
+.carousel-item img {
+    display:block;
+    width: 100%;
+}
+.carousel-item h2 {
+    margin:0;
+    padding: 5px;
+    color: #616161;
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 18px;
+}
+.carousel-item section {
+    display:none;
+}
+.carousel-section .spot img {
+    display:block;
+    margin-bottom: 10px;
+}
+.carousel-section h2 {
+    margin: 10px 0;
+}
+.carousel-section a {
+    float:right;
+}
+
+
+/* POP
+/*--------------------------------------------------*/
+/*#pop, #pop-overlay {
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 9000;
+}
+#pop-overlay {
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    -webkit-transition: 0.25s opacity;
+    -moz-transition: 0.25s opacity;
+    transition: 0.25s opacity;
+    background: -webkit-radial-gradient(rgba(127, 127, 127, 0.5), rgba(127, 127, 127, 0.5) 35%, rgba(0, 0, 0, 0.7));
+    background: -moz-radial-gradient(rgba(127, 127, 127, 0.5), rgba(127, 127, 127, 0.5) 35%, rgba(0, 0, 0, 0.7));
+    background: -o-radial-gradient(rgba(127, 127, 127, 0.5), rgba(127, 127, 127, 0.5) 35%, rgba(0, 0, 0, 0.7));
+    background: -ms-radial-gradient(rgba(127, 127, 127, 0.5), rgba(127, 127, 127, 0.5) 35%, rgba(0, 0, 0, 0.7));
+}
+#pop-aligner {
+    position: absolute;
+    top: 50%;
+    margin-top: -100px;
+    left: 0;
+    width: 100%;
+    z-index: 9001;
+}
+#pop-border {
+    display: block;
+    margin: 0 auto;
+    width: 420px;
+    padding: 10px;
+    min-height: 200px;
+    border-radius:3px;
+    box-shadow: #111 0 0 2px;
+    background: url(/themes/default/images/mask.png);
+    z-index: 9002;
+}
+#pop-container {
+    position: relative;
+    padding: 10px;
+    border: 1px solid #666;
+    background: #fff;
+}
+*/

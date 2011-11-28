@@ -1,0 +1,27 @@
+/* the humans responsible & colophon */
+/* humanstxt.org */
+
+/* TEAM */
+Developer : goker cebeci
+Contact   : http://gokercebeci.com
+Twitter   : @gokercebeci
+Location  : Istanbul, Turkiye
+
+/* SITE */
+Standards : HTML5, CSS3
+Components: jQuery
+Software  : Uygulama - http://uygulama.net
+
+|#####|
+|#####|    |#####|
+|#####|    |#####|
+|#####|    |#####|
+|#####|    |#####|
+|#####|    |#####|
+|#####|    |#####|
+|#####|    |#####|
+|#####|    |#####|
+|################|
+|################|
+|################|
+|#####|

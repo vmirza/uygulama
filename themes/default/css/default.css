@@ -1,118 +1,150 @@
-/*--------------------------------------------------*/
-/*      RESET ( Thanks HTML5 ✰ Boilerplate )
-/*--------------------------------------------------*/
-html, body, div, span, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp,
-small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section, summary,
-time, mark, audio, video {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  vertical-align: baseline;
+/* 
+ * The CSS modified for Uygulama from HTML5 ✰ Boilerplate - h5bp.com/css
+ *
+*/
+
+
+/* =============================================================================
+   HTML5 display definitions
+   ========================================================================== */
+
+article, aside, details, figcaption, figure, footer, header, hgroup, nav, section { display: block; }
+audio, canvas, video { display: inline-block; *display: inline; *zoom: 1; }
+audio:not([controls]) { display: none; }
+[hidden] { display: none; }
+
+/* =============================================================================
+   Base
+   ========================================================================== */
+
+html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+
+body { margin: 0; font-size: 13px; line-height: 1.231; }
+
+body, button, input, select, textarea { 
+    font: 12px/1.231 "Helvetica Neue", helvetica, arial, sans-serif; 
+    color: #5E6066; 
 }
 
-article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
-  display: block;
-}
+::-moz-selection { background: #fe57a1; color: #fff; text-shadow: none; }
+::selection { background: #fe57a1; color: #fff; text-shadow: none; }
 
-blockquote, q { quotes: none; }
-blockquote:before, blockquote:after,
-q:before, q:after { content: ""; content: none; }
-ins { background-color: #ff9; color: #000; text-decoration: none; }
-mark { background-color: #ff9; color: #000; font-style: italic; font-weight: bold; }
-del { text-decoration: line-through; }
-abbr[title], dfn[title] { border-bottom: 1px dotted; cursor: help; }
-table { border-collapse: collapse; border-spacing: 0; }
+/* =============================================================================
+   Links
+   ========================================================================== */
+
+a { 
+    color: #18D; 
+    text-decoration: none; 
+    cursor: pointer;
+    transition:all .2s ease-out;
+    -moz-transition:all .2s ease-out;
+    -webkit-transition:all .2s ease-out;
+}
+a:visited { color: #18D; }
+a:hover { color: #06B; }
+a:focus { outline: thin dotted; }
+a:hover, a:active { outline: 0; }
+
+/* =============================================================================
+   Typography
+   ========================================================================== */
+
+abbr[title] { border-bottom: 1px dotted; }
+
+b, strong { font-weight: bold; }
+
+blockquote { margin: 1em 40px; }
+
+dfn { font-style: italic; }
+
 hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
-input, select { vertical-align: middle; }
 
-body { font:13px/1.231 sans-serif; *font-size:small; }
-select, input, textarea, button { font:99% sans-serif; }
-pre, code, kbd, samp { font-family: monospace, sans-serif; }
+ins { background: #ff9; color: #000; text-decoration: none; }
 
-html { overflow-y: scroll; }
-a:hover, a:active { outline: none; }
-ul, ol { margin-left: 2em; }
-ol { list-style-type: decimal; }
-nav ul, nav li { margin: 0; list-style:none; list-style-image: none; }
+mark { background: #ff0; color: #000; font-style: italic; font-weight: bold; }
+
+/* Redeclare monospace font family: h5bp.com/j */
+pre, code, kbd, samp { font-family: monospace, monospace; _font-family: 'courier new', monospace; font-size: 1em; }
+code {
+    display: block;
+    padding: 10px;
+    color: #eee;
+    border: 1px solid #222;
+    background: #333;
+}
+
+/* Improve readability of pre-formatted text in all browsers */
+pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word; }
+
+q { quotes: none; }
+q:before, q:after { content: ""; content: none; }
+
 small { font-size: 85%; }
-strong, th { font-weight: bold; }
-td { vertical-align: top; }
-sub, sup { font-size: 75%; line-height: 0; position: relative; }
+
+/* Position subscript and superscript content without affecting line-height: h5bp.com/k */
+sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
 sup { top: -0.5em; }
 sub { bottom: -0.25em; }
 
-pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word; padding: 15px; }
-textarea { overflow: auto; } 
-.ie6 legend, .ie7 legend { margin-left: -7px; } 
-input[type="radio"] { vertical-align: text-bottom; }
-input[type="checkbox"] { vertical-align: bottom; }
-.ie7 input[type="checkbox"] { vertical-align: baseline; }
-.ie6 input { vertical-align: text-bottom; }
-label, input[type="button"], input[type="submit"], input[type="image"], button { cursor: pointer; }
-button, input, select, textarea { margin: 0; }
-input:valid, textarea:valid   {  }
-input:invalid, textarea:invalid { border-radius: 1px; -moz-box-shadow: 0px 0px 5px red; -webkit-box-shadow: 0px 0px 5px red; box-shadow: 0px 0px 5px red; }
-.no-boxshadow input:invalid, .no-boxshadow textarea:invalid { background-color: #f0dddd; }
+
+/* =============================================================================
+   Lists
+   ========================================================================== */
+
+ul, ol { margin: 1em 0; padding: 0 0 0 40px; }
+dd { margin: 0 0 0 40px; }
+nav ul, nav ol { list-style: none; list-style-image: none; margin: 0; padding: 0; }
 
 
-::-moz-selection{ background: #FF5E99; color:#fff; text-shadow: none; }
-::selection { background:#FF5E99; color:#fff; text-shadow: none; }
-a:link { -webkit-tap-highlight-color: #FF5E99; }
-button {  width: auto; overflow: visible; }
-.ie7 img { -ms-interpolation-mode: bicubic; }
+/* =============================================================================
+   Embedded content
+   ========================================================================== */
 
-body, select, input, textarea { color: #333; }
-h1, h2, h3, h4, h5, h6 {color: #000; font-weight: bold; }
-a, a:active, a:visited { color: #000; text-decoration: none;}
-a:hover, a:focus, a.selected { color: #333; text-decoration: none;}
-/*--------------------------------------------------*/
-/*      DEFAULT
-/*--------------------------------------------------*/
-body {
-    font-family: helvetica, arial, sans-serif;
-    background:#eee;
-}
-input, select, option, textarea, button {
-    font:99% helvetica, arial, sans-serif;
-}
-#degade {
-    padding: 20px 0 10px;
-    background: url(/themes/default/images/degade.png) repeat-x;
-}
-.clear:before, .clear:after { content: "\0020"; display: block; height: 0; overflow: hidden; }
-.clear:after { clear: both; }
-.clear { zoom: 1; }
+/*
+ * 1. Improve image quality when scaled in IE7: h5bp.com/d
+ * 2. Remove the gap between images and borders on image containers: h5bp.com/e 
+*/
 
-.none { display: none; }
+img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; }
+
+/*
+ * Correct overflow not hidden in IE9 
+*/
+
+svg:not(:root) { overflow: hidden; }
+
+
+/* =============================================================================
+   Figures
+   ========================================================================== */
+
+figure { margin: 0; }
+
+/* =============================================================================
+   Tables
+   ========================================================================== */
+
+table { border-collapse: collapse; border-spacing: 0; }
+td { vertical-align: top; }
+
+
+/* ==|== primary styles ========================================================
+   Author: Uygulama
+   ========================================================================== */
+
+
+.none { display : none; }
 .block { display: block; }
 .left { float: left; }
 .right { float: right; }
-img.left { margin: 0 5px 5px 0; }
-img.right { margin: 0 0 5px 5px; }
-p { margin-bottom:.5em; }
-ul li { list-style-type:square; }
-dl { margin-bottom: 1em; }
-dt { font-weight: bold;}
-dd { margin: 0 0 0.5em 0.5em; }
-ul, ol { margin:1em 0 1em 20px; }
-li ul, li ol { margin:0 0 0 30px; }
-td, th { padding: 0.2em; }
-pre { margin:1em; padding:1em; }
-blockquote { margin: 1em; }
-h1 { font-size: 20px; }
-h2 { font-size: 18px; }
-h3 { font-size: 16px; }
-h4 { font-size: 14px; }
-/*--------------------------------------------------*/
-/*      SITE
-/*--------------------------------------------------*/
+img.left { margin: 0 10px 10px 0; }
+img.right { margin: 0 0 10px 10px; }
+h1, h2, h3 { margin: 10px 0; }
+:first-child h1, :first-child h2, :first-child h3 { margin-top: 10px; }
+/*------------------------------------------------------------------------------
+      SITE
+------------------------------------------------------------------------------*/
 #site {
     position: relative;
     margin: 0 auto;
@@ -122,32 +154,31 @@ h4 { font-size: 14px; }
 }
 header {
     margin: 0 10px;
-    height: 61px;
-    border-bottom: 4px solid #000;
+    height: 60px;
 }
 #page {
     position: relative;
     margin: 0 10px;
+    padding: 20px 0;
     min-height: 300px;
-    line-height:1.4em;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
     z-index: 200;
 }
 footer {
-    margin:10px 10px 0;
-    padding: 0 5px 0 10px;
+    margin:0 10px;
     height: 25px;
     line-height: 25px;
-    color: #eee;
-    font-size: 11px;
-    background: #000;
+    color: #666;
+    font-size: smaller;
 }
-/*--------------------------------------------------*/
-/*      HEADER
-/*--------------------------------------------------*/
+/*------------------------------------------------------------------------------
+      HEADER
+------------------------------------------------------------------------------*/
 #languages {
     position: absolute;
-    top: 25px;
-    right: 20px;
+    top: 10px;
+    right: 10px;
     font-size: 11px;
 }
 #languages a {
@@ -159,19 +190,21 @@ footer {
     color: #333;
     text-decoration: underline;
 }
-/*--------------------------------------------------*/
-/*      PAGE
-/*--------------------------------------------------*/
+/*------------------------------------------------------------------------------
+      PAGE
+------------------------------------------------------------------------------*/
 hgroup {
+    display:none;
     margin-bottom:10px;
-    padding: 0 5px 4px;
+    padding: 3px 10px;
     color: #fff;
-    font-weight: bold;
-    background: #000;
+    font-weight: normal;
+    background:#222;
 }
 hgroup h1, hgroup h2 {
     display: inline;
     color: #fff;
+    font-weight: normal;
 }
 #content, #aside {
     float: left;
@@ -181,119 +214,113 @@ hgroup h1, hgroup h2 {
     float: right;
     width: 300px;
 }
-/*--------------------------------------------------*/
-/*      FOOTER
-/*--------------------------------------------------*/
+#aside.left { float: left; margin-right: 20px; }
+/*------------------------------------------------------------------------------
+      FOOTER
+------------------------------------------------------------------------------*/
 footer .developer {
     float: right;
-    margin: 4px 0 0 5px;
 }
-footer .geo { display:none; }
-/*--------------------------------------------------*/
-/*      NAV
-/*--------------------------------------------------*/
+/*------------------------------------------------------------------------------
+      NAV
+------------------------------------------------------------------------------*/
 nav {
-    position: absolute;
-    top:22px;
-    margin: 0 10px;
-    padding-left: 20px;
-    height: 30px;
+    margin:0 10px;
+    padding: 5px 0;
+    font-size:13px;
     font-weight:bold;
 }
 nav a, nav a:visited {
     padding: 0 22px;
     line-height: 30px;
-    color: #000;
-    border-left: 1px dotted #ddd;
+    color: #2C2D31;
+    background: url(/themes/default/images/seperator.png) 0 center no-repeat;
+}
+nav a:first-child {
+    border: 0;
+    background-image: none; 
 }
 nav a:focus, nav a:hover, nav a.selected {
-    color: #666;
+    color: #A4A5AA;
 }
 nav a.loader {
     background-image: url(/themes/default/images/loader.gif);
     background-position: 2px -1px;
     background-repeat: no-repeat;
 }
-/*--------------------------------------------------*/
-/*      RESULT
-/*--------------------------------------------------*/
-#result {
-    position: fixed;
-    top: 35%;
-    width: 100%;
-    z-index: 9000;
+/*------------------------------------------------------------------------------
+    SLIDEZONE
+------------------------------------------------------------------------------*/
+.slidezone { 
+    margin: 0 !important; 
 }
-#result .pop {
-    display: block;
-    margin: 0 auto;
-    padding:8px;
-    width: 400px;
-    background:url(/themes/default/images/mask.png);
+.slidezone-container {
+    -webkit-box-shadow: 0px 0px 6px rgba(0, 0, 0, .25);
+    -moz-box-shadow: 0px 0px 6px rgba(0, 0, 0, .25);
+    box-shadow: 0px 0px 6px rgba(0, 0, 0, .25);
 }
-#result .close, #result .approve, #result .cancel {
-    position: absolute;
-    bottom: 8px;
-    display: inline-block;
-    padding: 5px 10px;
-    color: #fff;
-    font-size: .95em;
-    font-weight: bold;
-    text-transform: uppercase;
-    background:#222;
-    cursor: pointer;
+.slidezone-title {
+    background: url(/themes/default/images/seperator.png) 0 -23px repeat-x;
 }
-#result .close, #result .approve { right: 8px; }
-#result .cancel { left: 8px;}
-#result .approve { border-color: #711; background: #911; }
-#result h1 {
-    padding: 7px 30px;
-    font-size: 1.2em;
-    border-style: solid;
-    border-width: 0;
-    border-bottom-width: 1px;
-}
-#result.error h1 {
-    color: #fee;
-    border-color: #610;
-    background: #810 url(/themes/default/images/warning-icons.png) 7px 10px no-repeat;
-}
-#result.alert h1 {
-    color: #ffe;
-    border-color: #b80;
-    background: #ea0 url(/themes/default/images/warning-icons.png) 7px -22px no-repeat;
-}
-#result.success h1 {
-    color: #efe;
-    border-color: #361;
-    background: #581 url(/themes/default/images/warning-icons.png) 7px -55px no-repeat;
-}
-#result .container {
-    position: relative;
-    padding-bottom: 30px;
-    border: 1px solid #666;
+.slidezone-index {
     background: #fff;
 }
-#result .container p {
-    padding: 13px;
+.slidezone-title i {
+    padding: 0 0 0 12px;
+    background: #fff;
 }
 
-/*--------------------------------------------------*/
-/*      MEDIA QUERY
-/*--------------------------------------------------*/
+
+
+
+/* ==|== non-semantic helper classes ========================================
+   Please define your styles before this section.
+   ========================================================================== */
+
+/* For image replacement */
+.ir { display: block; border: 0; text-indent: -999em; overflow: hidden; background-color: transparent; background-repeat: no-repeat; text-align: left; direction: ltr; }
+.ir br { display: none; }
+
+/* Hide from both screenreaders and browsers: h5bp.com/u */
+.hidden { display: none !important; visibility: hidden; }
+
+/* Hide only visually, but have it available for screenreaders: h5bp.com/v */
+.visuallyhidden { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
+
+/* Extends the .visuallyhidden class to allow the element to be focusable when navigated to via the keyboard: h5bp.com/p */
+.visuallyhidden.focusable:active, .visuallyhidden.focusable:focus { clip: auto; height: auto; margin: 0; overflow: visible; position: static; width: auto; }
+
+/* Hide visually and from screenreaders, but maintain layout */
+.invisible { visibility: hidden; }
+
+/* Contain floats: h5bp.com/q */ 
+.clearfix:before, .clearfix:after { content: ""; display: table; }
+.clearfix:after { clear: both; }
+.clearfix { zoom: 1; }
+
+
+
+/* ==|== media queries ======================================================
+   PLACEHOLDER Media Queries for Responsive Design.
+   These override the primary ('mobile first') styles
+   Modify as content requires.
+   ========================================================================== */
+
+/* for center divided HD */
 @media screen and (min-width:960px) {
     #content, #aside { min-height: 300px; }
 }
+/* for tablet */
 @media screen and (min-width:610px) and (max-width:960px) {
     #site { width: 99%; }
     #content, #aside { min-height: 300px; }
-    #content div  { max-width: 100%; }
-    #content img, #content object { max-width: 98%; }
+    #content div, #content img, #content object { max-width: 100%; }
 }
+/* for mobile */
 @media screen and (max-width : 610px) {
     html { -webkit-text-size-adjust:none; -ms-text-size-adjust:none; }
     #degade { padding: 0; }
     #site { width:100%; }
-    #page { margin-top: 5px; border-top: 4px solid #000; }
     #page div { width: auto; max-width: 100%; }
     #page img, #page object {
         width: auto;
@@ -325,25 +352,27 @@ nav a.loader {
         padding: 0 22px;
         height: 25px;
         line-height: 24px;
-        color: #fff;
-        border:0;
-        background-color: #000;
+        text-align: center;
+        background: url(/themes/default/images/seperator.png) 0 -32px repeat-x;
     }
 }
-/*--------------------------------------------------*/
-/*      PRINT
-/*--------------------------------------------------*/
+
+/* ==|== print styles =======================================================
+   Print styles.
+   Inlined to avoid required HTTP connection: h5bp.com/r
+   ========================================================================== */
+
 @media print {
-  * { background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important;
-  -ms-filter: none !important; } 
-  a, a:visited { color: #444 !important; text-decoration: underline; }
-  a[href]:after { content: " (" attr(href) ")"; }
-  abbr[title]:after { content: " (" attr(title) ")"; }
-  .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; }  
-  pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
-  thead { display: table-header-group; } 
-  tr, img { page-break-inside: avoid; }
-  @page { margin: 0.5cm; }
-  p, h2, h3 { orphans: 3; widows: 3; }
-  h2, h3{ page-break-after: avoid; }
+    * { background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important; -ms-filter: none !important; } /* Black prints faster: h5bp.com/s */
+    a, a:visited { text-decoration: underline; }
+    a[href]:after { content: " (" attr(href) ")"; }
+    abbr[title]:after { content: " (" attr(title) ")"; }
+    .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; }  /* Don't show links for images, or javascript/internal links */
+    pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
+    thead { display: table-header-group; } /* h5bp.com/t */
+    tr, img { page-break-inside: avoid; }
+    img { max-width: 100% !important; }
+    @page { margin: 0.5cm; }
+    p, h2, h3 { orphans: 3; widows: 3; }
+    h2, h3 { page-break-after: avoid; }
 }

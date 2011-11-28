@@ -1,0 +1,52 @@
+<script src="/lib/js/forma.js"></script>
+<link rel="stylesheet" href="/lib/js/forma.css" />
+<hgroup><h1><?=TITLE?></h1></hgroup>
+<h2 class="none"><?=DESCRIPTION?></h2>
+<div id="content">
+    <form method="post" action="/json/<?=TEMPLATE?>/<?=PAGE?>,send">
+        <label>
+            <b><?=u::translate('Name')?>:</b>
+            <input type="text" name="name" maxlength="120" />
+        </label>
+        <label>
+            <b><?=u::translate('E-mail')?>:</b>
+            <input type="text" name="email" maxlength="160" />
+        </label>
+        <label>
+            <b><?=u::translate('Message')?>:</b>
+            <textarea name="message"></textarea>
+        </label>
+        <label>
+            <b><?=u::translate('Security code')?>:</b>
+            <img id="captchaImg" src="/captcha.png" alt="captcha" />
+            <input type="text" name="captcha" maxlength="4" />
+            <i><?=sprintf(u::translate('to change the security code %s click here. %s')
+                ,'<a onclick="contact.captcha();">','</a>')?>
+                <?=u::translate('security code is  not case sensitive.')?></i>
+        </label>
+        <!-- SUBMIT -->
+        <label>
+            <img class="loader" src="/themes/<?=THEME?>/images/loader.gif" alt="loader" />
+            <input type="submit" value="<?=u::translate('Send')?>" />
+        </label>
+    </form>
+    <script> 
+        $(document).ready(function() { 
+            //contact.form(); 
+            $('form').forma();
+        }); 
+    </script>
+    <div class="clearfix"></div>
+</div>
+<div id="aside">
+    <?=$page->$lang->content?>
+    <div id="links">
+        <?if($page->$lang->links) foreach($page->$lang->links as $i):?>
+        <a href="<?=$i->url?>" title="<?=$i->title?>">
+            <img src="http://geticon.org/of/<?=$i->url?>" alt="<?=$i->title?>" />
+            <?=$i->title?>
+        </a>
+        <?endforeach;?>
+    </div>
+</div>
+<div class="clearfix"></div>

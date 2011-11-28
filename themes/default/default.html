@@ -6,97 +6,51 @@
         <title>[[TITLE]]</title>
         <meta name="description" content="[[DESCRIPTION]]" />
         <meta name="keywords" content="[[KEYWORDS]]" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" href="[[COOKIELESS]]/favicon.ico">
-        <link rel="apple-touch-icon" href="[[COOKIELESS]]/apple-touch-icon.png">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+        <script>window.jQuery || document.write("<script src='//code.jquery.com/jquery-1.7.min.js'>\x3C/script>")</script>
+        <link rel="shortcut icon" href="[[COOKIELESS]]/favicon.ico" />
+        <link rel="apple-touch-icon" href="[[COOKIELESS]]/apple-touch-icon.png" />
         <link rel="canonical" href="[[CANONICALLINK]]" />
-        <link type="text/plain" rel="author" href="http://[[DOMAIN]]/humans.txt" />
-        <link rel="stylesheet" href="[[COOKIELESS]]/[[CSS]].css" type="text/css" />
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-        <script>window.jQuery || document.write("<script src='//code.jquery.com/jquery-1.6.1.min.js'>\x3C/script>")</script>
+        <link rel="author" href="http://[[DOMAIN]]/humans.txt" />
+        <link rel="stylesheet" href="[[COOKIELESS]]/[[CSS]].css" />
     </head>
     <body>
-        <script type="text/javascript">
-            var AJAX = [[AJAX]];
-            var DOMAIN = '[[DOMAIN]]';
-            var ANALYTICS = '[[ANALYTICS]]';
+        [if[AJAX]]
+        <script>
+            var REQUESTURI = '[[REQUESTURI]]';
             // hash redirect for SEO
             var url = location.hash.replace('#!','');
             if(url) location.href = url;
         </script>
-        <div id="result"></div>
-        <div id="degade">
-            <div id="site">
-                <header>
-                    <a id="logo" href="/"><img src="[[COOKIELESS]]/logo.png" alt="[[TITLE]]" /></a>
-                    <div id="languages">
-                        [each[languages]]
-                        <a data-val="[[code]]" class="[[selected]]" title="[[name]]">[[code]]</a>
-                        [[endeach]]
-                    </div>
-                </header>
-                <div class="clear"></div>
-                <nav>
-                    [each[nav]]
-                    <a href="/[[link]]" class="[[selected]]">[[name]]</a>
+        [[else]]
+        [[endif]]
+        <div id="site">
+            <header>
+                <a id="logo" href="/"><img src="[[COOKIELESS]]/logo.png" alt="[[TITLE]]" /></a>
+                <div id="languages">
+                    [each[languages]]
+                    <a data-val="[[code]]" class="[[selected]]" title="[[name]]">[[code]]</a>
                     [[endeach]]
-                    <div class="clear"></div>
-                </nav>
-                <div class="clear"></div>
-                <div id="page">
-                    [[PAGECONTENT]]
                 </div>
+            </header>
+            <nav>
+                [each[nav]]
+                <a href="/[[link]]" class="[[selected]]">[[name]]</a>
+                [[endeach]]
                 <div class="clear"></div>
-                <footer>
-                    <span>[[COPYRIGHT]]</span>
-                    <a class="developer" href="http://uygulama.net" title="uygulama">
-                        <img alt="uygulama" src="http://geticon.org/of/uygulama.net">
-                    </a>
-                    <span class="geo">
-                        <span class="latitude">[[GEOLATITUDE]]</span>,
-                        <span class="longitude">[[GEOLONGITUDE]]</span>
-                    </span>
-                    <div class="clear"></div>
-                </footer>
+            </nav>
+            <div id="page">
+                [[PAGECONTENT]]
             </div>
+            <footer>
+                <span>[[COPYRIGHT]]</span>
+                <a class="developer" href="http://uygulama.net" title="uygulama">
+                    <img alt="uygulama" src="http://geticon.org/of/uygulama.net">
+                </a>
+                <div class="clear"></div>
+            </footer>
         </div>
-        
-
         <script src="[[COOKIELESS]]/[[JS]].js"></script>
-
-        <script>
-            var pageTracker = 0;
-            if(ANALYTICS){
-                var _gaq=[["_setAccount",ANALYTICS],['_setDomainName', '.' + DOMAIN],["_trackPageview"]];
-                (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.async=1;
-                    g.src=("https:"==location.protocol?"//ssl":"//www")+".google-analytics.com/ga.js";
-                    s.parentNode.insertBefore(g,s)}(document,"script"));
-            }
-            var href;
-            // DOMREADY
-            $(document).ready(function() {
-                // THEME
-                theme.initialize();
-                // LOCATION HASH LISTENER :: PAGE LOADER
-                if(AJAX)
-                    window.onhashchange = function() {
-                        href = location.hash.replace('#!','');
-                        if(!href) href = '/[[REQUESTURI]]';
-                        var loader = $('a[href="'+href+'"]').addClass('loader');
-                        $('#page, footer').fadeOut('fast',function(){
-                            $('#page').load('/page'+href,function(){
-                                $('#page, footer').fadeIn('fast');
-                                loader.removeClass('loader');
-                                if(ANALYTICS && pageTracker) pageTracker._trackPageview(href);
-                                theme.menu();
-                            });
-                        });
-                    if(ANALYTICS){
-                        if(!pageTracker) pageTracker = _gat._createTracker(ANALYTICS);
-                        pageTracker._trackPageview(href);
-                    }
-                }
-            });
-        </script>
     </body>
 </html>

@@ -1,0 +1,22 @@
+<?
+//echo '<pre>'.print_r($page,1).'</pre>';
+?>
+<hgroup>
+    <?= $page->title ? '<h2>'.TITLE.'</h2> / <h1>'. $page->title.'</h1>' : '<h1>'.TITLE.'</h1>'?>
+</hgroup>
+<div id="aside" class="<?=$page->layout?>">
+    <menu>
+        <?foreach ($page->subpages as $k=>$i):?> 
+        <a href="/<?=PAGE?>/<?=$k?>" <?=$k==$param?'class="selected"':''?>><?=$i?></a>
+        <?endforeach;?>
+    </menu>
+</div>
+<div id="content">
+    <h2 class="none"><?=$page->description?></h2>
+    <?=$page->content?>
+</div>
+<div class="clear"></div>
+<script src="//<?=COOKIELESS?>/lib/js/ubox-min.js"></script>
+<script>
+    $('#page .thumb').ubox();
+</script>

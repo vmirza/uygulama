@@ -1,0 +1,51 @@
+/*------------------------------------------------------------------------------
+    SIMPLE
+------------------------------------------------------------------------------*/
+#mediaalign, #mediasize {
+    float:left;
+    padding: 10px;
+    width: 170px;
+}
+.mediaalign, .mediasize {
+    float: left;   
+    padding: 10px 5px 20px;
+    font-size:smaller;
+    text-align: center;
+}
+.mediaalign b, .mediasize b {
+    display: block; 
+    margin:5px auto;
+    width: 32px;
+    height: 32px;
+    background: url(/templates/simple/images/media-insert-sprite.png) no-repeat;
+    cursor: pointer;
+}
+.mediaalign.left b { background-position-x: -64px; }
+.mediaalign.right b { background-position-x: -96px; }
+.mediaalign.default b { background-position-x: -128px; }
+.mediasize.original b { background-position-x: -32px; }
+.mediaalign.selected b, .mediasize.selected b { background-position-y: bottom; }
+
+.label label {
+    float:left;
+    margin-right: 10px;
+    width: 150px;
+    text-align: center;
+    font-size: smaller;
+}
+p.radio.custom, p.radio.custom.focus {
+    float:none;
+    display: block;
+    margin: 5px auto;
+    width: 64px;
+    height: 64px;
+    background-image: url(/templates/simple/images/layouts.png);
+    background-position: 0 0;
+    cursor: pointer;
+}
+p.radio.custom.checked, p.radio.custom.checked.focus { background-position: left bottom; }
+p.radio.custom.left, p.radio.left.checked.focus { background-position-x: -64px; }
+p.radio.custom.right, p.radio.right.checked.focus { background-position-x: -128px; }
+.label i {
+    clear : both;
+}

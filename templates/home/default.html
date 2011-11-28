@@ -1,0 +1,50 @@
+<hgroup class="none"><h1><?=TITLE?></h1><h2><?=DESCRIPTION?></h2></hgroup>
+<?if($page->$lang->slide):?>
+<div class="slidezone">
+    <div class="slidezone-container">
+        <?foreach($page->$lang->slide as $i):?>
+        <a href="<?=$i->link?>" title="<?=$i->alt?>">
+            <img src="//<?=COOKIELESS?>/<?=$i->src?>" alt="<?=$i->alt?>" />
+        </a>
+        <?endforeach;?>
+    </div>
+</div>
+<?endif;?>
+<?if($page->$lang->carousel->items):?>
+<?if($page->$lang->carousel->title):?>
+<h2 class="carousel-header"><?=$page->$lang->carousel->title?></h2>
+<?endif;?>
+<div class="carousel">
+    <div class="carousel-left"></div>
+    <div class="carousel-rail">
+        <div class="carousel-wagon">
+            <?foreach($page->$lang->carousel->items as $i):?>
+            <div class="carousel-item">
+                <div class="carousel-container">
+                    <article>
+                        <img src="//<?=COOKIELESS?>/<?=$i->thumb?>" alt="<?=$i->title?>" />
+                        <h2><?=$i->title?></h2>
+                        <section>
+                            <img src="//<?=COOKIELESS?>/<?=$i->src?>" alt="<?=$i->title?>" />
+                            <h2><?=$i->title?></h2>
+                            <p><?=$i->content?></p>
+                            <?if($i->link):?>
+                            <a href="<?=$i->link?>"><?=$i->link?></a>
+                            <?endif;?>
+                        </section>
+                    </article>
+                </div>
+            </div>
+            <?endforeach;?>
+        </div>
+    </div>
+    <div class="carousel-right"></div>
+</div>
+<div class="clear"></div>
+<?endif;?>
+<div class="content">
+    <?=$page->$lang->content?>
+</div>
+
+<script src="//<?=COOKIELESS?>/lib/js/slidezone.js"></script>
+<script src="//<?=COOKIELESS?>/lib/js/carousel.js"></script>
