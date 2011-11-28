@@ -1,9 +1,9 @@
 <?php
 define('DEVELOPMENT', 1);
 define('AJAX', 0);
-define('COOKIELESS', '');
-define('ADMIN', '');
-define('APASSWORD', '');
+define('COOKIELESS', $_SERVER['HTTP_HOST']);
+define('ADMIN', 'goker');
+define('APASSWORD', '09cce980c3b1081233c0abec82bf4d586cebeefb');
 define('EDITORIAL', 0);
 define('EDITOR', '');
 define('EPASSWORD', '');
