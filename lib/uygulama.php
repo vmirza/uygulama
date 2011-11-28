@@ -233,7 +233,7 @@ class u {
     public static function locale($locale, $lang, $multilingual) {
         $locale = strtolower($locale);
         $locales = self::locales();
-        $deflocale = array_search((DEFLANG || 'en'), $locales['index']);
+        $deflocale = array_search(DEFLANG, $locales['index']);
         if ($lang)
             $locale = array_search($lang, $locales['index']);
         return strstr(SUPPORTEDLANGS, $locales['index'][$locale]) && $multilingual ? array($locales['locales'][$locale]['locale'], $locales['index'][$locale]) : array($locales['locales'][$deflocale]['locale'], $locales['index'][$deflocale]);
@@ -259,40 +259,53 @@ class u {
         // SPLIT GET DATA
         list($theme, $template, $admintemplate) = preg_split('/,/', $get, 3);
         $info = "/*\n"
-                . "THEME         : " . $theme . "\n"
-                . "TEMPLATE      : " . $template . "\n"
-                . "ADMIN TEMPLATE: " . $admintemplate . "\n"
+                . "THEME          : " . $theme . "\n"
+                . "TEMPLATE       : " . $template . "\n"
+                . "ADMIN TEMPLATE : " . $admintemplate . "\n"
+                . "LAST MODIFIED  : " . @date('D, d M Y H:i:s e', THEMEMODIFIED) . "\n"
                 . "*/\n";
+        // TEMPLATE'S CSS FILE
+        $styles = '/*############################################################################*/' . "\n"
+                . '/*############################# TEMPLATE CSS #################################*/' . "\n"
+                . '/*############################################################################*/' . "\n";
+        $styles .= @ file_get_contents('templates/' . $template . '/default.css') . "\n";
         if ($theme) {
-            // THEME CSS FILES
+            // THEME'S CSS FILE
+            $styles .= '/*############################################################################*/' . "\n"
+                    . '/*############################### THEME CSS ##################################*/' . "\n"
+                    . '/*############################################################################*/' . "\n";
             $styles .= file_get_contents('themes/' . $theme . '/css/'
                             . ($template == 'admin' ? 'admin' : 'default' )
                             . '.css') . "\n";
             // BROWSER HACK
-            $styles .= @ file_get_contents('themes/' . $theme . '/browsers/' . $browser . '.css');
+            //$styles .= @ file_get_contents('themes/' . $theme . '/browsers/' . $browser . '.css');
         }
-        // TEMPLATES CSS FILES
-        $styles .= @ file_get_contents('templates/' . $template . '/default.css');
-        if ($admintemplate)
+        if ($admintemplate) {
+// ADMIN TEMPLATE'S CSS FILE
+            $styles .= '/*############################################################################*/' . "\n"
+                    . '/*########################### ADMIN TEMPLATE CSS #############################*/' . "\n"
+                    . '/*############################################################################*/' . "\n";
             $styles .= @ file_get_contents('templates/' . $admintemplate . '/admin.css');
+        }
+        // MINIFIED
         if (DEVELOPMENT)
             return $info . $styles;
         else
             return $info . preg_replace(array(
-                '!//[^\n\r]+!',
-                '/[\r\n\t\s]+/s',
-                '#/\*.*?\*/#',
-                '/[\s]*([\{\};:])[\s]*/',
-                '/^\s+/',
-                '/}/'
-                    ), array(
-                '',
-                ' ',
-                '',
-                '\1',
-                '',
-                "}\n",
-                    ), $styles);
+                        '!//[^\n\r]+!',
+                        '/[\r\n\t\s]+/s',
+                        '#/\*.*?\*/#',
+                        '/[\s]*([\{\};:])[\s]*/',
+                        '/^\s+/',
+                        '/}/'
+                            ), array(
+                        '',
+                        ' ',
+                        '',
+                        '\1',
+                        '',
+                        "}\n",
+                            ), $styles);
     }
 
     public static function js($get) {
@@ -300,52 +313,72 @@ class u {
         // SPLIT GET DATA
         list($theme, $template, $admintemplate) = preg_split('/,/', $get, 3);
         $info = "/*\n"
-                . "THEME         : " . $theme . "\n"
-                . "TEMPLATE      : " . $template . "\n"
-                . "ADMIN TEMPLATE: " . $admintemplate . "\n"
+                . "THEME          : " . $theme . "\n"
+                . "TEMPLATE       : " . $template . "\n"
+                . "ADMIN TEMPLATE : " . $admintemplate . "\n"
+                . "LAST MODIFIED  : " . @date('D, d M Y H:i:s e', THEMEMODIFIED) . "\n"
                 . "*/\n";
         if ($theme) {
             // JS DEFINES
-            $js = "var THEME = '$theme';\nvar TEMPLATE = '$template';\n";
+            $js = 
+                "var DOMAIN = '".$_SERVER['HTTP_HOST']."';\n"
+                ."var THEME = '$theme';\n"
+                ."var TEMPLATE = '$template';\n"
+                ."var AJAX = ".AJAX.";\n"
+                ."var ANALYTICS = '".ANALYTICS."';\n";
             //// JS LANGUAGE
             $js .= 'var _lang = {"close":"' . u::translate('Close')
                     . '", "ok":"' . u::translate('Ok')
                     . '", "cancel":"' . u::translate('Cancel')
-                    . '"};';
-            // THEME JS FILES
+                    . '"};'. "\n";
+            // THEME'S JS FILE
+            $js .= '/*############################################################################*/' . "\n"
+                    . '/*############################### THEME JS ###################################*/' . "\n"
+                    . '/*############################################################################*/' . "\n";
             $js .= file_get_contents('themes/' . $theme . '/js/'
                             . ($template == 'admin' ? 'admin' : 'default' )
                             . '.js') . "\n";
             // BROWSER HACK
-            $js .= @ file_get_contents('themes/' . $theme . '/browsers/' . $browser . '.js');
+            //$js .= @ file_get_contents('themes/' . $theme . '/browsers/' . $browser . '.js');
         }
-        // TEMPLATES JS FILES
-        $js .= @ file_get_contents('templates/' . $template . '/default.js');
-        if ($admintemplate)
+        // TEMPLATE'S JS FILE
+        $js .= '/*############################################################################*/' . "\n"
+                . '/*############################## TEMPLATE JS #################################*/' . "\n"
+                . '/*############################################################################*/' . "\n";
+        $js .= @ file_get_contents('templates/' . $template . '/default.js'). "\n";
+        if ($admintemplate) {
+
+            // ADMIN TEMPLATE'S JS FILE
+            $js .= '/*############################################################################*/' . "\n"
+                    . '/*########################### ADMIN TEMPLATE JS ##############################*/' . "\n"
+                    . '/*############################################################################*/' . "\n";
             $js .= @ file_get_contents('templates/' . $admintemplate . '/admin.js');
+        }
+        // MINIFIED
         if (DEVELOPMENT)
             return $info . $js;
         else
             return $info . preg_replace(array(
-                '!//[^\n\r]+!',
-                //'/[\r\n\t\s]+/s',
-                '/^[\r\n\t\s]+/m',
-                '#/\*.*?\*/#',
-                '/[\s]*([\{\},;:\=\+\-\?\|\&])[\s]*/',
-                '/^\s+/'
-                    //'/\);/'
-                    ), array(
-                '',
-                //' ',
-                '',
-                '',
-                '\1',
-                ''
-                    //");\n"
-                    ), $js);
+                        '![^\'|"]//[^\n\r]+!',
+                        //'/[\r\n\t\s]+/s',
+                        '/^[\r\n\t\s]+/m',
+                        '#/\*.*?\*/#',
+                        '/[\s]*([\{\},;:\=\+\-\?\|\&])[\s]*/',
+                        '/^\s+/'
+                            //'/\);/'
+                            ), array(
+                        '',
+                        //' ',
+                        '',
+                        '',
+                        '\1',
+                        ''
+                            //");\n"
+                            ), $js);
     }
 
     public static function sitemap($pages) {
+        define('DOMAIN', $_SERVER['HTTP_HOST']);
         $sitemap = '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
                 . "<urlset xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
                 . "  xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\"\n"
@@ -420,7 +453,7 @@ class u {
             $ext = strtolower(pathinfo($image, PATHINFO_EXTENSION));
             // JPEG image
             $func = imagecreatefrom . (($ext == "jpg") ? 'jpeg' : $ext);
-            $image = @$func($image);
+            $image = $func($image);
         } else
             $image = $source;
         $dext = strtolower(pathinfo($destination, PATHINFO_EXTENSION));
@@ -531,10 +564,12 @@ class u {
     }
 
     public static function initialize() {
-        /*if (DOMAIN && (DOMAIN != $_SERVER['HTTP_HOST'] && COOKIELESS != $_SERVER['HTTP_HOST'])) {
-            header('location: http://' . DOMAIN);
-            exit;
-        }*/
+        /* if (DOMAIN && (DOMAIN != $_SERVER['HTTP_HOST'] && COOKIELESS != $_SERVER['HTTP_HOST'])) {
+          header('location: http://' . DOMAIN);
+          exit;
+          } */
+        define('DOMAIN', $_SERVER['HTTP_HOST']);
+
         $headers = getallheaders();
         define('POST', count($_POST));
         define('FILE', (count($_FILES) || $headers['x-file-name']) ? 1 : 0);
@@ -555,7 +590,7 @@ class u {
         $project = @self::get('data/project');
         // supported language list
         $project->languages = self::languages();
-        define('PAGE', $_GET['PAGE'] ? $_GET['PAGE'] : (DEFPAGE || 'home'));
+        define('PAGE', $_GET['PAGE'] ? $_GET['PAGE'] : DEFPAGE);
         define('PARAMS', $_GET['PARAMS'] ? $_GET['PARAMS'] : 'default');
         return $project;
     }
@@ -649,13 +684,13 @@ class u {
                 '[[DESCRIPTION]]',
                 '[[KEYWORDS]]',
                 '[[ANALYTICS]]',
-                '[[ALEXA]]',
-                '[[WEBMASTER]]',
-                '[[SITEEXPLORER]]',
-                '[[GEOPLACENAME]]',
-                '[[GEOREGION]]',
-                '[[GEOLATITUDE]]',
-                '[[GEOLONGITUDE]]',
+                '[[METATAGS]]',
+                /* '[[WEBMASTER]]',
+                  '[[SITEEXPLORER]]',
+                  '[[GEOPLACENAME]]',
+                  '[[GEOREGION]]',
+                  '[[GEOLATITUDE]]',
+                  '[[GEOLONGITUDE]]', */
                 '[[DOMAIN]]',
                 '[[COOKIELESS]]',
                 '[[THEME]]',
@@ -673,13 +708,13 @@ class u {
                 DESCRIPTION,
                 KEYWORDS,
                 ANALYTICS,
-                ALEXA,
-                WEBMASTER,
-                SITEEXPLORER,
-                GEOPLACENAME,
-                GEOREGION,
-                GEOLATITUDE,
-                GEOLONGITUDE,
+                METATAGS,
+                /* WEBMASTER,
+                  SITEEXPLORER,
+                  GEOPLACENAME,
+                  GEOREGION,
+                  GEOLATITUDE,
+                  GEOLONGITUDE, */
                 DOMAIN,
                 (COOKIELESS ? '//' . COOKIELESS : ''),
                 THEME,
