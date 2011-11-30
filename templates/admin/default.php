@@ -47,7 +47,8 @@ switch ($params[0]) {
             $project->cookieless = isset($_POST['cookieless']) 
                     ? "'".$_POST['cookieless']."'"
                     : COOKIELESS;
-            $project->cookieless = $project->cookieless != '' ? $project->cookieless : '$_SERVER[\'HTTP_HOST\']';
+            $project->cookieless = $project->cookieless && $project->cookieless != "''" 
+                    ? $project->cookieless : '$_SERVER[\'HTTP_HOST\']';
             $project->admin = $_POST['admin'] ? $_POST['admin'] : ADMIN;
             $project->editor = $_POST['editor'] ? $_POST['editor'] : EDITOR;
             if ($_POST['arepassword'] && $_POST['apassword'] != $_POST['arepassword']) {

@@ -51,7 +51,7 @@ class u {
         }
         $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
         foreach ($iterator as $key => $value)
-            if (!preg_match('/\.svn\//', $key) && basename($key) != '.' && basename($key) != '..') {
+            if (!preg_match('/\.(svn|git)\//', $key) && basename($key) != '.' && basename($key) != '..') {
                 $zip->addFile(realpath($key), $pathcleaning ? str_replace($path, '', $key) : $key) or die("ERROR: Could not add file: $key");
             }
         $zip->close();
