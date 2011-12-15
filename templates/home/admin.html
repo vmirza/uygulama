@@ -25,7 +25,7 @@ case 'info':?>
     <!-- PAGE CONTENT -->
     <label>
         <b><?=u::translate('Content')?>:</b>
-        <textarea id="pagecontent" class="forma wysiwyg" name="content"><?=($page->page->$lang->content)?></textarea>
+        <textarea id="pagecontent" class="wysiwyg" name="content"><?=($page->page->$lang->content)?></textarea>
     </label>
     <!-- SUBMIT -->
     <label>
@@ -51,11 +51,12 @@ case 'slide':
         <img class="loader" src="/themes/<?=THEME?>/images/loader.gif" alt="loader" />
         <input type="submit" value="<?=u::translate('Save')?>" />
     </label>
-    <div class="clear"></div>
+    <div class="clearfix"></div>
     <div class="tool">
         <a class="removeall"><?=u::translate('Remove all items')?></a>
     </div>
 </form>
+<script src="/lib/js/droparea.js"></script>
 <script>
     var item = function(i){
         $('<div id="'+i.ID+'" class="item">').append(
@@ -73,7 +74,7 @@ case 'slide':
         .click(function(){
             remove(0,i.ID)
         })
-        ,'<div class="clear"></div>'
+        ,'<div class="clearfix"></div>'
     ).appendTo('#items');
     }; 
     var remove = function(confirm, ID){
@@ -155,7 +156,7 @@ case 'carousel':?>
         <img class="loader" src="/themes/<?=THEME?>/images/loader.gif" alt="loader" />
         <input type="submit" value="<?=u::translate('Save')?>" />
     </label>
-    <div class="clear"></div>
+    <div class="clearfix"></div>
     <div class="tool">
         <a class="add"><?=u::translate('Add new item')?></a>
         <a class="removeall"><?=u::translate('Remove all items')?></a>
@@ -196,7 +197,7 @@ case 'carousel':?>
         .click(function(){
             remove(0,i.ID)
         })
-        ,'<div class="clear"></div>'
+        ,'<div class="clearfix"></div>'
     ).appendTo('#items');
     };  
     var removeall = function(confirm){

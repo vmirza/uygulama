@@ -15,6 +15,7 @@ switch ($params[2]) {
                     $page->page = $page->page->$lang;
                     $page->page->template = $template;
                     $page->page->urn = $params[1];
+                    $page->page->content = htmlentities($page->page->content, null, 'UTF-8');
                     $page->page->media = addslashes(json_encode($page->page->media));
                 }
                 break;
@@ -41,7 +42,7 @@ switch ($params[2]) {
             case 'upload':
                 if (FILE) {
                     // Object Reference
-                    $o = & $page->page->subpages->$urn->$lang->media;
+                    $o = & $page->page->$lang->media;
                     $ID = key($_FILES);
                     $file = $_FILES[$ID];
                     // MEDIA ID
@@ -56,12 +57,12 @@ switch ($params[2]) {
                     $ext = $mimetypes[$mimetype = mime_content_type($file["tmp_name"])];
                     if ($ext) {
                         // GENERATE TMP FILE
-                        $o->$ID->tmp = 'data/' . $params[1] . '/' . $urn . '-m' . $ID . '.' . $ext;
+                        $o->$ID->tmp = 'data/' . $params[1] . '/m' . $ID . '.' . $ext;
                         // UPLOAD THE IMAGE
                         u::upload($file['tmp_name'], $o->$ID->tmp);
 
-                        $o->$ID->thumb = 'data/' . $params[1] . '/' . $urn . '-t' . $ID . '.jpg';
-                        $o->$ID->src = 'data/' . $params[1] . '/' . $urn . '-m' . $ID . '.jpg';
+                        $o->$ID->thumb = 'data/' . $params[1] . '/t' . $ID . '.jpg';
+                        $o->$ID->src = 'data/' . $params[1] . '/m' . $ID . '.jpg';
                         $o->$ID->alt = $file['name'];
 
                         u::imageresize($o->$ID->tmp, $o->$ID->src, 620);
@@ -85,7 +86,7 @@ switch ($params[2]) {
             case 'sort':
                 if (POST) {
                     // Object Reference
-                    $o = & $page->page->subpages->$urn->$lang->media;
+                    $o = & $page->page->$lang->media;
                     $dump = new stdClass();
                     foreach (explode(',', $_POST['order']) as $i) {
                         $dump->$i = $o->$i;
@@ -98,7 +99,7 @@ switch ($params[2]) {
             case 'remove':
                 if (($ID = $_POST['ID'])) {
                     // Object Reference
-                    @$o = & $page->page->subpages->$urn->$lang->media;
+                    @$o = & $page->page->$lang->media;
                     @unlink($o->$ID->thumb);
                     @unlink($o->$ID->src);
                     unset($o->$ID);
@@ -208,6 +209,7 @@ switch ($params[2]) {
                 if ($page->page->subpages->$urn) {
                     $page->page->subpage = $page->page->subpages->$urn->$lang;
                     $page->page->subpage->urn = $urn;
+                    $page->page->subpage->content = htmlentities($page->page->subpage->content, null, 'UTF-8');
                     $page->page->subpage->media = addslashes(json_encode($page->page->subpage->media));
                 }
                 break;

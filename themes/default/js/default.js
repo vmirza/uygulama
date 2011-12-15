@@ -1,4 +1,4 @@
-var getPage;
+var getPage, href;
 var theme = {
     initialize: function(e){
         // AJAX Supports
@@ -28,7 +28,7 @@ var theme = {
         // LANGUAGES
         $('#languages a').click(function(){
             $.post('/', {
-                'LANG':$(this).data('val')
+                'LANG':$(this).data('lang')
             }, function(){
                 location.href = href ? href : location.href;
             });
@@ -41,16 +41,8 @@ var theme = {
         });*/
         // RESIZE + MEDIA QUERY FIXED
         var normal = function(){
-            // LOGO - NAV
-            $('nav').css({
-                'left':$('#logo img').width()
-            });
         };
         var tablet = function(){
-            // LOGO - NAV
-            $('nav').css({
-                'left':$('#logo img').width()
-            });
             $('#content').width($('#page').width()-$('#aside').width()-10);
         };
         var mobile = function(){

@@ -16,7 +16,7 @@ $(function() {
         for(var col = 0; col < cols; col++){
             var rand = direction ? col+1 : cols - col;
             container.append(
-                $('<a class="mask">')
+                $('<a>',{'class':'mask'})
                 .css({ 
                     position:'absolute',
                     opacity:0,
@@ -24,7 +24,9 @@ $(function() {
                     left:(boxWidth*col), 
                     width:boxWidth,
                     height:boxHeight,
-                    background:'url('+ src +') -'+ (col * boxWidth + m) +'px 0px no-repeat'
+                    'background-image':'url("'+ src +'")',
+                    'background-position':'-'+ (col * boxWidth + m) +'px 0px',
+                    'background-repeat':'no-repeat'
                 }).delay(100*rand)
                 .animate({
                     opacity:'1'
@@ -47,14 +49,14 @@ $(function() {
 
     
 // CAROUSEL DEFINATION
-$('.carousel').carousel();
+//$('.carousel').carousel();
 /*
     i.click(function(){
         $(this).find('section').pop({'width':'420px','className':'carousel-section'})
     });
 });    */
 
-  
+/*  
 (function($){
     var s;
     var m = {
@@ -107,3 +109,4 @@ $('.carousel').carousel();
         });
     };
 })(jQuery);
+*/

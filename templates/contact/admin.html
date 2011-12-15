@@ -53,7 +53,7 @@ case 'content':?>
         <b><?=u::translate('Media')?>:</b>
         <input type="file" name="media" 
                data-post="/json/<?=TEMPLATE.'/'.implode(',',$params)?>,upload"
-               data-complete="complete(result, file, input, area)" 
+               data-complete="item(forma.result)" 
                data-type="jpg,gif,png"
                title="<?=u::translate('Browse')?>" 
                multiple>

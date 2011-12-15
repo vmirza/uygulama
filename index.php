@@ -17,16 +17,20 @@ include 'lib/uygulama.php';
 // detect request format
 switch (@$_GET['FORMAT']) {
     case 'css':
+        $m = @date('D, d M Y H:i:s e',THEMEMODIFIED);
+        $e = @date('D, d M Y H:i:s e',THEMEMODIFIED+290304000);
         header('cache-control: public, max-age=290304000');
-        header('last-modified: Mon, 01 Jun 2010 18:30:45 GMT');
-        header('expires: '.@date('D, d M Y H:i:s e',time()+290304000));
+        header('last-modified: '.$m);
+        header('expires: '.$e);
         header('Content-Type: text/css');
         echo u::css($_GET['GET']);
         break;
     case 'js':
+        $m = @date('D, d M Y H:i:s e',THEMEMODIFIED);
+        $e = @date('D, d M Y H:i:s e',THEMEMODIFIED+290304000);
         header('cache-control: public, max-age=290304000');
-        header('last-modified: Mon, 01 Jun 2010 18:30:45 GMT');
-        header('expires: '.@date('D, d M Y H:i:s e',time()+290304000));
+        header('last-modified: '.$m);
+        header('expires: '.$e);
         header('Content-Type: text/javascript');
         echo u::js($_GET['GET']);
         break;

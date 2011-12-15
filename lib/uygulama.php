@@ -1,12 +1,12 @@
 <?php
 
 /*
-  ╠═ Uygulama ═══════════════════════════════════════════════════════════════
+  ╠═ Uygulama ══════════════════════════════════════════════════════════════════
   Software: Uygulama :: Web Builder
-  Version: beta 2.0
+  Version: 3.0.0 RC
   Support: http://uygulama.net
   Author: goker.cebeci
-  Contact: http://uygulama.net
+  Contact: http://gokercebeci.com
   -------------------------------------------------------------------------
   License: Distributed under the Lesser General Public License (LGPL)
   http://www.gnu.org/copyleft/lesser.html
@@ -14,13 +14,23 @@
   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
   FITNESS FOR A PARTICULAR PURPOSE.
   ═══════════════════════════════════════════════════════════════════════════ */
-
 class u {
-
+    
+    /**
+     *
+     * @param string $file (file name without .json extension)
+     * @param array or object $content
+     * @return boolean 
+     */
     public static function set($file, $content) {
         return file_put_contents($file . '.json', json_encode($content));
     }
-
+    
+    /**
+     *
+     * @param string $file (file name without .json extension)
+     * @return bbject 
+     */
     public static function get($file) {
         return json_decode(file_get_contents($file . '.json'));
     }
@@ -255,7 +265,7 @@ class u {
     }
 
     public static function css($get) {
-        $browser = self::browser();
+        // $browser = self::browser();
         // SPLIT GET DATA
         list($theme, $template, $admintemplate) = preg_split('/,/', $get, 3);
         $info = "/*\n"
@@ -287,7 +297,7 @@ class u {
                     . '/*############################################################################*/' . "\n";
             $styles .= @ file_get_contents('templates/' . $admintemplate . '/admin.css');
         }
-        // MINIFIED
+        // MINIFY
         if (DEVELOPMENT)
             return $info . $styles;
         else
@@ -320,17 +330,17 @@ class u {
                 . "*/\n";
         if ($theme) {
             // JS DEFINES
-            $js = 
-                "var DOMAIN = '".$_SERVER['HTTP_HOST']."';\n"
-                ."var THEME = '$theme';\n"
-                ."var TEMPLATE = '$template';\n"
-                ."var AJAX = ".AJAX.";\n"
-                ."var ANALYTICS = '".ANALYTICS."';\n";
+            $js =
+                    "var DOMAIN = '" . $_SERVER['HTTP_HOST'] . "';\n"
+                    . "var THEME = '$theme';\n"
+                    . "var TEMPLATE = '$template';\n"
+                    . "var AJAX = " . AJAX . ";\n"
+                    . "var ANALYTICS = '" . ANALYTICS . "';\n";
             //// JS LANGUAGE
             $js .= 'var _lang = {"close":"' . u::translate('Close')
                     . '", "ok":"' . u::translate('Ok')
                     . '", "cancel":"' . u::translate('Cancel')
-                    . '"};'. "\n";
+                    . '"};' . "\n";
             // THEME'S JS FILE
             $js .= '/*############################################################################*/' . "\n"
                     . '/*############################### THEME JS ###################################*/' . "\n"
@@ -345,7 +355,7 @@ class u {
         $js .= '/*############################################################################*/' . "\n"
                 . '/*############################## TEMPLATE JS #################################*/' . "\n"
                 . '/*############################################################################*/' . "\n";
-        $js .= @ file_get_contents('templates/' . $template . '/default.js'). "\n";
+        $js .= @ file_get_contents('templates/' . $template . '/default.js') . "\n";
         if ($admintemplate) {
 
             // ADMIN TEMPLATE'S JS FILE
@@ -354,15 +364,15 @@ class u {
                     . '/*############################################################################*/' . "\n";
             $js .= @ file_get_contents('templates/' . $admintemplate . '/admin.js');
         }
-        // MINIFIED
+        // MINIFY
         if (DEVELOPMENT)
             return $info . $js;
         else
             return $info . preg_replace(array(
-                        '![^\'|"]//[^\n\r]+!',
+                        '![^\'|"|\\\]//[^\n\r]+!',
                         //'/[\r\n\t\s]+/s',
                         '/^[\r\n\t\s]+/m',
-                        '#/\*.*?\*/#',
+                        '#/\*.*?\*/#s',
                         '/[\s]*([\{\},;:\=\+\-\?\|\&])[\s]*/',
                         '/^\s+/'
                             //'/\);/'
@@ -579,12 +589,19 @@ class u {
         $_SESSION['THEME'] = $_GET['THEME'] ? $_GET['THEME'] : ($_SESSION['THEME'] ? $_SESSION['THEME'] : DEFTHEME);
         define('THEME', $_SESSION['THEME']);
         define('FORMAT', $_GET['FORMAT'] ? $_GET['FORMAT'] : 'html');
+
         // LANGUAGES / LOCALES
         $locale = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 5);
-        $lang = $_REQUEST['LANG'] ? $_REQUEST['LANG'] : $_SESSION['LANG'];
+        $lang2 = $lang = $_REQUEST['LANG'] ? $_REQUEST['LANG'] : $_COOKIE['LANG'];
         list($locale, $lang) = self::locale($locale, $lang, MULTILINGUAL);
-        define('LANG', $_SESSION['LANG'] = $lang);
         define('LOCALE', $locale);
+        define('LANG', $lang);
+        setcookie('LOCALE', LOCALE, 0, '/');
+        setcookie('LANG', LANG, 0, '/');
+        if ($_GET['LANG']) {
+            header('location: ' . str_replace('/' . LANG . '/', '/', $_SERVER['REQUEST_URI']));
+        } elseif ($_POST['LANG']) { die; }
+
         define('BROWSER', self::browser());
         // GET PROJECT INFO
         $project = @self::get('data/project');
@@ -685,12 +702,6 @@ class u {
                 '[[KEYWORDS]]',
                 '[[ANALYTICS]]',
                 '[[METATAGS]]',
-                /* '[[WEBMASTER]]',
-                  '[[SITEEXPLORER]]',
-                  '[[GEOPLACENAME]]',
-                  '[[GEOREGION]]',
-                  '[[GEOLATITUDE]]',
-                  '[[GEOLONGITUDE]]', */
                 '[[DOMAIN]]',
                 '[[COOKIELESS]]',
                 '[[THEME]]',
@@ -709,12 +720,6 @@ class u {
                 KEYWORDS,
                 ANALYTICS,
                 METATAGS,
-                /* WEBMASTER,
-                  SITEEXPLORER,
-                  GEOPLACENAME,
-                  GEOREGION,
-                  GEOLATITUDE,
-                  GEOLONGITUDE, */
                 DOMAIN,
                 (COOKIELESS ? '//' . COOKIELESS : ''),
                 THEME,
@@ -739,11 +744,13 @@ class u {
             else
                 echo preg_replace(array(
                     '/^[\r\n\t\s]+/m',
-                    '#<\!--.*?\--\>#',
+                    //'/\n|\r/',
+                    //'#<\!--.*?\--\>#',
                     '/^\s+/'
                         ), array(
                     '',
-                    '',
+                    //'',
+                    //'',
                     ''
                         ), $theme);
         } else {

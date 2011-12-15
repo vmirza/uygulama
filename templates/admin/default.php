@@ -33,6 +33,7 @@ switch ($params[0]) {
     case 'theme':
     case 'defpage':
     case 'accounts':
+        $page->metatags = htmlentities(METATAGS);
         $page->robots = @file_get_contents('data/robots.txt');
         $page->humans = @file_get_contents('data/humans.txt');
         if (POST) {
@@ -43,11 +44,11 @@ switch ($params[0]) {
               } else { */
             $project->development = isset($_POST['development']) ? ($_POST['development'] ? 1 : 0) : DEVELOPMENT;
             $project->ajax = isset($_POST['ajax']) ? ($_POST['ajax'] ? 1 : 0) : AJAX;
-            $project->editorial = isset($_POST['editorial']) ? $_POST['editorial'] : EDITORIAL;
+            $project->editorial = isset($_POST['editorial']) ? ($_POST['editorial'] ? 1 : 0) : EDITORIAL;
             $project->cookieless = isset($_POST['cookieless']) 
                     ? "'".$_POST['cookieless']."'"
                     : COOKIELESS;
-            $project->cookieless = $project->cookieless && $project->cookieless != "''" 
+            $project->cookieless = $project->cookieless != DOMAIN
                     ? $project->cookieless : '$_SERVER[\'HTTP_HOST\']';
             $project->admin = $_POST['admin'] ? $_POST['admin'] : ADMIN;
             $project->editor = $_POST['editor'] ? $_POST['editor'] : EDITOR;
@@ -64,10 +65,11 @@ switch ($params[0]) {
                     $project->theme = ($_SESSION['THEME'] = ($_POST['theme'] ? $_POST['theme'] : THEME));
                     $project->thememodified = $_POST['thememodified'] ? @date('U') : THEMEMODIFIED;
                     $project->analytics = $_POST['analytics'] ? $_POST['analytics'] : ANALYTICS;
-                    $project->metatags = isset($_POST['metatags']) ? str_replace("'",'',$_POST['metatags']) : METATAGS;
+                    $project->metatags = isset($_POST['metatags']) ? str_replace("'",'',html_entity_decode($_POST['metatags'])) : METATAGS;
                     $project->multilingual = isset($_POST['multilingual']) ? $_POST['multilingual'] : MULTILINGUAL;
                     $project->defaultlang = $_POST['defaultlang'] ? $_POST['defaultlang'] : DEFLANG;
                     if ($_POST['defaultlang']) {
+                        // BUG
                         $_SESSION['LANG'] = $project->defaultlang;
                     }
                     $supportedlangs = implode(',', $_POST['supportedlangs']);
@@ -106,15 +108,6 @@ switch ($params[0]) {
         }
         break;
         
-// =============================================================================
-// LANGUAGE 
-// =============================================================================
-        
-    case 'language':
-        $_SESSION['LANG'] = $_POST['lang'];
-        $page = u::result('200');
-        break;
-    
 // =============================================================================
 // TRANSLATIONS 
 // =============================================================================

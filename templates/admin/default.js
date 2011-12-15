@@ -351,13 +351,7 @@ var tool = {
     }
 };
 
-
-
-
-
-
-
-
+/*
 (function( $ ){
 
   var methods = {
@@ -412,4 +406,83 @@ var tool = {
       $.error( 'Method ' +  method + ' does not exist on jQuery.u' );
     }    
   };
-})(jQuery);
+})(jQuery);*/
+
+
+
+$(document).ready(function(){
+        
+        
+        // LANGUAGES
+        $('#language-bar a').click(function(){
+            $.post('/', {
+                'LANG':$(this).data('lang')
+            }, function(){
+                location.href = location.href;
+            });
+        });
+        
+        var params = location.pathname.replace(/\//g,'\\/').split(/,/);
+        for(var i in params){
+            //console.log(params[i]);
+            params[i] = params[i] == '\\/admin\\/page' ? '\\/admin\\/pages' : params[i];
+            $('a[href$='+ (i > 0 ? '\\,'+params[i] : params[i]) +']').addClass('selected');
+        }        
+        
+        var p = $('#page').height();
+        var w = $(window).height();
+        $('#footer-admin').css('position',w > p ? 'fixed' : 'absolute');
+        $(window).resize(function(){
+            w = $(window).height();
+            $('#footer-admin').css('position',w > p ? 'fixed' : 'absolute');
+        });
+        
+        // forma
+        $('form').forma();
+        
+        // tinymce wysiwyg
+        $('textarea.wysiwyg').tinymce({
+            // Location of TinyMCE script
+            script_url : '/lib/tinymce/tiny_mce.js',
+
+            // General options
+            theme : "advanced",
+            //plugins : "autolink,lists,save,advhr,advlink,,contextmenu,noneditable,nonbreaking,xhtmlxtras,advlist",
+            plugins : "paste,inlinepopups,preview,fullscreen",
+            // Theme options
+            theme_advanced_buttons1 : "pasteword,|,"
+                +"bold,italic,underline,strikethrough,sub,sup,|,"
+                +"justifyleft,justifycenter,justifyright,justifyfull,|,"
+                +"bullist,numlist,|,"
+                +"outdent,indent,blockquote,codeblock,hr,|,"
+                +"undo,redo,|,"
+                +"forecolor,backcolor,"
+                +"formatselect,link,unlink,anchor,removeformat,cleanup,code,preview,remove,format,fullscreen",
+            theme_advanced_buttons2 : "",
+            theme_advanced_buttons3 : "",
+            theme_advanced_toolbar_location : "top",
+            theme_advanced_toolbar_align : "left",
+                
+            body_class : "tinymce",
+
+            setup : function(ed) {
+                // Add a custom button
+                ed.addButton('codeblock', {
+                    title : 'Code Block',
+                    image : '/templates/admin/images/codeblock.gif',
+                    onclick : function() {
+                        // Add you own code to execute something on click
+                        ed.focus();
+                        //ed.selection.setContent('Hello world!');
+                        var uid = ed.dom.uniqueId();
+                        var sel = ed.selection.getContent();
+                        ed.execCommand('mceReplaceContent',false,'<code id="' + uid + '">' + sel + '</code>');
+                    }
+                });
+            },
+
+            // Example content CSS (should be your site CSS)
+            content_css : "/themes/"+ THEME +"/css/wysiwyg.css"
+        });
+        
+    });

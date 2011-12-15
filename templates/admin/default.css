@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
     ADMIN
-============================--------------------------------------------------*/
+------------------------------------------------------------------------------*/
 #header-admin, #footer-admin {
     position: absolute;
     top:0;
@@ -166,10 +166,10 @@ hr {
 #menu-admin a.selected {
     color:#15c;
 }
-label.translation b, textarea.translation {
+label.translation b, .translation p.textarea {
     display: inline-block;
     margin:5px 0;
-    width:270px;
+    width:310px ;
     height:80px;
     vertical-align: middle;
 }
@@ -177,6 +177,9 @@ label.translation b {
     padding: 20px;
     width:230px;
     height:40px;
+}
+.translation textarea {
+    height: 55px;
 }
 .dashboard, .themes , .templates {
     -moz-box-sizing: border-box; /* ff2 */
@@ -344,8 +347,7 @@ form {
 }
 
 .selected-template { 
-position: absolute;
-right: 0;
+
 }
 .selected-template [type=submit] { 
     display:none; 

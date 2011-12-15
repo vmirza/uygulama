@@ -27,8 +27,6 @@ switch($params[2]):
 // CONTENT
 // =============================================================================
 case 'content':?>
-<link rel="stylesheet" href="/lib/jwysiwyg/jquery.wysiwyg.css" />
-<script src="/lib/jwysiwyg/jquery.wysiwyg.js"></script>
 <form method="post" action="/json/<?=TEMPLATE.'/'.implode(',',$params)?>,update">
     <label>
         <b><?=u::translate('Title')?>:</b>
@@ -46,34 +44,20 @@ case 'content':?>
     <!-- PAGE CONTENT -->
     <label>
         <b><?=u::translate('Content')?>:</b>
-        <p class="textarea">
-            <textarea id="pagecontent" class="forma" name="content"><?=($page->page->content)?></textarea>
-        </p>
+        <textarea id="pagecontent" class="wysiwyg" name="content"><?=($page->page->content)?></textarea>
     </label>
-    <script>
-        $(function(){ $('#pagecontent').wysiwyg({
-                controls: {
-                    h1: { visible: false },
-                    insertImage: { visible: false },
-                    insertTable: { visible: false },
-                    html  : { visible: true }
-                },
-                css: "/themes/<?=THEME?>/css/wysiwyg.css"
-            });
-        });
-    </script>
     <!-- MEDIA -->
     <label>
         <b><?=u::translate('Media')?>:</b>
         <input type="file" name="media" 
                data-post="/json/<?=TEMPLATE.'/'.implode(',',$params)?>,upload"
-               data-complete="complete(result, file, input, area)" 
+               data-complete="item(forma.result)" 
                data-type="jpg,gif,png"
                title="<?=u::translate('Browse')?>" 
                multiple>
     </label>
     <div id="items"></div>
-    <div class="clear"></div>
+    <div class="clearfix"></div>
     <!-- SUBMIT -->
     <label>
         <img class="loader" src="/themes/<?=THEME?>/images/loader.gif" alt="loader" />
@@ -93,7 +77,7 @@ case 'content':?>
                 +'<a class="mediasize thumb" data-value="thumb"><b></b>'+lang.thumbnail+'</a>'
                 +'<a class="mediasize original" data-value="original"><b></b>'+lang.original_size+'</a>'
                 +'</div><button id="media">'+lang.add+'</button>'
-                +'<div class="clear"></div></form>';
+                +'<div class="clearfix"></div></form>';
             $(document).keydown(function(e){
                 if(e.keyCode == 32){
                     mediaInsert();
@@ -121,8 +105,7 @@ case 'content':?>
             : '<a href="/'+media.src+'" class="thumb" title="'+media.alt+'">'
                 +'<img src="/'+media.thumb+'" alt="'+media.alt+'" class="'+$('#media').data('align')+'" />'
                 +'</a>';
-            //editor.selection.insertContent(content);
-            $('#pagecontent').wysiwyg('insertHtml', content);
+            $('#pagecontent').tinymce().execCommand('mceInsertContent', false, content);
             $('#result').empty();
         }
     };
@@ -157,11 +140,8 @@ case 'content':?>
             mediaInsert(1);
             $('form').forma();
         })
-        ,'<div class="clear"></div>'
+        ,'<div class="clearfix"></div>'
     ).appendTo('#items');
-    };
-    var complete = function(result, file, input, area){
-        item(result);
     };
     var remove = function(confirm, ID){
         if(confirm == 1){
@@ -198,7 +178,7 @@ case 'content':?>
             $('input[name=urn]').val(u);
             $('#urn').html(u);
         });
-        var items = $.parseJSON('<?=$page->page->subpage->media?>');
+        var items = $.parseJSON('<?=$page->page->media?>');
         for(var i in items){
             items[i].ID = i;
             item(items[i]);
@@ -220,12 +200,12 @@ case 'subpages':
             <img class="loader" src="/themes/<?=THEME?>/images/loader.gif" alt="loader" />
             <input type="submit" value="<?=u::translate('Save')?>" />
         </label>
-        <div class="clear"></div>
+        <div class="clearfix"></div>
         <div class="tool">
             <a class="removeall"><?=u::translate('Remove all items')?></a>
         </div>
     </form>
-    <form method="post" action="/json/<?=TEMPLATE.'/'.implode(',',$params)?>,add" data-complete="item(r)" >
+    <form method="post" action="/json/<?=TEMPLATE.'/'.implode(',',$params)?>,add" data-complete="item(forma.result)" >
         <h3><?=u::translate('Add New Subpage')?></h3>
         <label>
             <input type="text" id="title" name="title" placeholder="<?=u::translate('write a subpage title...')?>" />
@@ -301,8 +281,6 @@ break;
 // =============================================================================
 case 'subpage':
 ?>
-<link rel="stylesheet" href="/lib/jwysiwyg/jquery.wysiwyg.css" />
-<script src="/lib/jwysiwyg/jquery.wysiwyg.js"></script>
 <div id="content">
     <form method="post" action="/json/<?=TEMPLATE.'/'.implode(',',$params)?>,update">
         <label>
@@ -321,28 +299,14 @@ case 'subpage':
         <!-- PAGE CONTENT -->
         <label>
             <b><?=u::translate('Content')?>:</b>
-            <p class="textarea">
-                <textarea id="pagecontent" class="forma" name="content"><?=($page->page->subpage->content)?></textarea>
-            </p>
+            <textarea id="pagecontent" class="wysiwyg" name="content"><?=($page->page->content)?></textarea>
         </label>
-        <script>
-            $(function(){ $('#pagecontent').wysiwyg({
-                    controls: {
-                        h1: { visible: false },
-                        insertImage: { visible: false },
-                        insertTable: { visible: false },
-                        html  : { visible: true }
-                    },
-                    css: "/themes/<?=THEME?>/css/wysiwyg.css"
-                });
-            });
-        </script>
         <!-- MEDIA -->
         <label>
             <b><?=u::translate('Media')?>:</b>
             <input type="file" name="media" 
                    data-post="/json/<?=TEMPLATE.'/'.implode(',',$params)?>,upload"
-                   data-complete="complete(result, file, input, area)" 
+                   data-complete="item(forma.result)" 
                    data-type="jpg,gif,png"
                    title="<?=u::translate('Browse')?>" 
                    multiple>
@@ -358,7 +322,7 @@ case 'subpage':
             </div>
             <?endforeach;*/?>
         </div>
-        <div class="clear"></div>
+        <div class="clearfix"></div>
         <!-- SUBMIT -->
         <label>
             <img class="loader" src="/themes/<?=THEME?>/images/loader.gif" alt="loader" />
@@ -378,7 +342,7 @@ case 'subpage':
                     +'<a class="mediasize thumb" data-value="thumb"><b></b>'+lang.thumbnail+'</a>'
                     +'<a class="mediasize original" data-value="original"><b></b>'+lang.original_size+'</a>'
                     +'</div><button id="media">'+lang.add+'</button>'
-                    +'<div class="clear"></div></form>';
+                    +'<div class="clearfix"></div></form>';
                 $(document).keydown(function(e){
                     if(e.keyCode == 32){
                         mediaInsert();
@@ -406,23 +370,10 @@ case 'subpage':
                 : '<a href="/'+media.src+'" class="thumb" title="'+media.alt+'">'
                     +'<img src="/'+media.thumb+'" alt="'+media.alt+'" class="'+$('#media').data('align')+'" />'
                     +'</a>';
-                //editor.selection.insertContent(content);
-                $('#pagecontent').wysiwyg('insertHtml', content);
+                $('#pagecontent').tinymce().execCommand('mceInsertContent', false, content);
                 $('#result').empty();
             }
         };
-        /*tool.inlineedits();
-        tool.form();
-        var projecttitle = ('<?=TITLE?>'.length+3);
-        $('#title').keyup(function(){
-            tool.lengthcheck('title',5,70-projecttitle);
-        });
-        tool.lengthcheck('title',5,70-projecttitle);
-        $('#description').keyup(function(){
-            tool.lengthcheck('description',70,120);
-        });
-        tool.lengthcheck('description',70,120);
-         */
         var item = function(i){
             $('<div id="'+i.ID+'" class="item">').append(
             '<b class="handler">&nbsp;</b>'
@@ -442,11 +393,8 @@ case 'subpage':
                 mediaInsert(1);
                 $('form').forma();
             })
-            ,'<div class="clear"></div>'
+            ,'<div class="clearfix"></div>'
         ).appendTo('#items');
-        };
-        var complete = function(result, file, input, area){
-            item(result);
         };
         var remove = function(confirm, ID){
             if(confirm == 1){
@@ -498,81 +446,7 @@ case 'subpage':
     <?if(true):?>
     <?endif;?>
 </div>
-<div id="aside">
-
-</div>
-<script>
-    /*
-    $('#title').bind('keydown', 'blur',function(){
-        var u = urn($(this).val());
-        $('input[name=urn]').val(u);
-        $('#urn').html(u);
-    });
-    var subpage = function(i){
-        $('<div id="'+i.ID+'" class="subpage">').append(
-        '<b class="handler">&nbsp;</b>',
-        '<label>'
-            +'<b><?=u::translate("Title")?></b>'
-            +'<input type="text" name="title['+i.ID+']" value="'+ i.title +'">'
-            +'<i>'+i.ID+'</i>'
-            +'</label>',
-        $('<a class="remove">').html('<?=u::translate("Remove")?>')
-        .click(function(){
-            remove(0,i.ID)
-        })
-    ).appendTo('#subpages');
-    };  
-    $(document).ready(function(){
-        var subpages = $.parseJSON('<?=json_encode($page->page->subpages)?>');
-        for( var i in subpages){
-            subpages[i].ID = i;
-            subpage(subpages[i]);
-        };
-        tool.sortable('subpages','b',{'url':'/json/<?=TEMPLATE."/".implode(",",$params)?>,sort'});
-    });
-    
-    
-    /*
-    //tool.valuelabels();
-    var linksort = tool.sortable('subnavForm','span',{'url':'/json/<?=TEMPLATE?>/<?=$params[0].",".$params[1].",sort"?>'});
-    function add(urn, title){
-        var item = $('<div>',{'id':urn,'class':'formItem'})
-        .append($('<a>',{'class':'button right','href':'javascript:del(\''+urn+'\')'}).html(lang.delete))
-        .append($('<a>',{'class':'button right','href':'/<?=TEMPLATE?>/<?=$params[0]?>,<?=$params[1]?>,'+urn}).html(lang.edit))
-        .append($('<span>',{'class':'handler left'}).html('::'))
-        .append($('<label>',{'class':'block'}).html(title))
-        .append($('<div>',{'class':'clear'}));
-        $('#subnavForm').append(item)
-    }
-    function del(urn){
-        var func = 'tool.post({\'url\':\'/json/<?=TEMPLATE?>/<?=$params[0].",".$params[1].",del"?>\',\'data\':\'urn='+urn+'\',\'onComplete\':function(r){'
-            +'if(r.code == 200) $(\'#'+urn+'\').remove(); '
-            +'else tool.result(r.code,r.status,r.message,r.fields,r.redirect,r.debug);'
-            +'}'
-            +'});';
-        tool.confirm('Delete Page', 'Are you sure delete the page? You are lose all data!', func);
-    }
-    function newsub(){
-        var subpageurn = urn($('#subpage').val());
-        $('#subpagepost').attr('disabled','disabled');
-        tool.post({'url':'/json/<?=TEMPLATE?>/<?=$params[0].",".$params[1].",add"?>',
-            'data':'urn='+subpageurn+'&lang='+LANG+'&title='+$('#subpage').val(),
-            'onComplete':function(r){
-                if(r.code == 200) add(subpageurn, $('#subpage').val());
-                else tool.result(r.code,r.status,r.message,r.fields,r.redirect,r.debug);
-                $('#subpagepost').removeAttr('disabled');
-                $('#subpage').val($('#subpage').attr('data-label')).focus();
-            }
-        });
-    }
-    $('#subpage').keydown(function(e){
-        if((e.keyCode == 13) && $('#subpage').val() && $('#subpage').val() != $('#subpage').attr('data-value')) { // enter
-            if(e) e.preventDefault();
-            newsub();
-        } return true;
-    });
-     */
-</script>
+<div id="aside"></div>
 <?
 break;
 // =============================================================================
@@ -598,7 +472,7 @@ $i = $page->page->layout;
         </label>
         <i>* <?=u::translate('If you select "Single Page", subpages\'s menu doesn\'t show else main content doesn\'t show and main URL shows first subpage.')?></i>
     </div>
-    <div class="clear"></div>
+    <div class="clearfix"></div>
     <!-- SUBMIT -->
     <label>
         <img class="loader" src="/themes/<?=THEME?>/images/loader.gif" alt="loader" />
