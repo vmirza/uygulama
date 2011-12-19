@@ -66,13 +66,13 @@ switch ($params[0]) {
                     $project->thememodified = $_POST['thememodified'] ? @date('U') : THEMEMODIFIED;
                     $project->analytics = $_POST['analytics'] ? $_POST['analytics'] : ANALYTICS;
                     $project->metatags = isset($_POST['metatags']) ? str_replace("'",'',html_entity_decode($_POST['metatags'])) : METATAGS;
-                    $project->multilingual = isset($_POST['multilingual']) ? $_POST['multilingual'] : MULTILINGUAL;
+                    $project->multilingual = isset($_POST['multilingual']) ? ($_POST['multilingual'] ? 1 : 0) : MULTILINGUAL;
                     $project->defaultlang = $_POST['defaultlang'] ? $_POST['defaultlang'] : DEFLANG;
                     if ($_POST['defaultlang']) {
                         // BUG
                         $_SESSION['LANG'] = $project->defaultlang;
                     }
-                    $supportedlangs = implode(',', $_POST['supportedlangs']);
+                    $supportedlangs = str_replace(',,','',implode(',', $_POST['supportedlangs']));
                     $project->supportedlangs = $supportedlangs ? $supportedlangs : SUPPORTEDLANGS;
                     $project->defaultpage = $_POST['defaultpage'] ? $_POST['defaultpage'] : DEFPAGE;
 

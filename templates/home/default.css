@@ -102,7 +102,7 @@ a.slidezone-prev, a.slidezone-prev:hover {
     float:left;
     width: 10px;
     height: 160px;
-    background: url(/lib/js/slidezone-sprite.png) no-repeat;
+    background: url(/themes/default/images/slidezone-sprite.png) no-repeat;
     background-position: left center;
     cursor:pointer;
     opacity: .6;
