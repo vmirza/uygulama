@@ -9,6 +9,7 @@
         <?endforeach;?>
     </div>
 </div>
+<script src="//<?=COOKIELESS?>/lib/js/slidezone.js"></script>
 <?endif;?>
 <?if($page->$lang->carousel->items):?>
 <?if($page->$lang->carousel->title):?>
@@ -24,14 +25,10 @@
                     <article>
                         <img src="//<?=COOKIELESS?>/<?=$i->thumb?>" alt="<?=$i->title?>" />
                         <h2><?=$i->title?></h2>
-                        <section>
-                            <img src="//<?=COOKIELESS?>/<?=$i->src?>" alt="<?=$i->title?>" />
-                            <h2><?=$i->title?></h2>
-                            <p><?=$i->content?></p>
-                            <?if($i->link):?>
-                            <a href="<?=$i->link?>"><?=$i->link?></a>
-                            <?endif;?>
-                        </section>
+                        <p><?=$i->content?></p>
+                        <?if($i->link):?>
+                        <a href="<?=$i->link?>" class="link"><?=$i->link?></a>
+                        <?endif;?>
                     </article>
                 </div>
             </div>
@@ -41,9 +38,8 @@
     <div class="carousel-right"></div>
 </div>
 <div class="clear"></div>
+<script src="//<?=COOKIELESS?>/lib/js/carousel.js"></script>
 <?endif;?>
 <div class="content">
     <?=$page->$lang->content?>
 </div>
-
-<script src="//<?=COOKIELESS?>/lib/js/slidezone.js"></script>

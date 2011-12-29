@@ -43,7 +43,7 @@ case 'slide':
 <div class="slidezone">
     <input type="file" class="droparea" name="slide" 
            data-post="/json/<?=TEMPLATE.'/'.implode(',',$params)?>,upload" 
-           data-width="940" data-height="300" data-crop="true" data-canvas="true">
+           data-width="940" data-height="300" data-crop="true" />
 </div>
 <form method="post" action="/json/<?=TEMPLATE.'/'.implode(',',$params)?>,update">
     <div id="items"></div>
@@ -148,7 +148,7 @@ case 'carousel':?>
 <form method="post" action="/json/<?=TEMPLATE.'/'.implode(',',$params)?>,update">
     <label>
         <b><?=u::translate('Title')?>:</b>
-        <input type="text" name="title[main]" placeholder="<?=u::translate('not nessery.')?>" value="<?=$page->page->$lang->carousel->title?>" />
+        <input type="text" name="title[main]" placeholder="<?=u::translate('not nessery.')?>" value="<?=$page->page->carousel->title?>" />
     </label>
     <hr/>
     <div id="items"></div>
@@ -183,7 +183,7 @@ case 'carousel':?>
         '<input type="file" class="droparea" name="'+i.ID+'"'
             +'data-post="/json/<?=TEMPLATE."/".implode(",",$params)?>,upload"'
             +'data-value="'+ (i.thumb ?  '/'+i.thumb : '') +'"'
-            +'data-width="400" data-canvas="true">',
+            +'data-width="400" />',
         '<label>'
             +'<input type="text" name="title['+i.ID+']" value="'+ (i.title || '') +'" placeholder="<?=u::translate("Title")?>"/>'
             +'</label>',
@@ -256,7 +256,7 @@ case 'carousel':?>
         });
     };
     $(document).ready(function(){
-        var items = $.parseJSON('<?=$page->page->$lang->carousel->items?>');
+        var items = $.parseJSON('<?=$page->page->carousel->items?>');
         for( var i in items){
             if(items[i] == null) items[i] = {};
             items[i].ID = i;

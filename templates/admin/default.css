@@ -409,3 +409,10 @@ form {
 .defaultSkin .mceIframeContainer {
     padding-top: 8px !important;
 }
+
+
+#ace-editor { 
+    margin: -15px -20px 10px;
+    position: relative;
+    height: 500px;
+}

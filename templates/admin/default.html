@@ -305,7 +305,7 @@ default:?>
             <b><?=u::translate('Multilingual')?>:</b>  
             <label>
                 <input type="checkbox" class="switch" name="multilingual" value="1" <?=MULTILINGUAL?'checked':''?>/>
-                <?=u::translate('Is the project multilingual?')?>
+                       <?=u::translate('Is the project multilingual?')?>
             </label>
         </p>
         <label>
@@ -373,7 +373,6 @@ $params[3] = $params[3] ? $params[3] : 'uygulama';
                 <?endforeach;?>
             </select>
             <i><?=u::translate('Select a template or a library dictionary')?></i>
-
         </label>
         <h3><?=sprintf(u::translate('Dictionary of %s'), $params[2].', '.$params[3])?></h3>
         <?
@@ -410,7 +409,18 @@ break;
 endswitch;
 break;
 // =============================================================================
-// THEMES 
+// THEMES & LOGOS & JS OVERWRITE & CSS OVERWRITE
+// =============================================================================
+case 'themes':?>
+<div id="submenu">
+    <a href="/<?=TEMPLATE.'/'.$params[0]?>,themes"><?=u::translate("Theme")?></a>
+    <a href="/<?=TEMPLATE.'/'.$params[0]?>,logos"><?=u::translate("Logos")?></a>
+    <a href="/<?=TEMPLATE.'/'.$params[0]?>,overwrite"><?=u::translate("Overwrite")?></a>
+</div>
+<?
+switch($params[1]):
+// =============================================================================
+// THEMES
 // =============================================================================
 case 'themes':?>
 <div id="content" class="themes">
@@ -445,28 +455,6 @@ case 'themes':?>
                    title="<?=u::translate('Browse')?>" 
                    multiple>
         </label>
-        <hr>
-        <h3><?=u::translate('Logo and Icons')?></h3>
-        <label>
-            <b><?=u::translate('Logo')?>:</b>
-            <img src="/logo.png" alt="logo" />
-            <input type="file" name="logo" 
-                   data-post="/json/admin/<?=$params[0]?>,logo" 
-                   data-complete="reload(forma)" 
-                   data-type="jpg,png,gif"
-                   title="<?=u::translate('Browse')?>" 
-                   multiple>
-        </label>
-        <label>
-            <b><?=u::translate('Favicon')?>:</b>
-            <img src="/favicon.ico" alt="favicon" />
-            <input type="file" name="favicon" 
-                   data-post="/json/admin/<?=$params[0]?>?>,favicon" 
-                   data-complete="reload(forma)" 
-                   data-type="ico"
-                   title="<?=u::translate('Browse')?>" 
-                   multiple>
-        </label>
     </form>
 </div>
 <script>
@@ -483,11 +471,119 @@ case 'themes':?>
             }
         });
     });
+</script>
+<?
+break;
+// =============================================================================
+// LOGOS
+// =============================================================================
+case 'logos':
+?>
+<div id="content">
+    <form>
+        <h3><?=u::translate('Logo and Icons')?></h3>
+        <label>
+            <b><?=u::translate('Logo')?>:</b>
+            <img src="/logo.png" alt="logo" />
+            <input type="file" name="logo" 
+                   data-post="/json/<?=TEMPLATE.'/'.implode(',',$params)?>,logo" 
+                   data-complete="reload(forma)" 
+                   data-type="jpg,png,gif"
+                   title="<?=u::translate('Browse')?>" 
+                   multiple>
+        </label>
+        <label>
+            <b><?=u::translate('Favicon')?>:</b>
+            <img src="/favicon.ico" alt="favicon" />
+            <input type="file" name="favicon" 
+                   data-post="/json/<?=TEMPLATE.'/'.implode(',',$params)?>,favicon" 
+                   data-complete="reload(forma)" 
+                   data-type="ico"
+                   title="<?=u::translate('Browse')?>" 
+                   multiple>
+        </label>
+    </form>
+</div>
+<script>
     var reload = function(forma){
         forma.area.prev().attr('src',forma.area.prev().attr('src')+'?'+Math.random());
     };
 </script>
+<?
+break;
+// =============================================================================
+// OVERWRITE
+// =============================================================================
+case 'overwrite':
+?>
+<div id="content">
+    <form method="post" action="/json/<?=TEMPLATE.'/'.implode(',',$params)?>">
+        <pre id="ace-editor"><?=$page->source?></pre>
+        <!-- SUBMIT -->
+        <label>
+            <img class="loader" src="/themes/<?=THEME?>/images/loader.gif" alt="loader" />
+            <input type="hidden" name="source" />
+            <input type="submit" id="ace-submit" value="<?=u::translate('Save')?>" />
+        </label>
+    </form>
+</div>
+<div id="aside">
+    <form>
+        <label>
+            <b><?=u::translate('Page')?>:</b>
+            <select name="pages">
+                <?foreach ($page->pages as $k=>$i):?>
+                <option value="<?=$k?>"<?=$k==$params[2]?'selected="selected"':''?>><?=$k?></option>
+                <?endforeach;?>
+            </select>
+            <i><?=u::translate('Select a page for overwrite')?></i>
+        </label>
+        <label>
+            <b><?=u::translate('Type')?>:</b>
+            <select name="types">
+                <option value="js"<?='js'==$params[3]?'selected="selected"':''?>>JS</option>
+                <option value="css"<?='css'==$params[3]?'selected="selected"':''?>>CSS</option>
+            </select>
+        </label>
+    </form>
+    <hr/>
+    <form method="post" action="/json/<?=TEMPLATE.'/'.implode(',',$params)?>">
+        <p class="label">
+            <b><?=u::translate('Theme Overwriting')?>:</b>  
+            <label>
+                <input type="checkbox" class="switch" name="multilingual" value="1" <?=MULTILINGUAL?'checked':''?>/>
+                       <?=u::translate('Overwrite')?>
+            </label>
+            <i><?=u::translate('You can disable all page overwriting options.')?></i>
+        </p>
+        <!-- SUBMIT -->
+        <label>
+            <img class="loader" src="/themes/<?=THEME?>/images/loader.gif" alt="loader" />
+            <input type="submit" value="<?=u::translate('Save')?>" />
+        </label>
+    </form>
+</div>
+<script src="/lib/ace/ace-noconflict.js" type="text/javascript" charset="utf-8"></script>
+<script src="/lib/ace/theme-twilight-noconflict.js" type="text/javascript" charset="utf-8"></script>
+<script src="/lib/ace/mode-javascript-noconflict.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    var editor;
+    $('#ace-submit').click(function(){
+        $('input[name=source]').val(editor.getSession().getValue());
+    });
+    window.onload = function() {
+        editor = ace.edit("ace-editor");
+        editor.setTheme("ace/theme/twilight");
+        var JavaScriptMode = ace.require("ace/mode/javascript").Mode;
+        editor.getSession().setMode(new JavaScriptMode());
+    };
+    $('select[name=pages], select[name=types]').change(function(){
+        location.href = '/admin/themes,overwrite,' +  $('select[name=pages]').val() +','+ $('select[name=types]').val();
+    });
+</script>
 <?break;
+endswitch;
+break;
 // =============================================================================
 // TEMPLATES 
 // =============================================================================
