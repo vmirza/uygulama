@@ -130,7 +130,10 @@ switch ($params[2]) {
     case 'carousel':
         switch ($params[3]) {
             default:
-                $page->page->$lang->carousel->items = str_replace("'", "\'", json_encode($page->page->$lang->carousel->items));
+                $page->page = $page->page->$lang;
+                $page->page->template = $template;
+                $page->page->carousel->items = addslashes(json_encode($page->page->carousel->items));
+                //$page->page->$lang->carousel->items = str_replace("'", "\'", json_encode($page->page->$lang->carousel->items));
                 break;
             case 'add':
                 $ID = (@count($page->page->$lang->carousel->items) + 1) . (microtime(1) * 10000);

@@ -89,15 +89,12 @@ a.slidezone-prev, a.slidezone-prev:hover {
     color: #333;
 } 
 
-
-
-
+/* CAROUSEL
+------------------------------------------------------------------------------*/
 .carousel {
-    height: 220px;
+    margin: 10px 0;
 }
-.carousel-header {
-    margin-bottom: 10px;
-}
+.carousel-header {}
 .carousel-left, .carousel-right {
     float:left;
     width: 10px;
@@ -118,12 +115,10 @@ a.slidezone-prev, a.slidezone-prev:hover {
     position: relative;
     float:left;   
     width: 920px;
-    height: 220px;
     overflow: hidden;
 }
 .carousel-wagon {
     position: absolute;
-    height: 220px;
     margin-right: -15px; 
 }
 .carousel-item {
@@ -138,82 +133,24 @@ a.slidezone-prev, a.slidezone-prev:hover {
     cursor: pointer;
 }
 .carousel-item article {
+    position: relative;
     padding: 4px;
-    height: 190px;
     background: #fff;
 }
 .carousel-item img {
     display:block;
-    width: 100%;
+    margin-bottom: 5px;
+    width: 200px;
+    height: 150px;
 }
-.carousel-item h2 {
-    margin:0;
-    padding: 5px;
+.carousel-item h2, .carousel-item p {
+    margin:0 !important;
     color: #616161;
     font-size: 12px;
-    font-weight: normal;
     line-height: 18px;
 }
-.carousel-item section {
-    display:none;
-}
-.carousel-section .spot img {
-    display:block;
-    margin-bottom: 10px;
-}
-.carousel-section h2 {
-    margin: 10px 0;
-}
-.carousel-section a {
-    float:right;
-}
-
-
-/* POP
-/*--------------------------------------------------*/
-/*#pop, #pop-overlay {
+.carousel-item a.link {
     position: absolute;
-    top: 0px;
-    width: 100%;
-    height: 100%;
-    z-index: 9000;
+    bottom: 5px;
+    right: 5px;
 }
-#pop-overlay {
-    position: absolute;
-    top: 0px;
-    width: 100%;
-    height: 100%;
-    -webkit-transition: 0.25s opacity;
-    -moz-transition: 0.25s opacity;
-    transition: 0.25s opacity;
-    background: -webkit-radial-gradient(rgba(127, 127, 127, 0.5), rgba(127, 127, 127, 0.5) 35%, rgba(0, 0, 0, 0.7));
-    background: -moz-radial-gradient(rgba(127, 127, 127, 0.5), rgba(127, 127, 127, 0.5) 35%, rgba(0, 0, 0, 0.7));
-    background: -o-radial-gradient(rgba(127, 127, 127, 0.5), rgba(127, 127, 127, 0.5) 35%, rgba(0, 0, 0, 0.7));
-    background: -ms-radial-gradient(rgba(127, 127, 127, 0.5), rgba(127, 127, 127, 0.5) 35%, rgba(0, 0, 0, 0.7));
-}
-#pop-aligner {
-    position: absolute;
-    top: 50%;
-    margin-top: -100px;
-    left: 0;
-    width: 100%;
-    z-index: 9001;
-}
-#pop-border {
-    display: block;
-    margin: 0 auto;
-    width: 420px;
-    padding: 10px;
-    min-height: 200px;
-    border-radius:3px;
-    box-shadow: #111 0 0 2px;
-    background: url(/themes/default/images/mask.png);
-    z-index: 9002;
-}
-#pop-container {
-    position: relative;
-    padding: 10px;
-    border: 1px solid #666;
-    background: #fff;
-}
-*/

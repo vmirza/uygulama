@@ -14,8 +14,9 @@
   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
   FITNESS FOR A PARTICULAR PURPOSE.
   ═══════════════════════════════════════════════════════════════════════════ */
+
 class u {
-    
+
     /**
      *
      * @param string $file (file name without .json extension)
@@ -25,7 +26,7 @@ class u {
     public static function set($file, $content) {
         return file_put_contents($file . '.json', json_encode($content));
     }
-    
+
     /**
      *
      * @param string $file (file name without .json extension)
@@ -127,7 +128,10 @@ class u {
 
     public static function translate($word) {
         $caller = debug_backtrace();
-        list($type, $part) = explode('/', dirname(str_replace($_SERVER['DOCUMENT_ROOT'] . '/', '', $caller[0]['file'])));
+        //list($type, $part) = explode('/', dirname(str_replace($_SERVER['DOCUMENT_ROOT'] . '/', '', $caller[0]['file'])));
+        $root = explode('/',$caller[0]['file']);
+        $part = $root[count($root)-2];        
+        $type = $root[count($root)-3];
         //return $type.','.$part;
         //$lang = LANG;
         $key = sha1($word);
@@ -267,39 +271,47 @@ class u {
     public static function css($get) {
         // $browser = self::browser();
         // SPLIT GET DATA
-        list($theme, $template, $admintemplate) = preg_split('/,/', $get, 3);
+        list($theme, $template, $page, $admintemplate) = preg_split('/,/', $get, 4);
         $info = "/*\n"
                 . "THEME          : " . $theme . "\n"
                 . "TEMPLATE       : " . $template . "\n"
+                . "PAGE           : " . $page . "\n"
                 . "ADMIN TEMPLATE : " . $admintemplate . "\n"
                 . "LAST MODIFIED  : " . @date('D, d M Y H:i:s e', THEMEMODIFIED) . "\n"
                 . "*/\n";
         // TEMPLATE'S CSS FILE
-        $styles = '/*############################################################################*/' . "\n"
+        $css = '/*############################################################################*/' . "\n"
                 . '/*############################# TEMPLATE CSS #################################*/' . "\n"
                 . '/*############################################################################*/' . "\n";
-        $styles .= @ file_get_contents('templates/' . $template . '/default.css') . "\n";
+        $css .= @ file_get_contents('templates/' . $template . '/default.css') . "\n";
         if ($theme) {
             // THEME'S CSS FILE
-            $styles .= '/*############################################################################*/' . "\n"
+            $css .= '/*############################################################################*/' . "\n"
                     . '/*############################### THEME CSS ##################################*/' . "\n"
                     . '/*############################################################################*/' . "\n";
-            $styles .= file_get_contents('themes/' . $theme . '/css/'
+            $css .= file_get_contents('themes/' . $theme . '/css/'
                             . ($template == 'admin' ? 'admin' : 'default' )
                             . '.css') . "\n";
             // BROWSER HACK
             //$styles .= @ file_get_contents('themes/' . $theme . '/browsers/' . $browser . '.css');
         }
+
+        // OVERWRITE CSS
+        $css .= '/*############################################################################*/' . "\n"
+                . '/*############################ OVERWRITE CSS #################################*/' . "\n"
+                . '/*############################################################################*/' . "\n";
+        $css .= @ file_get_contents('data/' . $page . '/overwrite.css');
+
         if ($admintemplate) {
-// ADMIN TEMPLATE'S CSS FILE
-            $styles .= '/*############################################################################*/' . "\n"
+            // ADMIN TEMPLATE'S CSS FILE
+            $css .= '/*############################################################################*/' . "\n"
                     . '/*########################### ADMIN TEMPLATE CSS #############################*/' . "\n"
                     . '/*############################################################################*/' . "\n";
-            $styles .= @ file_get_contents('templates/' . $admintemplate . '/admin.css');
+            $css .= @ file_get_contents('templates/' . $admintemplate . '/admin.css');
         }
         // MINIFY
         if (DEVELOPMENT)
-            return $info . $styles;
+            return $info . $css;
         else
             return $info . preg_replace(array(
                         '!//[^\n\r]+!',
@@ -315,16 +327,17 @@ class u {
                         '\1',
                         '',
                         "}\n",
-                            ), $styles);
+                            ), $css);
     }
 
     public static function js($get) {
         $browser = self::browser();
         // SPLIT GET DATA
-        list($theme, $template, $admintemplate) = preg_split('/,/', $get, 3);
+        list($theme, $template, $page, $admintemplate) = preg_split('/,/', $get, 4);
         $info = "/*\n"
                 . "THEME          : " . $theme . "\n"
                 . "TEMPLATE       : " . $template . "\n"
+                . "PAGE           : " . $page . "\n"
                 . "ADMIN TEMPLATE : " . $admintemplate . "\n"
                 . "LAST MODIFIED  : " . @date('D, d M Y H:i:s e', THEMEMODIFIED) . "\n"
                 . "*/\n";
@@ -356,6 +369,13 @@ class u {
                 . '/*############################## TEMPLATE JS #################################*/' . "\n"
                 . '/*############################################################################*/' . "\n";
         $js .= @ file_get_contents('templates/' . $template . '/default.js') . "\n";
+
+        // OVERWRITE JS
+        $js .= '/*############################################################################*/' . "\n"
+                . '/*############################# OVERWRITE JS #################################*/' . "\n"
+                . '/*############################################################################*/' . "\n";
+        $js .= @ file_get_contents('data/' . $page . '/overwrite.js');
+
         if ($admintemplate) {
 
             // ADMIN TEMPLATE'S JS FILE
@@ -600,7 +620,9 @@ class u {
         setcookie('LANG', LANG, 0, '/');
         if ($_GET['LANG']) {
             header('location: ' . str_replace('/' . LANG . '/', '/', $_SERVER['REQUEST_URI']));
-        } elseif ($_POST['LANG']) { die; }
+        } elseif ($_POST['LANG']) {
+            die;
+        }
 
         define('BROWSER', self::browser());
         // GET PROJECT INFO
@@ -693,7 +715,9 @@ class u {
         //print_r($project); exit;
         if (is_file('themes/' . THEME . '/default.html')) {
             // for admin
-            $template = (!$project->page->page->template || TEMPLATE == $project->page->page->template ? '' : ',' . $project->page->page->template);
+            
+            $page = TEMPLATE == 'admin' ? '': PAGE;
+            $admintemplate = (!$project->page->page->template || TEMPLATE == $project->page->page->template ? '' : ',' . $project->page->page->template);
             $theme = file_get_contents('themes/' . THEME . '/default.html');
             $theme = str_replace(array(
                 '[[AJAX]]',
@@ -723,8 +747,8 @@ class u {
                 DOMAIN,
                 (COOKIELESS ? '//' . COOKIELESS : ''),
                 THEME,
-                THEME . ',' . TEMPLATE . $template,
-                THEME . ',' . TEMPLATE . $template,
+                THEME . ',' . TEMPLATE . ',' . $page . $admintemplate,
+                THEME . ',' . TEMPLATE . ',' . $page . $admintemplate,
                 LANG,
                 PAGE,
                 $project->template,

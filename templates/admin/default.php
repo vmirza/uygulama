@@ -45,11 +45,8 @@ switch ($params[0]) {
             $project->development = isset($_POST['development']) ? ($_POST['development'] ? 1 : 0) : DEVELOPMENT;
             $project->ajax = isset($_POST['ajax']) ? ($_POST['ajax'] ? 1 : 0) : AJAX;
             $project->editorial = isset($_POST['editorial']) ? ($_POST['editorial'] ? 1 : 0) : EDITORIAL;
-            $project->cookieless = isset($_POST['cookieless']) 
-                    ? "'".$_POST['cookieless']."'"
-                    : COOKIELESS;
-            $project->cookieless = $project->cookieless != DOMAIN
-                    ? $project->cookieless : '$_SERVER[\'HTTP_HOST\']';
+            $project->cookieless = isset($_POST['cookieless']) ? "'" . $_POST['cookieless'] . "'" : COOKIELESS;
+            $project->cookieless = $project->cookieless != DOMAIN ? $project->cookieless : '$_SERVER[\'HTTP_HOST\']';
             $project->admin = $_POST['admin'] ? $_POST['admin'] : ADMIN;
             $project->editor = $_POST['editor'] ? $_POST['editor'] : EDITOR;
             if ($_POST['arepassword'] && $_POST['apassword'] != $_POST['arepassword']) {
@@ -65,14 +62,14 @@ switch ($params[0]) {
                     $project->theme = ($_SESSION['THEME'] = ($_POST['theme'] ? $_POST['theme'] : THEME));
                     $project->thememodified = $_POST['thememodified'] ? @date('U') : THEMEMODIFIED;
                     $project->analytics = $_POST['analytics'] ? $_POST['analytics'] : ANALYTICS;
-                    $project->metatags = isset($_POST['metatags']) ? str_replace("'",'',html_entity_decode($_POST['metatags'])) : METATAGS;
+                    $project->metatags = isset($_POST['metatags']) ? str_replace("'", '', html_entity_decode($_POST['metatags'])) : METATAGS;
                     $project->multilingual = isset($_POST['multilingual']) ? ($_POST['multilingual'] ? 1 : 0) : MULTILINGUAL;
                     $project->defaultlang = $_POST['defaultlang'] ? $_POST['defaultlang'] : DEFLANG;
                     if ($_POST['defaultlang']) {
                         // BUG
                         $_SESSION['LANG'] = $project->defaultlang;
                     }
-                    $supportedlangs = str_replace(',,','',implode(',', $_POST['supportedlangs']));
+                    $supportedlangs = str_replace(',,', '', implode(',', $_POST['supportedlangs']));
                     $project->supportedlangs = $supportedlangs ? $supportedlangs : SUPPORTEDLANGS;
                     $project->defaultpage = $_POST['defaultpage'] ? $_POST['defaultpage'] : DEFPAGE;
 
@@ -107,13 +104,14 @@ switch ($params[0]) {
             // }
         }
         break;
-        
+
 // =============================================================================
 // TRANSLATIONS 
 // =============================================================================
-    
+
     case 'translations':
-        if(ACCESS < 3) return;
+        if (ACCESS < 3)
+            return;
         if (in_array($_POST['type'], array('lib', 'templates'))) {
             $path = $_POST['type'] == 'lib' ? 'lib/' : $_POST['type'] . '/' . $_POST['part'] . '/';
             if (u::set($path . 'dictionary/' . $lang, $_POST['word']))
@@ -123,15 +121,18 @@ switch ($params[0]) {
         } else
             $page = u::result('400', u::translate('Undefined type!'));
         break;
-        
+
 // =============================================================================
-// THEMES 
+// THEMES | LOGOS | OVERWRITE
 // =============================================================================
-        
+
     case 'themes':
-        if(ACCESS < 3) return;
+        if (ACCESS < 3)
+            return;
         switch ($params[1]) {
             default:
+                header('location: /' . TEMPLATE . '/' . $params[0] . ',themes');
+            case 'themes':
                 if (u::upload($_FILES['theme']['tmp_name'], 'themes/' . $_FILES['theme']['name'])) {
                     u::extract('themes/' . $_FILES['theme']['name'], 'themes/' . basename($_FILES['theme']['name'], '.zip'));
                     unlink('themes/' . $_FILES['theme']['name']);
@@ -143,33 +144,51 @@ switch ($params[0]) {
 // =============================================================================                
 // LOGO 
 // =============================================================================
-                
-            case 'logo':
-                if (u::upload($_FILES['logo']['tmp_name'], 'data/logo.png')) {
-                    $page = u::result('200', u::translate('Upload succesful!'));
-                } else
-                    $page = u::result('400', u::translate('Upload failed!'));
+
+            case 'logos':
+                if (ACCESS < 3)
+                    return;
+                if (FILE) {
+                    if ($params[2] == 'logo') {
+                        if (u::upload($_FILES['logo']['tmp_name'], 'data/logo.png')) {
+                            $page = u::result('200', u::translate('Upload succesful!'));
+                        } else
+                            $page = u::result('400', u::translate('Upload failed!'));
+                    } else {
+                        if (u::upload($_FILES['favicon']['tmp_name'], 'data/favicon.ico')) {
+                            $page = u::result('200', u::translate('Upload succesful!'));
+                        } else
+                            $page = u::result('400', u::translate('Upload failed!'));
+                    }
+                }
                 break;
-                
+
 // =============================================================================
-// FAVICON 
+// OVERVRITE 
 // =============================================================================
-                
-            case 'favicon':
-                if (u::upload($_FILES['favicon']['tmp_name'], 'data/favicon.ico')) {
-                    $page = u::result('200', u::translate('Upload succesful!'));
-                } else
-                    $page = u::result('400', u::translate('Upload failed!'));
+
+            case 'overwrite':
+                if (ACCESS < 3)
+                    return;
+                if (POST) {
+                    file_put_contents('data/' . $params[2] . '/overwrite.' . $params[3], $_POST['source']);
+                    $page = u::result('200', u::translate('Source is succesful!'));
+                } else {
+                    $page->pages = @self::get('data/project');
+                    $page->pages = $page->pages->pages;
+                    $page->source = htmlentities(@file_get_contents('data/' . $params[2] . '/overwrite.' . $params[3]));
+                }
                 break;
         }
         break;
-        
+
 // =============================================================================
 // TEMPLATES 
 // =============================================================================
-        
+
     case 'templates':
-        if(ACCESS < 3) return;
+        if (ACCESS < 3)
+            return;
         if (TEMPLATEUPLOAD)
             if (u::upload($_FILES['template']['tmp_name'], 'templates/' . $_FILES['template']['name'])) {
                 u::extract('templates/' . $_FILES['template']['name'], 'templates/' . basename($_FILES['template']['name'], '.zip'));
@@ -180,19 +199,20 @@ switch ($params[0]) {
         else
             $page = u::result('600', u::translate('Template upload not allowed'));
         break;
-        
-        
+
+
 // =============================================================================
 // PAGES
 // =============================================================================
-        
+
     case 'pages':
         $project = u::get('data/project');
         if (POST) {
             $_POST['url'] = strtolower($_POST['url']);
             switch ($params[1]) {
                 case 'add':
-                    if(ACCESS < 3) return;
+                    if (ACCESS < 3)
+                        return;
                     // Object Reference
                     $o = & $project->pages;
                     $urn = strtolower($_POST['urn']);
@@ -222,7 +242,8 @@ switch ($params[0]) {
                     $page = u::result('200', u::translate('Navigator saved!'));
                     break;
                 case 'remove':
-                    if(ACCESS < 3) return;
+                    if (ACCESS < 3)
+                        return;
                     if (($ID = $_POST['ID'])) {
                         // Object Reference
                         unset($project->pages->$ID);
@@ -252,9 +273,10 @@ switch ($params[0]) {
 // =============================================================================        
 // INFO 
 // =============================================================================
-        
+
     case 'info':
-        if(ACCESS < 3) return;
+        if (ACCESS < 3)
+            return;
         if (POST) {
             $project = u::get('data/project');
             $project->title->$lang = isset($_POST['title']) ? $_POST['title'] : $project->$lang->title;
@@ -263,7 +285,7 @@ switch ($params[0]) {
             $page = u::result('200', u::translate('Project info saved!'));
         }
         break;
-        
+
 // =============================================================================
 // TEMPLATE 
 // =============================================================================
@@ -297,6 +319,5 @@ switch ($params[0]) {
         unset($_SESSION);
         header('location: /admin');
         break;
-    
 }
 ?>

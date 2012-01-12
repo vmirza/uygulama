@@ -52,7 +52,6 @@
 }
 
 .carousel {
-    height: 155px;
 }
 .carousel .droparea, .carousel img {
     float:left;
@@ -61,6 +60,9 @@
     height:150px; 
 }
 .carousel .droparea { margin: 0 10px; }
+.carousel .textarea {
+    margin:0;
+}
 .carousel textarea {
     float:left;
     width:575px;
