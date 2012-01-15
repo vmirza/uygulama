@@ -281,7 +281,6 @@ break;
 // =============================================================================
 case 'subpage':
 ?>
-<div id="content">
     <form method="post" action="/json/<?=TEMPLATE.'/'.implode(',',$params)?>,update">
         <label>
             <b><?=u::translate('Title')?>:</b>
@@ -299,7 +298,7 @@ case 'subpage':
         <!-- PAGE CONTENT -->
         <label>
             <b><?=u::translate('Content')?>:</b>
-            <textarea id="pagecontent" class="wysiwyg" name="content"><?=($page->page->content)?></textarea>
+            <textarea id="pagecontent" class="wysiwyg" name="content"><?=$page->page->subpage->content?></textarea>
         </label>
         <!-- MEDIA -->
         <label>
@@ -445,8 +444,6 @@ case 'subpage':
     </script>
     <?if(true):?>
     <?endif;?>
-</div>
-<div id="aside"></div>
 <?
 break;
 // =============================================================================

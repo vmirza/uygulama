@@ -269,6 +269,14 @@ nav a.loader {
     padding: 0 0 0 12px;
     background: #fff;
 }
+/*------------------------------------------------------------------------------
+    UBOX
+------------------------------------------------------------------------------*/
+#ubox a {
+    transition: none;
+    -moz-transition: none;
+    -webkit-transition: none;
+}
 
 
 

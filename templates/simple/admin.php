@@ -23,10 +23,10 @@ switch ($params[2]) {
                 if (POST) {
                     // Object Reference
                     $o = & $page->page->$lang;
-                    $o->title = $_POST['title'] ? $_POST['title'] : $o->title;
-                    $o->description = $_POST['description'] ? $_POST['description'] : $o->description;
-                    $o->keywords = $_POST['keywords'] ? $_POST['keywords'] : $o->keywords;
-                    $o->content = $_POST['content'] ? $_POST['content'] : $o->content;
+                    $o->title = isset($_POST['title']) ? $_POST['title'] : $o->title;
+                    $o->description = isset($_POST['description']) ? $_POST['description'] : $o->description;
+                    $o->keywords = isset($_POST['keywords']) ? $_POST['keywords'] : $o->keywords;
+                    $o->content = isset($_POST['content']) ? $_POST['content'] : $o->content;
                     // Media
                     if (is_array($_POST['alt']))
                         foreach ($_POST['alt'] as $k => $i) {
@@ -217,11 +217,10 @@ switch ($params[2]) {
                 if (POST && $urn) {
                     // Object Reference
                     $o = & $page->page->subpages->$urn->$lang;
-                    $o->title = $_POST['title'] ? $_POST['title'] : $o->title;
-                    $o->description = $_POST['description'] ? $_POST['description'] : $o->description;
-                    $o->keywords = $_POST['keywords'] ? $_POST['keywords'] : $o->keywords;
-                    $o->content = $_POST['content'] ? $_POST['content'] : $o->content;
-                    // Media
+                    $o->title = isset($_POST['title']) ? $_POST['title'] : $o->title;
+                    $o->description = isset($_POST['description']) ? $_POST['description'] : $o->description;
+                    $o->keywords = isset($_POST['keywords']) ? $_POST['keywords'] : $o->keywords;
+                    $o->content = isset($_POST['content']) ? $_POST['content'] : $o->content;
                     if (is_array($_POST['alt']))
                         foreach ($_POST['alt'] as $k => $i) {
                             if ($o->media->$k) {

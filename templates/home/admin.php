@@ -197,7 +197,7 @@ switch ($params[2]) {
                 $page = u::result('200', u::translate('carousel data is updated!'));
                 break;
             case 'sort':
-                $object = & $page->page->$lang->carousel;
+                $object = & $page->page->$lang->carousel->items;
                 $dump = new stdClass();
                 foreach (explode(',', $_POST['order']) as $i) {
                     $dump->$i = $object->$i;

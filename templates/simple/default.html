@@ -5,8 +5,8 @@
     <?= $page->title ? '<h2>'.TITLE.'</h2> / <h1>'. $page->title.'</h1>' : '<h1>'.TITLE.'</h1>'?>
 </hgroup>
 <?if(!$page->layout || $page->layout == 'single'):?>
-    <h2 class="none"><?=$page->description?></h2>
-    <?=$page->content?>
+<h2 class="none"><?=$page->description?></h2>
+<?=$page->content?>
 <?else:?>
 <div id="aside" class="<?=$page->layout?>">
     <menu>
@@ -21,7 +21,14 @@
 </div>
 <?endif;?>
 <div class="clearfix"></div>
-<script src="//<?=COOKIELESS?>/lib/js/ubox-min.js"></script>
+<script src="//<?=COOKIELESS?>/lib/js/ubox.js"></script>
 <script>
-    $('#page .thumb').ubox();
+    $().ready(function(){
+        $('#page .thumb').ubox({
+            loader  :'/themes/'+ THEME +'/images/loader.gif',
+            previous:'/themes/'+ THEME +'/images/ubox-sprite.png',
+            next    :'/themes/'+ THEME +'/images/ubox-sprite.png',
+            close   :'/themes/'+ THEME +'/images/ubox-sprite.png'
+        })
+    });
 </script>
