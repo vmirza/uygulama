@@ -1,0 +1,832 @@
+<?php
+$params = preg_split('/,/', PARAMS);
+// HEADER & MENU
+////////////////////////////////////////////////////////////////////////////////
+?>
+<div id="header-admin">
+    <div id="header-container-admin">
+        <div id="logo-admin">
+            <a id="uygulama" href="/admin">
+                <img src="/templates/admin/images/logo.png" alt="uygulama" />
+            </a> 
+            <a id="project-link" href="/" target="_blank">
+                <?php
+                echo u::translate('View Project');
+                ;
+                ?>
+            </a>
+        </div>
+        <div id="language-bar">
+            <i><?php echo u::translate('Current language'); ?>: <?php echo LOCALE; ?> . <?php echo LANG; ?></i>
+            <?php if (MULTILINGUAL): ?> ||
+                <?php foreach (u::languages() as $k => $i): ?>
+                    <a data-lang="<?php echo $k; ?>" title="<?php echo $i; ?>" <?php echo $k == LANG ? 'class="selected"' : ''; ?>><?php echo $k; ?></a>
+                <?php endforeach; ?>
+        <?php endif; ?>
+        </div>
+<?php if (ACCESS >= 1): ?>
+            <a href="/admin/logout" id="logout"><?php echo u::translate('Logout'); ?></a>
+            <div id="nav-admin">
+                <a href="/admin/project"><?php echo u::translate('Project'); ?></a>
+    <?php if (ACCESS >= 3): ?>
+                    <a href="/admin/languages"><?php echo u::translate('Language Settings'); ?></a>
+                    <a href="/admin/themes"><?php echo u::translate('Themes'); ?></a>
+                    <a href="/admin/templates"><?php echo u::translate('Page Templates'); ?></a>
+    <?php endif; ?>
+                <a href="/admin/pages"><?php echo u::translate('Pages'); ?></a>
+            </div>
+<?php endif; ?>
+    </div>
+</div>
+<script>
+    function changeLang(i){
+        tool.post({'url':'/json/<?php echo TEMPLATE; ?>/language','data':'lang='+i,'onComplete':function(){ location.href = location.href;}});
+    }
+</script>
+<?php
+// PAGES
+////////////////////////////////////////////////////////////////////////////////
+if (!ACCESS):
+// =============================================================================
+// LOGIN 
+// =============================================================================
+    ?>
+    <div id="content"></div>
+    <div id="aside">
+        <form method="post" action="/json/<?php echo TEMPLATE; ?>/login">
+            <h2><?php echo u::translate('Administration Panel'); ?></h2>
+            <label>
+                <b><?php echo u::translate('Username'); ?>:</b>
+                <input id="username" name="username" type="text" />
+            </label>
+
+            <label>
+                <b><?php echo u::translate('Password'); ?>:</b>
+                <input id="password" name="password" type="password" />
+            </label>
+            <label>
+                <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+                <input type="submit" value="<?php echo u::translate('Login'); ?>" />
+            </label>
+        </form>
+    </div>
+    <script>$(document).ready(function() { $('input[name=username]').focus(); });</script>
+    <?php
+else:
+// =============================================================================
+// CHECK IS WRITABLE
+// =============================================================================
+    if (!is_writable('data/config.php')) {
+        ?>
+        <h1><?php echo u::translate('Error: <u>data/</u> folder is not writable. Please set <u>data/</u> folder writing permission.'); ?></h1>
+        <?php
+    } else
+        switch ($params[0]):
+// =============================================================================
+// PROJECT 
+// =============================================================================
+            default:
+            case 'project':
+                switch ($params[1]):
+// =============================================================================
+// DASHBOARD 
+// =============================================================================
+                    default:
+                        ?>
+                        <div id="content" class="dashboard">
+                            <a href="/admin/project,accounts"><?php echo u::translate('Accounts'); ?></a>
+                        <?php if (ACCESS >= 3): ?>
+                                <a href="/admin/themes"><?php echo u::translate('Themes'); ?></a>
+                                <a href="/admin/templates"><?php echo u::translate('Page Templates'); ?></a>
+                            <?php endif; ?>
+                            <a href="/admin/pages"><?php echo u::translate('Pages'); ?></a>
+                        <?php if (ACCESS >= 3): ?>
+                                <a href="/admin/languages"><?php echo u::translate('Languages'); ?></a>     
+                                <a href="/admin/languages,translations"><?php echo u::translate('Translations'); ?></a>     
+                                <a href="/admin/project,settings"><?php echo u::translate('Settings'); ?></a>     
+                                <a href="/admin/project,seo"><?php echo u::translate('SEO'); ?></a>
+                        <?php endif; ?>
+                        </div>
+                        <script>
+                            $('#content a').each(function(i){
+                                $('<b>').css({
+                                    'background-position': '-'+(i%4*64)+'px -'+(Math.floor(i/4)*64)+'px'
+                                }).prependTo(this);
+                            });
+                        </script>
+                        <?php
+                        break;
+// =============================================================================
+// SETTINGS 
+// =============================================================================
+                    case 'settings':
+                        ?>
+                        <div id="content">
+                            <form method="post" action="/json/<?php echo TEMPLATE; ?>/project">
+                                <h3><?php echo u::translate('Settings'); ?></h3>
+                                <div class="label">
+                                    <label>
+                                        <input type="checkbox" class="switch" name="ajax" value="1" <?php echo AJAX ? 'checked' : ''; ?>>
+                        <?php echo u::translate('AJAX Mode'); ?>
+                                    </label>
+                                    <i><?php echo u::translate('If AJAX mode is activated, system work with XHTTP request.'); ?></i>
+                                </div>
+                                <div class="label">
+                                    <label>
+                                        <input type="checkbox" class="switch" name="development" value="1" <?php echo DEVELOPMENT ? 'checked' : ''; ?>>
+                        <?php echo u::translate('Development Mode'); ?>
+                                    </label>
+                                    <i><?php echo u::translate('If development mode is activated, system does not compress js, css, html files.'); ?></i>
+                                </div>
+                                <label>
+                                    <b>Analytics:</b> 
+                                    <input type="text" name="analytics" value="<?php echo ANALYTICS; ?>" />
+                                    <i><a href="http://www.google.com/analytics/" target="_blank"><?php echo u::translate('Google Analytics Code'); ?></a>
+                        <?php echo u::translate('[ex: #UA-012346]'); ?></i> 
+                                </label>
+                                <label>
+                                    <b><?php echo u::translate('Cookieless Domain:'); ?></b> 
+                                    <input type="text" name="cookieless" value="<?php echo COOKIELESS; ?>" />
+                                    <i><a href="http://cookieless.org/" target="_blank">http://cookieless.org</a> <?php echo u::translate('[ex: uygulama.cookieless.org]'); ?></i>
+                                </label>
+                                <label>
+                                    <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+                                    <input type="submit" value="<?php echo u::translate('Save'); ?>" />
+                                </label>
+                            </form>
+                        </div>
+                        <script>
+                            /*
+                             *$(document).ready(function() { tool.form(1); });
+                            function developmentmode(el){
+                                if(el.checked){
+                                    $('development').set('value',1);
+                                } else {
+                                    $('development').set('value',0);
+                                }
+                            }*/
+                        </script>
+                        <?php
+                        break;
+// =============================================================================
+// ACCOUNTS 
+// =============================================================================
+                    case 'accounts':
+                        ?>
+                        <div id="content">
+                            <form method="post" action="/json/<?php echo TEMPLATE . '/' . implode(',', $params); ?>">
+                        <?php if (ACCESS >= 3): ?>
+                                    <h3><?php echo u::translate('Project Admin'); ?></h3>
+                                    <p>The user access and change all project data.</p>
+                                    <label>
+                                        <b><?php echo u::translate('Username'); ?>:</b>
+                                        <input name="admin" type="text" value="<?php echo ADMIN; ?>" />
+                                        <i><?php echo u::translate('Admin username'); ?></i>
+                                    </label>
+                                    <label>
+                                        <b><?php echo u::translate('Password'); ?>:</b>
+                                        <input name="apassword" type="password"/>
+                                        <i><?php echo u::translate('Admin password'); ?></i>
+                                    </label>
+                                    <label>
+                                        <b><?php echo u::translate('Confirm password'); ?>:</b>
+                                        <input name="arepassword" type="password"/>
+                                    </label> 
+                                    <hr>
+                                    <h3><?php echo u::translate('Project Editor'); ?></h3>
+                                    <p>The user just access and change pages data.</p>
+                                    <div class="label">
+                                        <b><?php echo u::translate('Editorial'); ?>:</b>
+                                        <label>
+                                            <input type="checkbox" name="editorial" value="1" <?php echo EDITORIAL ? 'checked' : ''; ?>>
+                            <?php echo u::translate('Do you want to create an editor account?'); ?>
+                                        </label>
+                                        <i><?php echo u::translate('Editors only have access to page editing.'); ?></i>
+                                    </div>
+                                    <div id="editorial-panel">
+                                    <?php
+                                    else: echo '<div>';
+                                    endif;
+                                    ?>
+                                    <label>
+                                        <b><?php echo u::translate('Username'); ?>:</b>
+                                        <input name="editor" type="text" value="<?php echo EDITOR; ?>" />
+                                        <i><?php echo u::translate('Editor username'); ?></i>
+                                    </label> 
+                                    <label>
+                                        <b><?php echo u::translate('Password'); ?>:</b>
+                                        <input name="epassword" type="password"/>
+                                        <i><?php echo u::translate('Editor password'); ?></i>
+                                    </label> 
+                                    <label>
+                                        <b><?php echo u::translate('Confirm password'); ?>:</b>
+                                        <input name="erepassword" type="password"/>
+                                    </label> 
+                                </div>
+                                <label>
+                                    <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+                                    <input type="submit" value="<?php echo u::translate('Save'); ?>" />
+                                </label>
+                            </form>
+                        </div>
+                        <script>
+                            $(document).ready(function(){ 
+                                $('#editorial-panel').css('display', $('input[name=editorial]').attr('checked')?'block':'none');
+                                $('input[name=editorial]').change(function(){
+                                    $('#editorial-panel').slideToggle();
+                                });
+                            });
+                        </script>
+                        <?php
+                        break;
+// =============================================================================
+// SEO 
+// =============================================================================
+                    case 'seo':
+                        ?>
+                        <div id="content">
+                            <form method="post" action="/json/<?php echo TEMPLATE; ?>/project">
+                                <h3><?php echo u::translate('Search Engine Optimization'); ?></h3>
+                                <label>
+                                    <b><?php echo u::translate('Additional Meta Tags'); ?></b> 
+                                    <textarea name="metatags"><?php echo $page->metatags; ?></textarea>
+                                    <i><a href="http://www.google.com/webmasters/" target="_blank">http://www.google.com/webmasters/</a></i>
+                                    <i><a href="http://siteexplorer.search.yahoo.com/" target="_blank">http://siteexplorer.search.yahoo.com/</a></i>
+                                    <i><a href="http://www.alexa.com/siteowners" target="_blank">http://www.alexa.com/siteowners</a></i>
+                                </label>
+                                <label>
+                                    <b>robots.txt:</b> 
+                                    <textarea name="robots"><?php echo $page->robots; ?></textarea>
+                                    <i><a href="http://www.google.com/support/webmasters/bin/answer.py?hl=en&answer=156449&from=35237&rd=1" target="_blank">robots.txt</a></i>
+                                </label>
+                                <label>
+                                    <b>humans.txt:</b> 
+                                    <textarea name="humans"><?php echo $page->humans; ?></textarea>
+                                    <i><a  href="http://humanstxt.org/" target="_blank">humans.txt</a></i>
+                                </label>
+                                <label>
+                                    <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+                                    <input type="submit" value="<?php echo u::translate('Save'); ?>" />
+                                </label>
+                                <div class="clearfix"></div>
+                                <hr>
+                                <h3><?php echo u::translate('Site Maps'); ?></h3>
+                                <label class="sitemaps">
+                                    <b><?php echo u::translate('Sitemap'); ?>:</b>
+                                    <a class="item" href="http://<?php echo DOMAIN; ?>/sitemap.xml" target="_blank">http://<?php echo DOMAIN; ?>/sitemap.xml</a>
+                                    <i><?php echo u::translate('Project sitemap url'); ?></i>
+                                    <b><?php echo u::translate('Sitemap index'); ?>:</b>
+                                    <a class="item" href="http://<?php echo DOMAIN; ?>/sitemapindex.xml" target="_blank">http://<?php echo DOMAIN; ?>/sitemapindex.xml</a>
+                                    <i><?php echo u::translate('Project sitemap index url for subpages'); ?></i>
+                                    <b><?php echo u::translate('Sitemap ping'); ?>:</b>
+                                    <a class="item" href="http://www.google.com/webmasters/tools/ping?sitemap=http://<?php echo DOMAIN; ?>/sitemap.xml" target="_blank"><?php echo u::translate('Google sitemap ping'); ?></a>
+                                    <a class="item" href="http://search.yahooapis.com/SiteExplorerService/V1/ping?sitemap=http://<?php echo DOMAIN; ?>/sitemap.xml" target="_blank"><?php echo u::translate('Yahoo sitemap ping'); ?></a>
+                                    <a class="item" href="http://webmaster.live.com/webmaster/ping.aspx?siteMap=http://<?php echo DOMAIN; ?>/sitemap.xml" target="_blank"><?php echo u::translate('Bing sitemap ping'); ?></a>
+                                    <a class="item" href="http://www.google.com/webmasters/tools/ping?sitemap=http://<?php echo DOMAIN; ?>/sitemapindex.xml" target="_blank"><?php echo u::translate('Google sitemap index ping'); ?></a>
+                                    <a class="item" href="http://search.yahooapis.com/SiteExplorerService/V1/ping?sitemap=http://<?php echo DOMAIN; ?>/sitemapindex.xml" target="_blank"><?php echo u::translate('Yahoo sitemap index ping'); ?></a>
+                                    <a class="item" href="http://webmaster.live.com/webmaster/ping.aspx?siteMap=http://<?php echo DOMAIN; ?>/sitemapindex.xml" target="_blank"><?php echo u::translate('Bing sitemap index ping'); ?></a>
+                                    <i><?php echo u::translate('Search Engine\'s sitemap ping links'); ?></i>
+                                </label>
+                            </form>
+                        </div>
+                        <?php
+                        break;
+                endswitch;
+                ?>
+                <div id="aside">
+                    <div id="menu-admin">
+                        <a href="/admin/project,accounts" class="<?php echo $params[1] == 'accounts' ? ' selected' : ''; ?>"><?php echo u::translate('Accounts'); ?></a>
+                        <?php if (ACCESS >= 3): ?>
+                            <a href="/admin/project,settings" class="<?php echo $params[1] == 'settings' ? ' selected' : ''; ?>"><?php echo u::translate('Settings'); ?></a>
+                            <a href="/admin/project,seo" class="<?php echo $params[1] == 'seo' ? ' selected' : ''; ?>"><?php echo u::translate('SEO'); ?></a>
+                <?php endif; ?>
+                    </div>
+                </div>
+                <?php
+                break;
+// =============================================================================
+// LANGUAGES 
+// =============================================================================
+            case 'languages':
+                switch ($params[1]):
+                    default:
+                        ?>
+                        <div id="content">
+                            <form method="post" action="/json/<?php echo TEMPLATE; ?>/languages">
+                                <h3><?php echo u::translate('Languages'); ?></h3>
+                                <p class="label">
+                                    <b><?php echo u::translate('Multilingual'); ?>:</b>  
+                                    <label>
+                                        <input type="checkbox" class="switch" name="multilingual" value="1" <?php echo MULTILINGUAL ? 'checked' : ''; ?>/>
+                        <?php echo u::translate('Is the project multilingual?'); ?>
+                                    </label>
+                                </p>
+                                <label>
+                                    <b><?php echo u::translate('Default language'); ?>:</b> 
+                                    <select id="defaultlang" name="defaultlang">
+                                        <?php foreach (u::languages() as $k => $i): ?>
+                                            <option value="<?php echo $k; ?>"<?php echo $k == DEFLANG ? 'selected="selected"' : ''; ?>><?php echo $i; ?></option>
+                        <?php endforeach; ?>
+                                    </select>
+                                    <i><?php echo u::translate('If the client browser does not support selected languages, the project will be displayed in default language.'); ?></i>
+                                </label>
+                                <hr>
+                                <div class="checkboxes">
+                                    <h3><?php echo u::translate('Supported languages'); ?>:</h3>
+                                    <?php
+                                    foreach (u::languages(true) as $k => $i): // onchange="deflangs(this)"
+                                        $checked = ($k == DEFLANG || strstr(SUPPORTEDLANGS, $k)) ? 'checked="checked"' : '';
+                                        ?>
+                                        <label>
+                                            <input id="<?php echo $k; ?>" name="supportedlangs[]" type="checkbox" value="<?php echo $k; ?>" title="<?php echo $i; ?>" <?php echo $checked; ?> />
+                                        <?php echo $i; ?>
+                                        </label>
+                        <?php endforeach; ?>
+                                    <i><?php echo u::translate('Check the languages you wish to write in.'); ?></i>
+                                </div>
+                                <label>
+                                    <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+                                    <input type="submit" value="<?php echo u::translate('Save'); ?>" />
+                                </label>
+                            </form>
+                        </div>
+                        <div id="aside">
+                            <div id="menu-admin">
+                                <a class="selected" href="/admin/languages"><?php echo u::translate('Languages'); ?></a>
+                                <a href="/admin/languages,translations"><?php echo u::translate('Translations'); ?></a>
+                            </div>
+                        </div>
+                        <script>
+                            //var _complete = function(){ location.href =location.href; };
+                            $(document).ready(function() { 
+                                $('.checkboxes :checkbox').change(function(){
+                                    if($(this).attr('checked'))
+                                        $('#defaultlang')
+                                    .append('<option value="'+$(this).val()+'">'+$(this).attr('title')+'</option>');
+                                    else
+                                        $('#defaultlang option[value='+ $(this).val() +']').remove();
+                                });
+                            });
+                        </script>
+                        <?php
+                        break;
+// =============================================================================
+//  - TRANSLATIONS 
+// =============================================================================
+                    case 'translations':
+                        $params[2] = $params[2] ? $params[2] : 'lib';
+                        $params[3] = $params[3] ? $params[3] : 'uygulama';
+                        ?>
+                        <div id="content">
+                            <form method="post" action="/json/<?php echo TEMPLATE; ?>/translations">
+                                <h3><?php echo u::translate('Translations'); ?></h3>
+                                <label>
+                                    <b><?php echo u::translate('Dictionaries'); ?>:</b>
+                                    <select name="dictionary">
+                                        <?php foreach (u::dictionaries() as $k => $i): ?>
+                                            <option value="<?php echo $i; ?>"<?php echo $i == $params[2] . ',' . $params[3] ? 'selected="selected"' : ''; ?>><?php echo $k; ?></option>
+                        <?php endforeach; ?>
+                                    </select>
+                                    <i><?php echo u::translate('Select a template or a library dictionary'); ?></i>
+                                </label>
+                                <h3><?php echo sprintf(u::translate('Dictionary of %s'), $params[2] . ', ' . $params[3]); ?></h3>
+                                <?php
+                                if (($gettext = u::gettext($params[2], $params[3])))
+                                    foreach ($gettext as $key => $word):
+                                        ?>
+                                        <label class="translation">
+                                            <b><?php echo $word->def; ?></b>
+                                            <textarea name="word[<?php echo $key; ?>]" class="translation"><?php echo $word->$lang; ?></textarea>
+                                        </label>
+                            <?php endforeach; ?>
+                                <label>
+                                    <input name="type" type="hidden" value="<?php echo $params[2]; ?>" />
+                                    <input name="part" type="hidden" value="<?php echo $params[3]; ?>" />
+                                    <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader"/>
+                                    <input type="submit" value="<?php echo u::translate('Save'); ?>" />
+                                </label>
+                            </form>
+                        </div>
+                        <div id="aside">
+                            <div id="menu-admin">
+                                <a href="/admin/languages"><?php echo u::translate('Languages'); ?></a>
+                                <a class="selected" href="/admin/languages,translations"><?php echo u::translate('Translations'); ?></a>
+                            </div>
+                        </div>
+                        <script>
+                            $(document).ready(function() { 
+                                $('select[name=dictionary]').change(function(){
+                                    location.href = "/admin/languages,translations,"+$(this).val();
+                                });
+                            });
+                        </script>
+                        <?php
+                        break;
+                endswitch;
+                break;
+// =============================================================================
+// THEMES & LOGOS & JS OVERWRITE & CSS OVERWRITE
+// =============================================================================
+            case 'themes':
+                ?>
+                <div id="submenu">
+                    <a href="/<?php echo TEMPLATE . '/' . $params[0]; ?>,themes"><?php echo u::translate("Theme"); ?></a>
+                    <a href="/<?php echo TEMPLATE . '/' . $params[0]; ?>,logos"><?php echo u::translate("Logos"); ?></a>
+                    <a href="/<?php echo TEMPLATE . '/' . $params[0]; ?>,overwrite"><?php echo u::translate("Overwrite"); ?></a>
+                </div>
+                <?php
+                switch ($params[1]):
+// =============================================================================
+// - THEMES
+// =============================================================================
+                    case 'themes':
+                        ?>
+                        <div id="content" class="themes">
+                            <h3><?php echo u::translate('Themes'); ?></h3>
+                        <?php foreach (u::themes() as $i): ?>
+                                <div class="theme">
+                                    <img src="/themes/<?php echo $i; ?>/thumb.png" alt="<?php echo $i; ?>" class="theme" />
+                                    <span><?php echo $i; ?></span>
+                                    <a class="button" href="/<?php echo $i; ?>.thm" target="_blank"><?php echo u::translate('Preview'); ?></a>
+                                    <a class="button theme" rel="<?php echo $i; ?>"><?php echo u::translate('Apply'); ?></a>
+                                    <a class="button" href="http://<?php echo DOMAIN; ?>/themes/<?php echo $i; ?>.zip"><?php echo u::translate('Download'); ?></a>
+                                </div>
+                        <?php endforeach; ?>
+                        </div>
+                        <div id="aside">
+                            <form>
+                                <h3 class="top"><?php echo u::translate('Current Theme'); ?></h3>
+                                <div id="selected">
+                                    <div class="theme">
+                                        <img class="theme" src="/themes/<?php echo THEME; ?>/thumb.png" alt="active theme" >
+                                        <span><?php echo THEME; ?></span>
+                                    </div>
+                                </div>
+                                <hr>
+                                <h3><?php echo u::translate('Upload New Theme'); ?></h3>
+                                <label>
+                                    <b><?php echo u::translate('Theme'); ?>:</b>
+                                    <input type="file" name="theme" 
+                                           data-post="/json/admin/<?php echo $params[0]; ?>,<?php echo $params[1]; ?>" 
+                                           data-complete="(function(){ location.href = location.href; })()" 
+                                           data-type="zip"
+                                           title="<?php echo u::translate('Browse'); ?>" 
+                                           multiple>
+                                </label>
+                            </form>
+                        </div>
+                        <script>
+                            $('a.theme').click(function(e){
+                                var item = $(this);
+                                tool.post({'url':'/json/<?php echo TEMPLATE; ?>/theme','data':'page=<?php echo $params[1]; ?>&theme='+item.attr('rel'),'onComplete':function(r){
+                                        if(r.code == 200) {
+                                            $('#selected').empty();
+                                            var theme = $('<div>').addClass('theme').appendTo($('#selected'));
+                                            $('<img>').attr({'class':'theme','src':item.parent().find('img').attr('src')}).appendTo(theme);
+                                            $('<span>').html(item.parent().find('span').html()).appendTo(theme);
+                                            $('#selected').hide().fadeIn();
+                                        } else tool.result(r.code,r.status,r.message,r.fields,r.redirect,r.debug);
+                                    }
+                                });
+                            });
+                        </script>
+                        <?php
+                        break;
+// =============================================================================
+// - LOGOS
+// =============================================================================
+                    case 'logos':
+                        ?>
+                        <div id="content">
+                            <form>
+                                <h3><?php echo u::translate('Logo and Icons'); ?></h3>
+                                <label>
+                                    <b><?php echo u::translate('Logo'); ?>:</b>
+                                    <img src="/logo.png" alt="logo" />
+                                    <input type="file" name="logo" 
+                                           data-post="/json/<?php echo TEMPLATE . '/' . implode(',', $params); ?>,logo" 
+                                           data-complete="reload(forma)" 
+                                           data-type="jpg,png,gif"
+                                           title="<?php echo u::translate('Browse'); ?>" 
+                                           multiple>
+                                </label>
+                                <label>
+                                    <b><?php echo u::translate('Favicon'); ?>:</b>
+                                    <img src="/favicon.ico" alt="favicon" />
+                                    <input type="file" name="favicon" 
+                                           data-post="/json/<?php echo TEMPLATE . '/' . implode(',', $params); ?>,favicon" 
+                                           data-complete="reload(forma)" 
+                                           data-type="ico"
+                                           title="<?php echo u::translate('Browse'); ?>" 
+                                           multiple>
+                                </label>
+                            </form>
+                        </div>
+                        <script>
+                            var reload = function(forma){
+                                forma.area.prev().attr('src',forma.area.prev().attr('src')+'?'+Math.random());
+                            };
+                        </script>
+                        <?php
+                        break;
+// =============================================================================
+// - OVERWRITE
+// =============================================================================
+                    case 'overwrite':
+                        ?>
+                        <div id="content">
+                            <form method="post" action="/json/<?php echo TEMPLATE . '/' . implode(',', $params); ?>">
+                                <pre id="ace-editor"><?php echo $page->source; ?></pre>
+                                <!-- SUBMIT -->
+                                <label>
+                                    <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+                                    <input type="hidden" name="source" />
+                                    <input type="submit" id="ace-submit" value="<?php echo u::translate('Save'); ?>" />
+                                </label>
+                            </form>
+                        </div>
+                        <div id="aside">
+                            <form>
+                                <label>
+                                    <b><?php echo u::translate('Page'); ?>:</b>
+                                    <select name="pages">
+                                        <?php foreach ($page->pages as $k => $i): ?>
+                                            <option value="<?php echo $k; ?>"<?php echo $k == $params[2] ? 'selected="selected"' : ''; ?>><?php echo $k; ?></option>
+                        <?php endforeach; ?>
+                                    </select>
+                                    <i><?php echo u::translate('Select a page for overwrite'); ?></i>
+                                </label>
+                                <label>
+                                    <b><?php echo u::translate('Type'); ?>:</b>
+                                    <select name="types">
+                                        <option value="js"<?php echo 'js' == $params[3] ? 'selected="selected"' : ''; ?>>JS</option>
+                                        <option value="css"<?php echo 'css' == $params[3] ? 'selected="selected"' : ''; ?>>CSS</option>
+                                    </select>
+                                </label>
+                            </form>
+                            <hr/>
+                            <form method="post" action="/json/<?php echo TEMPLATE . '/' . implode(',', $params); ?>">
+                                <p class="label">
+                                    <b><?php echo u::translate('Theme Overwriting'); ?>:</b>  
+                                    <label>
+                                        <input type="checkbox" class="switch" name="multilingual" value="1" <?php echo MULTILINGUAL ? 'checked' : ''; ?>/>
+                        <?php echo u::translate('Overwrite'); ?>
+                                    </label>
+                                    <i><?php echo u::translate('You can disable all page overwriting options.'); ?></i>
+                                </p>
+                                <!-- SUBMIT -->
+                                <label>
+                                    <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+                                    <input type="submit" value="<?php echo u::translate('Save'); ?>" />
+                                </label>
+                            </form>
+                        </div>
+                        <script src="/lib/ace/ace-noconflict.js" type="text/javascript" charset="utf-8"></script>
+                        <script src="/lib/ace/theme-twilight-noconflict.js" type="text/javascript" charset="utf-8"></script>
+                        <script src="/lib/ace/mode-javascript-noconflict.js" type="text/javascript" charset="utf-8"></script>
+                        <script>
+                            var editor;
+                            $('#ace-submit').click(function(){
+                                $('input[name=source]').val(editor.getSession().getValue());
+                            });
+                            window.onload = function() {
+                                editor = ace.edit("ace-editor");
+                                editor.setTheme("ace/theme/twilight");
+                                var JavaScriptMode = ace.require("ace/mode/javascript").Mode;
+                                editor.getSession().setMode(new JavaScriptMode());
+                            };
+                            $('select[name=pages], select[name=types]').change(function(){
+                                location.href = '/admin/themes,overwrite,' +  $('select[name=pages]').val() +','+ $('select[name=types]').val();
+                            });
+                        </script>
+                        <?php
+                        break;
+                endswitch;
+                break;
+// =============================================================================
+// TEMPLATES 
+// =============================================================================
+            case 'templates':
+                ?>
+                <div id="content" class="templates">
+                    <h3 class="top"><?php echo u::translate('Page Templates'); ?></h3>
+                <?php foreach (u::templates() as $i): ?>
+                        <div class="template">
+                            <img src="/templates/<?php echo $i; ?>/thumb.png" alt="<?php echo $i; ?>" class="template" />
+                            <span><?php echo $i; ?></span>
+                            <a class="button" href="http://<?php echo COOKIELESS; ?>/templates/<?php echo $i; ?>.zip"><?php echo u::translate('Download'); ?></a>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <div id="aside">
+                <?php if (TEMPLATEUPLOAD): ?>
+                        <form>
+                            <h3><?php echo u::translate('Upload New Page Template'); ?></h3>
+                            <label>
+                                <b><?php echo u::translate('Template'); ?>:</b>
+                                <input type="file" name="template" 
+                                       data-post="/json/admin/<?php echo $params[0]; ?>,<?php echo $params[1]; ?>" 
+                                       data-complete="(function(){ location.href = location.href; })()" 
+                                       data-type="zip"
+                                       title="<?php echo u::translate('Browse'); ?>" 
+                                       multiple>
+                            </label>
+                        </form>
+                <?php endif; ?>
+                </div>
+                <?php
+                break;
+// =============================================================================
+// PAGES 
+// =============================================================================
+            case 'pages':
+//echo '<pre>'.print_r($page,1).'</pre>';
+                ?>
+                <div id="content">
+                    <form method="post" action="/json/<?php echo TEMPLATE; ?>/pages,set">
+                        <h3><?php echo u::translate('Pages'); ?></h3>
+                        <div id="items"></div>
+                        <label>
+                            <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+                            <input type="submit" value="<?php echo u::translate('Save'); ?>" />
+                        </label>
+                        <div class="clearfix"></div>
+                    </form>
+                <?php if (ACCESS >= 3): ?>
+                        <form method="post" action="/json/<?php echo TEMPLATE; ?>/pages,add" data-complete="item(forma.result)" >
+                            <h3><?php echo u::translate('New Page'); ?></h3>
+                            <label>
+                                <input type="text" name="urn" value="" />
+                                <i><?php echo u::translate('Write a page name what do you want to add.'); ?></i>
+                            </label>
+                            <label>
+                                <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+                                <input type="submit" value="<?php echo u::translate('Add'); ?>" />
+                            </label>
+                        </form>
+                    <?php endif; ?>
+                </div>
+                <div id="aside">
+                <?php if (ACCESS >= 3): ?>
+                        <form method="post" action="/json/<?php echo TEMPLATE; ?>/info">
+                            <h3><?php echo u::translate('Project Info'); ?></h3>
+                            <label>
+                                <b><?php echo u::translate('Title'); ?>:</b> 
+                                <input type="text" name="title" value="<?php echo $page->title->$lang; ?>" />
+                            </label>
+                            <label>
+                                <b><?php echo u::translate('Copyright'); ?>:</b> 
+                                <input type="text" name="copyright" value="<?php echo $page->copyright->$lang; ?>" />
+                            </label>
+                            <label>
+                                <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+                                <input type="submit" value="<?php echo u::translate('Save'); ?>" />
+                            </label>
+                        </form>
+                <?php endif; ?>
+                    <div class="clearfix"></div>
+                    <div id="menu-admin">
+                        <a href="/data.zip"><?php echo sprintf(u::translate('Click here to backup the %s folder.'), '<b>/data</b>'); ?></a>
+                    </div>
+                </div>
+                <script>
+                    var LANG = '<?php echo $lang; ?>';
+                    var DEFPAGE = '<?php echo DEFPAGE; ?>';
+                    var ACCESS = '<?php echo ACCESS; ?>';
+                    var item = function(i){
+                        $('<div id="'+i.ID+'" class="item">').append(
+                        '<b class="handler">&nbsp;</b>'
+                        ,'<input type="text" name="title['+i.ID+']" value="'+ (i[LANG] ? i[LANG] : '') +'">'
+                        ,$('<a href="/admin/page,'+i.ID+'">')
+                        .html('<?php echo u::translate("Edit"); ?>')
+                        ,ACCESS >= 3 ? $('<a class="remove">').html('<?php echo u::translate("Remove"); ?>')
+                        .click(function(){
+                            remove(0,i.ID)
+                        }):''
+                        ,$('<a class="select">')
+                        .html(i.ID == DEFPAGE ? 
+                            '<?php echo u::translate("Main Page"); ?>' 
+                        : '<?php echo u::translate("Set as Main Page"); ?>')
+                        .addClass(i.ID == DEFPAGE ? 'selected' : '')
+                        .click(function(){
+                            def(i.ID)
+                        })
+                        ,'<i>urn: '+i.ID+'</i>')
+                        .appendTo('#items');
+                        $('input[name=urn]').val('');
+                    };
+                    var remove = function(confirm, ID){
+                        if(confirm == 1){
+                            $.ajax({
+                                url     : '/json/<?php echo TEMPLATE . "/" . implode(",", $params); ?>,remove',
+                                type    : 'post',
+                                data    : 'ID='+ID,
+                                dataType: 'json',
+                                success : function(r){
+                                    if(r.code == 200) $('#'+ID).fadeOut();
+                                }
+                            }); 
+                        } else tool.confirm('<?php echo u::translate("Confirmation"); ?>',
+                        '<?php echo u::translate("You lose the item\'s all data!"); ?>','remove(1,\''+ID+'\')');
+                    };
+                    var def = function(ID){
+                        tool.post({'url':'/json/<?php echo TEMPLATE; ?>/defpage','data':'defaultpage='+ID,'onComplete':function(r){
+                                if(r.code == 200) { 
+                                    $('a.select').html("<?php echo u::translate('Set as Main Page'); ?>").removeClass('selected');
+                                    $('#item'+ID+' .select').html("<?php echo u::translate('Main Page'); ?>").addClass('selected');
+                                } else tool.result(r.code,r.status,r.message,r.fields,r.redirect,r.debug);
+                            }
+                        });
+                    }
+                    $(document).ready(function() { 
+                        var items = $.parseJSON('<?php echo $page->pages; ?>');
+                        for(var i in items){
+                            if(!items[i]) items[i] = {};
+                            items[i].ID = i;
+                            item(items[i]);
+                        };
+                        tool.sortable('items','b',{'url':'/json/<?php echo TEMPLATE . "/" . implode(",", $params); ?>,sort'});
+                        $('input[name=urn]').keydown(function(e){
+                            if(e.keyCode == 13) return;
+                            else {
+                                var c = e.keyCode;
+                                if((c >= 35 && c <= 39) ||(c >= 48 && c <= 57) || (c >= 65 && c <= 90)
+                                    || c == 8
+                                    || c == 46
+                                    || c == 189
+                                    || c == 190) return true;
+                                return false;
+                            }
+                        }); 
+                    });
+                </script>
+                <?php
+                break;
+// =============================================================================
+// PAGE 
+// =============================================================================
+            case 'page':
+                ?>
+                <?php if ($page->page->template): ?>
+                    <i id="page-info">( URI = <?php echo $params[1]; ?>, <?php echo u::translate('Page Template'); ?> = <?php echo $page->page->template; ?> )</i>
+                    <?php
+                    u::template($page->page, 'templates/' . $page->page->template . '/admin.phtml');
+                    ?>
+                <?php else: ?>
+                    <div id="content" class="templates">
+                        <h3><?php echo u::translate('Choose Page Template'); ?></h3>
+                    <?php foreach (u::templates() as $i): ?>
+                            <div class="template">
+                                <img src="/templates/<?php echo $i; ?>/thumb.png" alt="<?php echo $i; ?>" class="template" />
+                                <span><?php echo $i; ?></span>
+                                <a data-value="<?php echo $i; ?>"><?php echo u::translate('Choose'); ?></a>
+                            </div>
+                    <?php endforeach; ?>
+                    </div>
+                    <div id="aside" class="selected-template">
+                        <form methot="post" action="/json/<?php echo TEMPLATE; ?>/template" data-complete="complete()">
+                            <h3><?php echo u::translate('Page Template'); ?></h3>
+                            <div id="selected"></div>
+                            <input type="hidden" name="page" value="<?php echo $params[1]; ?>" >
+                            <input type="hidden" name="template">
+                            <label>
+                                <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+                                <input type="submit" value="<?php echo u::translate('Apply Template >'); ?>" >
+                                <i>* <?php echo u::translate('To chage the template after applied, the page must be deleted and recreated entirely.'); ?></i>
+                            </label>
+                        </form>
+                    </div>
+                    <script>
+                        var complete = function(){ location.href = location.href; };
+                        $('.template a').click(function(){
+                            $('#selected').empty()
+                            .append($('<div class="template">')
+                            .append($('<img>',{'class':'template','src':$(this).parent().find('img').attr('src')})));
+                            $('input[name=template]').val($(this).data('value'));
+                            $('input[type=submit]').fadeIn();
+                        });
+                    </script>
+                <?php
+                endif;
+                break;
+        endswitch;
+endif;
+// FOOTER
+////////////////////////////////////////////////////////////////////////////////
+?>
+<div class="clearfix"></div>
+<div id="footer-admin">
+    <div id="footer-container-admin">
+        Uygulama version 1.00  
+        <a href="http://uygulama.net/docs"><?php echo u::translate('Documents'); ?></a> 
+        <a href="http://gokercebeci.com/tutorials/uygulama"><?php echo u::translate('Tutorials'); ?></a> 
+        <a href="http://gokercebeci.com/feedbacks/uygulama"><?php echo u::translate('Feedbacks'); ?></a> 
+        <a href="https://github.com/gokercebeci/uygulama">Github</a> 
+        <a href="http://twitter.com/#!/uygulamaproject">Twitter</a>  
+    </div>
+</div>
+
+<script src="/lib/js/forma.js"></script>
+<script src="/lib/js/droparea.js"></script>
+<script src="/lib/tinymce/jquery.tinymce.js"></script>
+<link rel="stylesheet" href="/themes/<?php echo THEME; ?>/css/forma.css" />

@@ -1,4 +1,4 @@
-<?
+<?php
 if(POST) {
     $page->page->$lang->link = $_POST['link'];
     u::set('data/'.$params[1].'/content', $page->page);

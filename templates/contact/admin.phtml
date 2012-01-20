@@ -1,0 +1,210 @@
+<div id="submenu">
+    <a href="/<?php echo TEMPLATE.'/'.$params[0].','.$params[1]; ?>,content"><?php echo u::translate("Content"); ?></a>
+    <a href="/<?php echo TEMPLATE.'/'.$params[0].','.$params[1]; ?>,contactform"><?php echo u::translate("Contact Form"); ?></a>
+    <a href="/<?php echo TEMPLATE.'/'.$params[0].','.$params[1]; ?>,map"><?php echo u::translate("Map"); ?></a>
+    <a href="/<?php echo TEMPLATE.'/'.$params[0].','.$params[1]; ?>,layout"><?php echo u::translate("Layout"); ?></a>
+</div>
+<script>
+    var LANG = '<?php echo LANG; ?>';
+    var THEME = '<?php echo THEME; ?>';
+    var TEMPLATE = '<?php echo TEMPLATE; ?>';
+    var url = '/json/<?php echo TEMPLATE; ?>/<?php echo $params[0]; ?>,<?php echo $params[1]; ?>,<?php echo $params[2]; ?>';
+    var lang = ({
+        'position':'<?php echo u::translate("Position"); ?>',
+        'size':'<?php echo u::translate("Size"); ?>',
+        'thumbnail':'<?php echo u::translate("Thumbnail"); ?>',
+        'original_size':'<?php echo u::translate("Orginal size"); ?>',
+        'left':'<?php echo u::translate("Left"); ?>',
+        'right':'<?php echo u::translate("Right"); ?>',
+        'none':'<?php echo u::translate("None"); ?>',
+        'add':'<?php echo u::translate("ADD"); ?>',
+        'delete':'<?php echo u::translate("Delete"); ?>',
+        'edit':'<?php echo u::translate("Edit"); ?>',
+        'delete_image':'<?php echo u::translate("Delete Image"); ?>',
+        'are_you_sure':'<?php echo u::translate("Are you sure delete the imege?"); ?>'
+    });
+</script>
+<?php
+switch($params[2]):
+// =============================================================================
+// CONTENT
+// =============================================================================
+case 'content':?>
+<form method="post" action="/json/<?php echo TEMPLATE.'/'.implode(',',$params); ?>,update">
+    <label>
+        <b><?php echo u::translate('Title'); ?>:</b>
+        <input type="text" name="title" value="<?php echo $page->page->title; ?>" />
+        <i>urn: <?php echo $page->page->urn; ?></i>
+    </label>
+    <label>
+        <b><?php echo u::translate('Description'); ?>:</b>
+        <input type="text" name="description" value="<?php echo $page->page->description; ?>" />
+    </label>
+    <label>
+        <b><?php echo u::translate('Keywords'); ?>:</b>
+        <input type="text" name="keywords" value="<?php echo $page->page->keywords; ?>" />
+    </label>
+    <label>
+        <b><?php echo u::translate('Content'); ?>:</b>
+        <textarea id="pagecontent" class="wysiwyg" name="content"><?php echo ($page->page->content); ?></textarea>
+    </label>
+    <!-- MEDIA -->
+    <label>
+        <b><?php echo u::translate('Media'); ?>:</b>
+        <input type="file" name="media" 
+               data-post="/json/<?php echo TEMPLATE.'/'.implode(',',$params); ?>,upload"
+               data-complete="item(forma.result)" 
+               data-type="jpg,gif,png"
+               title="<?php echo u::translate('Browse'); ?>" 
+               multiple>
+    </label>
+    <div id="items"></div>
+    <div class="clearfix"></div>
+    <!-- SUBMIT -->
+    <label>
+        <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+        <input type="submit" value="<?php echo u::translate('Save'); ?>" />
+    </label>
+</form>
+<script>
+    var media;
+    var mediaInsert = function(options){
+        if(options){
+            var content = ''
+                +'<div id="mediaalign"><h4>'+lang.position+'</h4>'
+                +'<a class="mediaalign left" data-value="left"><b></b>'+lang.left+'</a>'
+                +'<a class="mediaalign right" data-value="right"><b></b>'+lang.right+'</a>'
+                +'<a class="mediaalign default" data-value="default"><b></b>'+lang.none+'</a>'
+                +'</div><div id="mediasize"><h4>'+lang.size+'</h4>'
+                +'<a class="mediasize thumb" data-value="thumb"><b></b>'+lang.thumbnail+'</a>'
+                +'<a class="mediasize original" data-value="original"><b></b>'+lang.original_size+'</a>'
+                +'</div><button id="media">'+lang.add+'</button>'
+                +'<div class="clearfix"></div></form>';
+            $(document).keydown(function(e){
+                if(e.keyCode == 32){
+                    mediaInsert();
+                    $('#result').empty();
+                    $(document).removeEvents();
+                }
+            });
+            tool.pop(content);
+            $('a.mediaalign, a.mediasize').click(function(){
+                if($(this).hasClass('mediaalign')){
+                    $('a.mediaalign').removeClass('selected');  
+                    $('#media').data('align',$(this).data('value'));
+                } else {
+                    $('a.mediasize').removeClass('selected');  
+                    $('#media').data('size',$(this).data('value'));
+                }                 
+                $(this).addClass('selected');
+            });
+            $('#media').click(function(){
+                mediaInsert();
+            });
+        } else {
+            var content = ($('#media').data('size') == 'original')
+                ? '<img src="/'+media.src+'" alt="'+media.alt+'"/>'
+            : '<a href="/'+media.src+'" class="thumb" title="'+media.alt+'">'
+                +'<img src="/'+media.thumb+'" alt="'+media.alt+'" class="'+$('#media').data('align')+'" />'
+                +'</a>';
+            //editor.selection.insertContent(content);
+            $('#pagecontent').wysiwyg('insertHtml', content);
+            $('#result').empty();
+        }
+    };
+    var item = function(i){
+        $('<div id="'+i.ID+'" class="item">').append(
+        '<b class="handler">&nbsp;</b>'
+        ,'<img src="/'+ i.thumb +'" alt="'+ i.alt +'">'
+        ,'<label>'
+            +'<b><?php echo u::translate("Title"); ?></b>'
+            +'<input type="text" name="alt['+i.ID+']" value="'+ i.alt +'">'
+            +'<i>'+i.ID+'</i>'
+            +'</label>'
+        ,$('<a class="remove">').html('<?php echo u::translate("Remove"); ?>')
+        .click(function(){
+            remove(0,i.ID)
+        })
+        ,$('<a class="add">').html('<?php echo u::translate("Add in the content"); ?>')
+        .click(function(){
+            media = i;
+            mediaInsert(1);
+            $('form').forma();
+        })
+        ,'<div class="clearfix"></div>'
+    ).appendTo('#items');
+    };
+    var complete = function(result, file, input, area){
+        item(result);
+    };
+    var remove = function(confirm, ID){
+        if(confirm == 1){
+            $.ajax({
+                url     : '/json/<?php echo TEMPLATE."/".implode(",",$params); ?>,remove',
+                type    : 'post',
+                data    : 'ID='+ID,
+                dataType: 'json',
+                success : function(r){
+                    if(r.code == 200) $('#'+ID).fadeOut();
+                }
+            }); 
+        } else tool.confirm('<?php echo u::translate("Confirmation"); ?>',
+        '<?php echo u::translate("You lose the item\'s all data!"); ?>','remove(1,\''+ID+'\')');
+    };
+    var removeall = function(confirm){
+        if(confirm == 1){
+            $.ajax({
+                url     : '/json/<?php echo TEMPLATE."/".implode(",",$params); ?>,removeall',
+                type    : 'post',
+                data    : 'removeall=true',
+                dataType: 'json',
+                success : function(r){
+                    if(r.code == 200) $('.item').fadeOut();
+                }
+            }); 
+        } else tool.confirm('<?php echo u::translate("Confirmation"); ?>',
+        '<?php echo u::translate("You lose all items data!"); ?>','removeall(1)');
+    };
+    $('a[class=removeall]').click(removeall);
+    $(document).ready(function(){
+        $('#title').bind('keyup', 'blur',function(){
+            var u = urn($(this).val());
+            $('input[name=urn]').val(u);
+            $('#urn').html(u);
+        });
+        var items = $.parseJSON('<?php echo $page->page->media; ?>');
+        for(var i in items){
+            items[i].ID = i;
+            item(items[i]);
+        };
+        tool.sortable('items','b',{'url':'/json/<?php echo TEMPLATE."/".implode(",",$params); ?>,sort'});
+    });        
+</script>
+<?php
+break;
+// =============================================================================
+// CONTACT FORM
+// =============================================================================
+case 'contactform':?>
+<form method="post" action="/json/<?php echo TEMPLATE.'/'.implode(',',$params); ?>,update">
+    <label>
+        <b><?php echo u::translate('Recipient Email'); ?>:</b>
+        <input type="text" name="recipient" value="<?php echo $page->page->recipient; ?>" />
+    </label>
+    <!-- SUBMIT -->
+    <label>
+        <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+        <input type="submit" value="<?php echo u::translate('Save'); ?>" />
+    </label>
+</form>
+<?php
+break;
+// =============================================================================
+// LAYOUT
+// =============================================================================
+case 'layout':
+?>
+<?php
+break;
+endswitch;
+?>

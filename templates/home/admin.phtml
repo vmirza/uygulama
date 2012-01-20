@@ -1,0 +1,271 @@
+<div id="submenu">
+    <a href="/<?php echo TEMPLATE.'/'.$params[0].','.$params[1]; ?>,info"><?php echo u::translate("Page Info"); ?></a>
+    <a href="/<?php echo TEMPLATE.'/'.$params[0].','.$params[1]; ?>,slide"><?php echo u::translate("Slide"); ?></a>
+    <a href="/<?php echo TEMPLATE.'/'.$params[0].','.$params[1]; ?>,carousel"><?php echo u::translate("Carousel"); ?></a>
+</div>
+<?php
+switch($params[2]):
+// =============================================================================
+// INFO
+// =============================================================================
+case 'info':?>
+<form method="post" action="/json/<?php echo TEMPLATE.'/'.implode(',',$params); ?>">
+    <label>
+        <b><?php echo u::translate('Title'); ?>:</b>
+        <input type="text" name="title" value="<?php echo $page->page->$lang->title; ?>" />
+    </label>
+    <label>
+        <b><?php echo u::translate('Description'); ?>:</b>
+        <input type="text" name="description" value="<?php echo $page->page->$lang->description; ?>" />
+    </label>
+    <label>
+        <b><?php echo u::translate('Keywords'); ?>:</b>
+        <input type="text" name="keywords" value="<?php echo $page->page->$lang->keywords; ?>" />
+    </label>
+    <!-- PAGE CONTENT -->
+    <label>
+        <b><?php echo u::translate('Content'); ?>:</b>
+        <textarea id="pagecontent" class="wysiwyg" name="content"><?php echo ($page->page->$lang->content); ?></textarea>
+    </label>
+    <!-- SUBMIT -->
+    <label>
+        <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+        <input type="submit" value="<?php echo u::translate('Save'); ?>" />
+    </label>
+</form>
+<?php
+break;
+// =============================================================================
+// SLIDE
+// =============================================================================
+case 'slide':
+?>
+<div class="slidezone">
+    <input type="file" class="droparea" name="slide" 
+           data-post="/json/<?php echo TEMPLATE.'/'.implode(',',$params); ?>,upload" 
+           data-width="940" data-height="300" data-crop="true" />
+</div>
+<form method="post" action="/json/<?php echo TEMPLATE.'/'.implode(',',$params); ?>,update">
+    <div id="items"></div>
+    <label>
+        <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+        <input type="submit" value="<?php echo u::translate('Save'); ?>" />
+    </label>
+    <div class="clearfix"></div>
+    <div class="tool">
+        <a class="removeall"><?php echo u::translate('Remove all items'); ?></a>
+    </div>
+</form>
+<script src="/lib/js/droparea.js"></script>
+<script>
+    var item = function(i){
+        $('<div id="'+i.ID+'" class="item">').append(
+        '<b class="handler">&nbsp;</b>',
+        '<img src="/'+ i.thumb +'" alt="'+ i.alt +'">',
+        '<label>'
+            +'<b><?php echo u::translate("Title"); ?></b>'
+            +'<input type="text" name="title['+i.ID+']" value="'+ i.alt +'">'
+            +'</label>',
+        '<label>'
+            +'<b><?php echo u::translate("Link"); ?></b>'
+            +'<input type="text" name="link['+i.ID+']" value="'+ (i.link || '') +'" placeholder="http://" />'
+            +'</label>',
+        $('<a class="remove">').html('<?php echo u::translate("Remove"); ?>')
+        .click(function(){
+            remove(0,i.ID)
+        })
+        ,'<div class="clearfix"></div>'
+    ).appendTo('#items');
+    }; 
+    var remove = function(confirm, ID){
+        if(confirm == 1){
+            $.ajax({
+                url     : '/json/<?php echo TEMPLATE."/".implode(",",$params); ?>,remove',
+                type    : 'post',
+                data    : 'ID='+ID,
+                dataType: 'json',
+                success : function(r){
+                    if(r.code == 200) $('#'+ID).fadeOut();
+                }
+            }); 
+        } else tool.confirm('<?php echo u::translate("Confirmation"); ?>',
+        '<?php echo u::translate("You lose the slide data!"); ?>','remove(1,\''+ID+'\')');
+    }; 
+    var removeall = function(confirm){
+        if(confirm == 1){
+            $.ajax({
+                url     : '/json/<?php echo TEMPLATE."/".implode(",",$params); ?>,removeall',
+                type    : 'post',
+                data    : 'removeall=true',
+                dataType: 'json',
+                success : function(r){
+                    if(r.code == 200) $('.item').fadeOut();
+                }
+            }); 
+        } else tool.confirm('<?php echo u::translate("Confirmation"); ?>',
+        '<?php echo u::translate("You lose all slide data!"); ?>','removeall(1)');
+    };
+    $('a[class=removeall]').click(removeall);
+    // Calling jQuery "droparea" plugin
+    $('.droparea').droparea({
+        'instructions': '<?php echo u::translate("drop an image or click to browse"); ?>',
+        'init' : function(result){
+            //console.log('custom init',result);
+        },
+        'start' : function(result){
+            //console.log('custom start',result);
+        },
+        'error' : function(result, input, area){
+            $('<div>').html(result.error).prependTo(area); 
+            return 0;
+            //console.log('custom error',result.error);
+        },
+        'complete' : function(result, file, input, area){
+            if((/image/i).test(file.type)){
+                area.find('img').remove();
+                //area.data('value',result.filename);
+                area.append($('<img>',{'src': '/' + result.src}));
+                item(result);
+            } 
+            //console.log('custom complete',result);
+        }
+    });
+    $(document).ready(function(){
+        var items = $.parseJSON('<?php echo $page->page->slide; ?>');
+        for(var i in items){
+            items[i].ID = i;
+            item(items[i]);
+        };
+        tool.sortable('items','b',{'url':'/json/<?php echo TEMPLATE."/".implode(",",$params); ?>,sort'});
+    });
+</script>
+<?php
+break;
+// =============================================================================
+// CAROUSEL
+// =============================================================================
+case 'carousel':?>
+<form method="post" action="/json/<?php echo TEMPLATE.'/'.implode(',',$params); ?>,update">
+    <label>
+        <b><?php echo u::translate('Title'); ?>:</b>
+        <input type="text" name="title[main]" placeholder="<?php echo u::translate('not nessery.'); ?>" value="<?php echo $page->page->carousel->title; ?>" />
+    </label>
+    <hr/>
+    <div id="items"></div>
+    <label>
+        <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+        <input type="submit" value="<?php echo u::translate('Save'); ?>" />
+    </label>
+    <div class="clearfix"></div>
+    <div class="tool">
+        <a class="add"><?php echo u::translate('Add new item'); ?></a>
+        <a class="removeall"><?php echo u::translate('Remove all items'); ?></a>
+    </div>
+</form>
+<script>
+    var remove = function(confirm, ID){
+        if(confirm == 1){
+            $.ajax({
+                url     : '/json/<?php echo TEMPLATE."/".implode(",",$params); ?>,remove',
+                type    : 'post',
+                data    : 'ID='+ID,
+                dataType: 'json',
+                success : function(r){
+                    if(r.code == 200) $('#'+ID).fadeOut();
+                }
+            }); 
+        } else tool.confirm('<?php echo u::translate("Confirmation"); ?>',
+        '<?php echo u::translate("You lose the slide data!"); ?>','remove(1,'+ID+')');
+    };
+    var item = function(i){
+        return $('<div id="'+i.ID+'" class="item carousel">').append(
+        '<b class="handler">&nbsp;</b>',
+        '<input type="file" class="droparea" name="'+i.ID+'"'
+            +'data-post="/json/<?php echo TEMPLATE."/".implode(",",$params); ?>,upload"'
+            +'data-value="'+ (i.thumb ?  '/'+i.thumb : '') +'"'
+            +'data-width="400" />',
+        '<label>'
+            +'<input type="text" name="title['+i.ID+']" value="'+ (i.title || '') +'" placeholder="<?php echo u::translate("Title"); ?>"/>'
+            +'</label>',
+        '<label>'
+            +'<input type="text" name="link['+i.ID+']" value="'+ (i.link || '') +'" placeholder="http://"/>'
+            +'</label>',
+        '<label>'
+            +'<textarea name="content['+i.ID+']" placeholder="<?php echo u::translate("content ..");; ?>">'+ (i.content || '') +'</textarea>'
+            +'</label>',
+        $('<a class="remove">').html('<?php echo u::translate("Remove"); ?>')
+        .click(function(){
+            remove(0,i.ID)
+        })
+        ,'<div class="clearfix"></div>'
+    ).appendTo('#items');
+    };  
+    var removeall = function(confirm){
+        if(confirm == 1){
+            $.ajax({
+                url     : '/json/<?php echo TEMPLATE."/".implode(",",$params); ?>,removeall',
+                type    : 'post',
+                data    : 'removeall=true',
+                dataType: 'json',
+                success : function(r){
+                    if(r.code == 200) $('.item').fadeOut();
+                }
+            }); 
+        } else tool.confirm('<?php echo u::translate("Confirmation"); ?>',
+        '<?php echo u::translate("You lose all slide data!"); ?>','removeall(1)');
+    };
+    $('a[class=removeall]').click(removeall);
+    var add = function(){
+        $.ajax({
+            url     : '/json/<?php echo TEMPLATE."/".implode(",",$params); ?>,add',
+            type    : 'post',
+            dataType: 'json',
+            success : function(r){
+                if(r.code == 200) {
+                    setdroparea(item(r.message));
+                    $('form').forma();
+                    //$('.item').fadeOut();
+                }
+            }
+        });
+    };
+    $('a[class=add]').click(add);
+    var setdroparea = function(i){
+        // Calling jQuery "droparea" plugin
+        i.find('.droparea').droparea({
+            'instructions': '<?php echo u::translate("drop an image or click to browse"); ?>',
+            'init' : function(result){
+                //console.log('custom init',result);
+            },
+            'start' : function(result){
+                //console.log('custom start',result);
+            },
+            'error' : function(result, input, area){
+                $('<div>').html(result.error).prependTo(area); 
+                return 0;
+                //console.log('custom error',result.error);
+            },
+            'complete' : function(result, file, input, area){
+                if((/image/i).test(file.type)){
+                    area.find('img').remove();
+                    //area.data('value',result.filename);
+                    area.append($('<img>',{'src': '/' + result.thumb +'?'+ Math.random()}));
+                } 
+                //console.log('custom complete',result);
+            }
+        });
+    };
+    $(document).ready(function(){
+        var items = $.parseJSON('<?php echo $page->page->carousel->items; ?>');
+        for( var i in items){
+            if(items[i] == null) items[i] = {};
+            items[i].ID = i;
+            setdroparea(item(items[i]));
+        };
+        tool.sortable('items','b',{'url':'/json/<?php echo TEMPLATE."/".implode(",",$params); ?>,sort'});
+    });
+</script>
+<?php
+break;
+endswitch;
+?>

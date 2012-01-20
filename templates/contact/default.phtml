@@ -1,0 +1,51 @@
+<hgroup><h1><?php echo TITLE; ?></h1></hgroup>
+<h2 class="none"><?php echo DESCRIPTION; ?></h2>
+<div id="content">
+    <form method="post" action="/json/<?php echo TEMPLATE; ?>/<?php echo PAGE; ?>,send">
+        <label>
+            <b><?php echo u::translate('Name'); ?>:</b>
+            <input type="text" name="name" maxlength="120" />
+        </label>
+        <label>
+            <b><?php echo u::translate('E-mail'); ?>:</b>
+            <input type="text" name="email" maxlength="160" />
+        </label>
+        <label>
+            <b><?php echo u::translate('Message'); ?>:</b>
+            <textarea name="message"></textarea>
+        </label>
+        <label>
+            <b><?php echo u::translate('Security code'); ?>:</b>
+            <img id="captchaImg" src="/captcha.png" alt="captcha" />
+            <input type="text" name="captcha" maxlength="4" />
+            <i><?php=sprintf(u::translate('to change the security code %s click here. %s')
+                ,'<a onclick="contact.captcha();">','</a>')?>
+                <?php echo u::translate('security code is  not case sensitive.'); ?></i>
+        </label>
+        <!-- SUBMIT -->
+        <label>
+            <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+            <input type="submit" value="<?php echo u::translate('Send'); ?>" />
+        </label>
+    </form>
+    <script> 
+        $(document).ready(function() { 
+            $('form').forma();
+        }); 
+    </script>
+    <div class="clearfix"></div>
+</div>
+<div id="aside">
+    <?php echo $page->$lang->content; ?>
+    <div id="links">
+        <?php if($page->$lang->links) foreach($page->$lang->links as $i):?>
+        <a href="<?php echo $i->url; ?>" title="<?php echo $i->title; ?>">
+            <img src="http://geticon.org/of/<?php echo $i->url; ?>" alt="<?php echo $i->title; ?>" />
+            <?php echo $i->title; ?>
+        </a>
+        <?php endforeach;?>
+    </div>
+</div>
+<div class="clearfix"></div>
+<script src="/lib/js/forma.js"></script>
+<link rel="stylesheet" href="/themes/<?php echo THEME; ?>/css/forma.css" />

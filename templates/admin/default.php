@@ -1,4 +1,4 @@
-<?
+<?php
 
 $params = preg_split('/,/', PARAMS, 6);
 if (ACCESS && ACCESS < 3 && !in_array($params[0], array('page', 'pages', 'logout')))
@@ -307,7 +307,7 @@ switch ($params[0]) {
         $deflang = DEFLANG;
         $page = new stdClass();
         $page->page = u::get('data/' . $params[1] . '/content');
-        include 'templates/' . $page->page->template . '/admin.php';
+        $page->page = u::template($page->page, 'templates/' . $page->page->template . '/admin.php');
         break;
 
 // =============================================================================

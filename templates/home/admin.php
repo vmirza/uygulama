@@ -1,4 +1,4 @@
-<?
+<?php
 
 $lang = LANG;
 $template = $page->page->template;

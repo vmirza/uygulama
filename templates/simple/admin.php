@@ -1,4 +1,4 @@
-<?
+<?php
 
 $template = $page->page->template;
 switch ($params[2]) {

@@ -1,0 +1,14 @@
+<div id="content">
+    <form method="post" action="/json/<?php echo TEMPLATE.'/'.implode(',',$params); ?>">
+        <label>
+            <b><?php echo u::translate('Link'); ?>:</b> 
+            <input type="text" name="link" value="<?php echo $page->page->$lang->link; ?>" />
+        </label>
+        <!-- SUBMIT -->
+        <label>
+            <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+            <input type="submit" value="<?php echo u::translate('Save'); ?>" />
+        </label>
+    </form>
+</div>
+<div id="aside"></div>

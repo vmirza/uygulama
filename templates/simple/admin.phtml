@@ -1,0 +1,482 @@
+<div id="submenu">
+    <a href="/<?php echo TEMPLATE.'/'.$params[0].','.$params[1]; ?>,content"><?php echo u::translate("Content"); ?></a>
+    <a href="/<?php echo TEMPLATE.'/'.$params[0].','.$params[1]; ?>,subpages"><?php echo u::translate("Subpages"); ?></a>
+    <a href="/<?php echo TEMPLATE.'/'.$params[0].','.$params[1]; ?>,layout"><?php echo u::translate("Layout"); ?></a>
+</div>
+<script>
+    var LANG = '<?php echo LANG; ?>';
+    var url = '/json/<?php echo TEMPLATE; ?>/<?php echo $params[0]; ?>,<?php echo $params[1]; ?>,<?php echo $params[2]; ?>';
+    var lang = ({
+        'position':'<?php echo u::translate("Position"); ?>',
+        'size':'<?php echo u::translate("Size"); ?>',
+        'thumbnail':'<?php echo u::translate("Thumbnail"); ?>',
+        'original_size':'<?php echo u::translate("Orginal size"); ?>',
+        'left':'<?php echo u::translate("Left"); ?>',
+        'right':'<?php echo u::translate("Right"); ?>',
+        'none':'<?php echo u::translate("None"); ?>',
+        'add':'<?php echo u::translate("ADD"); ?>',
+        'delete':'<?php echo u::translate("Delete"); ?>',
+        'edit':'<?php echo u::translate("Edit"); ?>',
+        'delete_image':'<?php echo u::translate("Delete Image"); ?>',
+        'are_you_sure':'<?php echo u::translate("Are you sure delete the imege?"); ?>'
+    });
+</script>
+<?php
+switch($params[2]):
+// =============================================================================
+// CONTENT
+// =============================================================================
+case 'content':?>
+<form method="post" action="/json/<?php echo TEMPLATE.'/'.implode(',',$params); ?>,update">
+    <label>
+        <b><?php echo u::translate('Title'); ?>:</b>
+        <input type="text" name="title" value="<?php echo $page->page->title; ?>" />
+        <i>urn: <?php echo $page->page->urn; ?></i>
+    </label>
+    <label>
+        <b><?php echo u::translate('Description'); ?>:</b>
+        <input type="text" name="description" value="<?php echo $page->page->description; ?>" />
+    </label>
+    <label>
+        <b><?php echo u::translate('Keywords'); ?>:</b>
+        <input type="text" name="keywords" value="<?php echo $page->page->keywords; ?>" />
+    </label>
+    <!-- PAGE CONTENT -->
+    <label>
+        <b><?php echo u::translate('Content'); ?>:</b>
+        <textarea id="pagecontent" class="wysiwyg" name="content"><?php echo ($page->page->content); ?></textarea>
+    </label>
+    <!-- MEDIA -->
+    <label>
+        <b><?php echo u::translate('Media'); ?>:</b>
+        <input type="file" name="media" 
+               data-post="/json/<?php echo TEMPLATE.'/'.implode(',',$params); ?>,upload"
+               data-complete="item(forma.result)" 
+               data-type="jpg,gif,png"
+               title="<?php echo u::translate('Browse'); ?>" 
+               multiple>
+    </label>
+    <div id="items"></div>
+    <div class="clearfix"></div>
+    <!-- SUBMIT -->
+    <label>
+        <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+        <input type="submit" value="<?php echo u::translate('Save'); ?>" />
+    </label>
+</form>
+<script>
+    var media;
+    var mediaInsert = function(options){
+        if(options){
+            var content = ''
+                +'<div id="mediaalign"><h4>'+lang.position+'</h4>'
+                +'<a class="mediaalign left" data-value="left"><b></b>'+lang.left+'</a>'
+                +'<a class="mediaalign right" data-value="right"><b></b>'+lang.right+'</a>'
+                +'<a class="mediaalign default" data-value="default"><b></b>'+lang.none+'</a>'
+                +'</div><div id="mediasize"><h4>'+lang.size+'</h4>'
+                +'<a class="mediasize thumb" data-value="thumb"><b></b>'+lang.thumbnail+'</a>'
+                +'<a class="mediasize original" data-value="original"><b></b>'+lang.original_size+'</a>'
+                +'</div><button id="media">'+lang.add+'</button>'
+                +'<div class="clearfix"></div></form>';
+            $(document).keydown(function(e){
+                if(e.keyCode == 32){
+                    mediaInsert();
+                    $('#result').empty();
+                    $(document).removeEvents();
+                }
+            });
+            tool.pop(content);
+            $('a.mediaalign, a.mediasize').click(function(){
+                if($(this).hasClass('mediaalign')){
+                    $('a.mediaalign').removeClass('selected');  
+                    $('#media').data('align',$(this).data('value'));
+                } else {
+                    $('a.mediasize').removeClass('selected');  
+                    $('#media').data('size',$(this).data('value'));
+                }                 
+                $(this).addClass('selected');
+            });
+            $('#media').click(function(){
+                mediaInsert();
+            });
+        } else {
+            var content = ($('#media').data('size') == 'original')
+                ? '<img src="/'+media.src+'" alt="'+media.alt+'"/>'
+            : '<a href="/'+media.src+'" class="thumb" title="'+media.alt+'">'
+                +'<img src="/'+media.thumb+'" alt="'+media.alt+'" class="'+$('#media').data('align')+'" />'
+                +'</a>';
+            $('#pagecontent').tinymce().execCommand('mceInsertContent', false, content);
+            $('#result').empty();
+        }
+    };
+    /*tool.inlineedits();
+    tool.form();
+    var projecttitle = ('<?php echo TITLE; ?>'.length+3);
+    $('#title').keyup(function(){
+        tool.lengthcheck('title',5,70-projecttitle);
+    });
+    tool.lengthcheck('title',5,70-projecttitle);
+    $('#description').keyup(function(){
+        tool.lengthcheck('description',70,120);
+    });
+    tool.lengthcheck('description',70,120);
+     */
+    var item = function(i){
+        $('<div id="'+i.ID+'" class="item">').append(
+        '<b class="handler">&nbsp;</b>'
+        ,'<img src="/'+ i.thumb +'" alt="'+ i.alt +'">'
+        ,'<label>'
+            +'<b><?php echo u::translate("Title"); ?></b>'
+            +'<input type="text" name="alt['+i.ID+']" value="'+ i.alt +'">'
+            +'<i>'+i.ID+'</i>'
+            +'</label>'
+        ,$('<a class="remove">').html('<?php echo u::translate("Remove"); ?>')
+        .click(function(){
+            remove(0,i.ID)
+        })
+        ,$('<a class="add">').html('<?php echo u::translate("Add in the content"); ?>')
+        .click(function(){
+            media = i;
+            mediaInsert(1);
+            $('form').forma();
+        })
+        ,'<div class="clearfix"></div>'
+    ).appendTo('#items');
+    };
+    var remove = function(confirm, ID){
+        if(confirm == 1){
+            $.ajax({
+                url     : '/json/<?php echo TEMPLATE."/".implode(",",$params); ?>,remove',
+                type    : 'post',
+                data    : 'ID='+ID,
+                dataType: 'json',
+                success : function(r){
+                    if(r.code == 200) $('#'+ID).fadeOut();
+                }
+            }); 
+        } else tool.confirm('<?php echo u::translate("Confirmation"); ?>',
+        '<?php echo u::translate("You lose the item\'s all data!"); ?>','remove(1,\''+ID+'\')');
+    };
+    var removeall = function(confirm){
+        if(confirm == 1){
+            $.ajax({
+                url     : '/json/<?php echo TEMPLATE."/".implode(",",$params); ?>,removeall',
+                type    : 'post',
+                data    : 'removeall=true',
+                dataType: 'json',
+                success : function(r){
+                    if(r.code == 200) $('.item').fadeOut();
+                }
+            }); 
+        } else tool.confirm('<?php echo u::translate("Confirmation"); ?>',
+        '<?php echo u::translate("You lose all items data!"); ?>','removeall(1)');
+    };
+    $('a[class=removeall]').click(removeall);
+    $(document).ready(function(){
+        $('#title').bind('keyup', 'blur',function(){
+            var u = urn($(this).val());
+            $('input[name=urn]').val(u);
+            $('#urn').html(u);
+        });
+        var items = $.parseJSON('<?php echo $page->page->media; ?>');
+        for(var i in items){
+            items[i].ID = i;
+            item(items[i]);
+        };
+        tool.sortable('items','b',{'url':'/json/<?php echo TEMPLATE."/".implode(",",$params); ?>,sort'});
+    });        
+</script>
+<?php
+break;
+// =============================================================================
+// SUBPAGES
+// =============================================================================
+case 'subpages':
+?>
+<div id="content">
+    <form method="post" action="/json/<?php echo TEMPLATE.'/'.implode(',',$params); ?>,update">
+        <div id="items"></div>
+        <label>
+            <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+            <input type="submit" value="<?php echo u::translate('Save'); ?>" />
+        </label>
+        <div class="clearfix"></div>
+        <div class="tool">
+            <a class="removeall"><?php echo u::translate('Remove all items'); ?></a>
+        </div>
+    </form>
+    <form method="post" action="/json/<?php echo TEMPLATE.'/'.implode(',',$params); ?>,add" data-complete="item(forma.result)" >
+        <h3><?php echo u::translate('Add New Subpage'); ?></h3>
+        <label>
+            <input type="text" id="title" name="title" placeholder="<?php echo u::translate('write a subpage title...'); ?>" />
+            <input type="hidden" name="urn" />
+            <i id="urn"></i>
+        </label>
+        <label>
+            <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+            <input type="submit" value="<?php echo u::translate('Save'); ?>" />
+        </label>
+    </form>
+</div>
+<script>
+    var item = function(i){
+        $('<div id="'+i.ID+'" class="item">').append(
+        '<b class="handler">&nbsp;</b>'
+        ,'<input type="text" name="title['+i.ID+']" value="'+ i.title +'">'
+        ,$('<a href="/admin/page,<?php echo $params[1]; ?>,subpage,'+i.ID+'">').html('<?php echo u::translate("Edit"); ?>')
+        ,$('<a class="remove">').html('<?php echo u::translate("Remove"); ?>')
+        .click(function(){
+            remove(0,i.ID)
+        })
+        ,'<i>urn: '+i.ID+'</i>'
+    ).appendTo('#items');
+    };
+    var remove = function(confirm, ID){
+        if(confirm == 1){
+            $.ajax({
+                url     : '/json/<?php echo TEMPLATE."/".implode(",",$params); ?>,remove',
+                type    : 'post',
+                data    : 'ID='+ID,
+                dataType: 'json',
+                success : function(r){
+                    if(r.code == 200) $('#'+ID).fadeOut();
+                }
+            }); 
+        } else tool.confirm('<?php echo u::translate("Confirmation"); ?>',
+        '<?php echo u::translate("You lose the item\'s all data!"); ?>','remove(1,\''+ID+'\')');
+    };
+    var removeall = function(confirm){
+        if(confirm == 1){
+            $.ajax({
+                url     : '/json/<?php echo TEMPLATE."/".implode(",",$params); ?>,removeall',
+                type    : 'post',
+                data    : 'removeall=true',
+                dataType: 'json',
+                success : function(r){
+                    if(r.code == 200) $('.item').fadeOut();
+                }
+            }); 
+        } else tool.confirm('<?php echo u::translate("Confirmation"); ?>',
+        '<?php echo u::translate("You lose all items data!"); ?>','removeall(1)');
+    };
+    $('a[class=removeall]').click(removeall);
+    $(document).ready(function(){
+        $('#title').bind('keyup', 'blur',function(){
+            var u = urn($(this).val());
+            $('input[name=urn]').val(u);
+            $('#urn').html(u);
+        });
+        var items = $.parseJSON('<?php echo $page->page->subpages; ?>');
+        for(var i in items){
+            items[i].ID = i;
+            item(items[i]);
+        };
+        tool.sortable('items','b',{'url':'/json/<?php echo TEMPLATE."/".implode(",",$params); ?>,sort'});
+    });
+</script>
+<?php
+break;
+// =============================================================================
+// SUBPAGE
+// =============================================================================
+case 'subpage':
+?>
+    <form method="post" action="/json/<?php echo TEMPLATE.'/'.implode(',',$params); ?>,update">
+        <label>
+            <b><?php echo u::translate('Title'); ?>:</b>
+            <input type="text" name="title" value="<?php echo $page->page->subpage->title; ?>" />
+            <i>urn: <?php echo $page->page->subpage->urn; ?></i>
+        </label>
+        <label>
+            <b><?php echo u::translate('Description'); ?>:</b>
+            <input type="text" name="description" value="<?php echo $page->page->subpage->description; ?>" />
+        </label>
+        <label>
+            <b><?php echo u::translate('Keywords'); ?>:</b>
+            <input type="text" name="keywords" value="<?php echo $page->page->subpage->keywords; ?>" />
+        </label>
+        <!-- PAGE CONTENT -->
+        <label>
+            <b><?php echo u::translate('Content'); ?>:</b>
+            <textarea id="pagecontent" class="wysiwyg" name="content"><?php echo $page->page->subpage->content; ?></textarea>
+        </label>
+        <!-- MEDIA -->
+        <label>
+            <b><?php echo u::translate('Media'); ?>:</b>
+            <input type="file" name="media" 
+                   data-post="/json/<?php echo TEMPLATE.'/'.implode(',',$params); ?>,upload"
+                   data-complete="item(forma.result)" 
+                   data-type="jpg,gif,png"
+                   title="<?php echo u::translate('Browse'); ?>" 
+                   multiple>
+        </label>
+        <div id="items">
+            <?php/*if($page->page->subpage->media) foreach($page->page->subpage->media as $k=>$i):?>
+            <div id="<?php echo $k; ?>" class="item">
+                <div class="thumb" onclick="mediaInsert('/<?php echo $i->thumb; ?>','<?php echo $i->alt; ?>','/<?php echo $i->src; ?>');">
+                    <img src="/<?php echo $i->thumb; ?>" alt="<?php echo $i->alt; ?>" />
+                </div>
+                <div data-id="<?php echo $k; ?>" class="name inlineedit" data-url="/json/<?php echo TEMPLATE; ?>/<?php echo $params[0]; ?>,<?php echo $params[1]; ?>,<?php echo $params[2]; ?>,alt"><?php echo $i->alt; ?></div>
+                <a class="button remove" onclick="mediaRemove('<?php echo $k; ?>');">x</a>
+            </div>
+            <?php endforeach;*/?>
+        </div>
+        <div class="clearfix"></div>
+        <!-- SUBMIT -->
+        <label>
+            <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+            <input type="submit" value="<?php echo u::translate('Save'); ?>" />
+        </label>
+    </form>
+    <script>
+        var media;
+        var mediaInsert = function(options){
+            if(options){
+                var content = ''
+                    +'<div id="mediaalign"><h4>'+lang.position+'</h4>'
+                    +'<a class="mediaalign left" data-value="left"><b></b>'+lang.left+'</a>'
+                    +'<a class="mediaalign right" data-value="right"><b></b>'+lang.right+'</a>'
+                    +'<a class="mediaalign default" data-value="default"><b></b>'+lang.none+'</a>'
+                    +'</div><div id="mediasize"><h4>'+lang.size+'</h4>'
+                    +'<a class="mediasize thumb" data-value="thumb"><b></b>'+lang.thumbnail+'</a>'
+                    +'<a class="mediasize original" data-value="original"><b></b>'+lang.original_size+'</a>'
+                    +'</div><button id="media">'+lang.add+'</button>'
+                    +'<div class="clearfix"></div></form>';
+                $(document).keydown(function(e){
+                    if(e.keyCode == 32){
+                        mediaInsert();
+                        $('#result').empty();
+                        $(document).removeEvents();
+                    }
+                });
+                tool.pop(content);
+                $('a.mediaalign, a.mediasize').click(function(){
+                    if($(this).hasClass('mediaalign')){
+                        $('a.mediaalign').removeClass('selected');  
+                        $('#media').data('align',$(this).data('value'));
+                    } else {
+                        $('a.mediasize').removeClass('selected');  
+                        $('#media').data('size',$(this).data('value'));
+                    }                 
+                    $(this).addClass('selected');
+                });
+                $('#media').click(function(){
+                    mediaInsert();
+                });
+            } else {
+                var content = ($('#media').data('size') == 'original')
+                    ? '<img src="/'+media.src+'" alt="'+media.alt+'"/>'
+                : '<a href="/'+media.src+'" class="thumb" title="'+media.alt+'">'
+                    +'<img src="/'+media.thumb+'" alt="'+media.alt+'" class="'+$('#media').data('align')+'" />'
+                    +'</a>';
+                $('#pagecontent').tinymce().execCommand('mceInsertContent', false, content);
+                $('#result').empty();
+            }
+        };
+        var item = function(i){
+            $('<div id="'+i.ID+'" class="item">').append(
+            '<b class="handler">&nbsp;</b>'
+            ,'<img src="/'+ i.thumb +'" alt="'+ i.alt +'">'
+            ,'<label>'
+                +'<b><?php echo u::translate("Title"); ?></b>'
+                +'<input type="text" name="alt['+i.ID+']" value="'+ i.alt +'">'
+                +'<i>'+i.ID+'</i>'
+                +'</label>'
+            ,$('<a class="remove">').html('<?php echo u::translate("Remove"); ?>')
+            .click(function(){
+                remove(0,i.ID)
+            })
+            ,$('<a class="add">').html('<?php echo u::translate("Add in the content"); ?>')
+            .click(function(){
+                media = i;
+                mediaInsert(1);
+                $('form').forma();
+            })
+            ,'<div class="clearfix"></div>'
+        ).appendTo('#items');
+        };
+        var remove = function(confirm, ID){
+            if(confirm == 1){
+                $.ajax({
+                    url     : '/json/<?php echo TEMPLATE."/".implode(",",$params); ?>,remove',
+                    type    : 'post',
+                    data    : 'ID='+ID,
+                    dataType: 'json',
+                    success : function(r){
+                        if(r.code == 200) $('#'+ID).fadeOut();
+                    }
+                }); 
+            } else tool.confirm('<?php echo u::translate("Confirmation"); ?>',
+            '<?php echo u::translate("You lose the item\'s all data!"); ?>','remove(1,\''+ID+'\')');
+        };
+        var removeall = function(confirm){
+            if(confirm == 1){
+                $.ajax({
+                    url     : '/json/<?php echo TEMPLATE."/".implode(",",$params); ?>,removeall',
+                    type    : 'post',
+                    data    : 'removeall=true',
+                    dataType: 'json',
+                    success : function(r){
+                        if(r.code == 200) $('.item').fadeOut();
+                    }
+                }); 
+            } else tool.confirm('<?php echo u::translate("Confirmation"); ?>',
+            '<?php echo u::translate("You lose all items data!"); ?>','removeall(1)');
+        };
+        $('a[class=removeall]').click(removeall);
+        $(document).ready(function(){
+            $('#title').bind('keyup', 'blur',function(){
+                var u = urn($(this).val());
+                $('input[name=urn]').val(u);
+                $('#urn').html(u);
+            });
+            var items = $.parseJSON('<?php echo $page->page->subpage->media; ?>');
+            for(var i in items){
+                items[i].ID = i;
+                item(items[i]);
+            };
+            tool.sortable('items','b',{'url':'/json/<?php echo TEMPLATE."/".implode(",",$params); ?>,sort'});
+        });
+        
+        
+        $('a[href$=subpages]').addClass('selected');
+        
+    </script>
+    <?php if(true):?>
+    <?php endif;?>
+<?php
+break;
+// =============================================================================
+// LAYOUT
+// =============================================================================
+case 'layout':
+$i = $page->page->layout;
+?>
+<form method="post" action="/json/<?php echo TEMPLATE.'/'.implode(',',$params); ?>,update">
+    <div class="label">
+        <b><?php echo u::translate('Layout'); ?>:</b>
+        <label>
+            <input type="radio" class="custom" name="layout" value="single" <?php echo !$i || $i=='single'?'checked':''; ?>>
+                   <?php echo u::translate('Single Page'); ?>
+        </label>
+        <label>
+            <input type="radio" class="custom left" name="layout" value="left" <?php echo $i=='left'?'checked':''; ?>>
+                   <?php echo u::translate('Show Menu on Left Side'); ?>
+        </label>
+        <label>
+            <input type="radio" class="custom right" name="layout" value="right" <?php echo $i=='right'?'checked':''; ?>>
+                   <?php echo u::translate('Show Menu on Right Side'); ?>
+        </label>
+        <i>* <?php echo u::translate('If you select "Single Page", subpages\'s menu doesn\'t show else main content doesn\'t show and main URL shows first subpage.'); ?></i>
+    </div>
+    <div class="clearfix"></div>
+    <!-- SUBMIT -->
+    <label>
+        <img class="loader" src="/themes/<?php echo THEME; ?>/images/loader.gif" alt="loader" />
+        <input type="submit" value="<?php echo u::translate('Save'); ?>" />
+    </label>
+</form>
+<?php
+break;
+endswitch;
+?>

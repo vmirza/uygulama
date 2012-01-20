@@ -1,0 +1,45 @@
+<hgroup class="none"><h1><?php echo TITLE; ?></h1><h2><?php echo DESCRIPTION; ?></h2></hgroup>
+<?php if($page->$lang->slide):?>
+<div class="slidezone">
+    <div class="slidezone-container">
+        <?php foreach($page->$lang->slide as $i):?>
+        <a href="<?php echo $i->link; ?>" title="<?php echo $i->alt; ?>">
+            <img src="//<?php echo COOKIELESS; ?>/<?php echo $i->src; ?>" alt="<?php echo $i->alt; ?>" />
+        </a>
+        <?php endforeach;?>
+    </div>
+</div>
+<script src="//<?php echo COOKIELESS; ?>/lib/js/slidezone.js"></script>
+<?php endif;?>
+<?php if($page->$lang->carousel->items):?>
+<?php if($page->$lang->carousel->title):?>
+<h2 class="carousel-header"><?php echo $page->$lang->carousel->title; ?></h2>
+<?php endif;?>
+<div class="carousel">
+    <div class="carousel-left"></div>
+    <div class="carousel-rail">
+        <div class="carousel-wagon">
+            <?php foreach($page->$lang->carousel->items as $i):?>
+            <div class="carousel-item">
+                <div class="carousel-container">
+                    <article>
+                        <img src="//<?php echo COOKIELESS; ?>/<?php echo $i->thumb; ?>" alt="<?php echo $i->title; ?>" />
+                        <h2><?php echo $i->title; ?></h2>
+                        <p><?php echo $i->content; ?></p>
+                        <?php if($i->link):?>
+                        <a href="<?php echo $i->link; ?>" class="link"><?php echo $i->link; ?></a>
+                        <?php endif;?>
+                    </article>
+                </div>
+            </div>
+            <?php endforeach;?>
+        </div>
+    </div>
+    <div class="carousel-right"></div>
+</div>
+<div class="clear"></div>
+<script src="//<?php echo COOKIELESS; ?>/lib/js/carousel.js"></script>
+<?php endif;?>
+<div class="content">
+    <?php echo $page->$lang->content; ?>
+</div>

@@ -1,4 +1,4 @@
-<?
+<?php
 
 $template = $page->template;
 $layout = $page->layout;

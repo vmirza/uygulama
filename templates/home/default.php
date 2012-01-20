@@ -1,4 +1,4 @@
-<?
+<?php
 
 if (!$page->$lang->description) {
     foreach ($project->languages as $k => $i) {

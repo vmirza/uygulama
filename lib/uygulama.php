@@ -113,7 +113,7 @@ class u {
         return $dictionaries;
     }
 
-    public static function dictionary($type, $part) {
+    private static function dictionary($type, $part) {
         if (!in_array($type, array('lib', 'templates')))
             return null;
         $path = $type == 'lib' ? 'lib/' : $type . '/' . $part . '/';
@@ -129,9 +129,9 @@ class u {
     public static function translate($word) {
         $caller = debug_backtrace();
         //list($type, $part) = explode('/', dirname(str_replace($_SERVER['DOCUMENT_ROOT'] . '/', '', $caller[0]['file'])));
-        $root = explode('/',$caller[0]['file']);
-        $part = $root[count($root)-2];        
-        $type = $root[count($root)-3];
+        $root = explode('/', $caller[0]['file']);
+        $part = $root[count($root) - 2];
+        $type = $root[count($root) - 3];
         //return $type.','.$part;
         //$lang = LANG;
         $key = sha1($word);
@@ -166,16 +166,29 @@ class u {
         //apc_delete('dictionary');
     }
 
+    /**
+     * themes list
+     * 
+     * @return array 
+     */
     public static function themes() {
         return array_diff(scandir('themes/'), Array(".", "..", ".svn"));
-        //return @glob('themes/*', GLOB_NOSORT);
     }
 
+    /**
+     * page templates list
+     * 
+     * @return array 
+     */
     public static function templates() {
         return array_diff(scandir('templates/'), Array(".", "..", ".svn", "admin"));
-        //return @glob('themes/*', GLOB_NOSORT);
     }
 
+    /**
+     * locales list
+     * 
+     * @return array 
+     */
     public static function locales() {
         //'lang' is short language code [2 digit]
         return array(
@@ -253,6 +266,12 @@ class u {
         return strstr(SUPPORTEDLANGS, $locales['index'][$locale]) && $multilingual ? array($locales['locales'][$locale]['locale'], $locales['index'][$locale]) : array($locales['locales'][$deflocale]['locale'], $locales['index'][$deflocale]);
     }
 
+    /**
+     * languages list
+     * 
+     * @param boolean $all
+     * @return array 
+     */
     public static function languages($all = false) {
         $locales = self::locales();
         $supportedlangs = explode(',', SUPPORTEDLANGS);
@@ -268,7 +287,7 @@ class u {
         return $browser[1] ? strtolower($browser[1]) : 'trident';
     }
 
-    public static function css($get) {
+    private static function css($get) {
         // $browser = self::browser();
         // SPLIT GET DATA
         list($theme, $template, $page, $admintemplate) = preg_split('/,/', $get, 4);
@@ -330,7 +349,7 @@ class u {
                             ), $css);
     }
 
-    public static function js($get) {
+    private static function js($get) {
         $browser = self::browser();
         // SPLIT GET DATA
         list($theme, $template, $page, $admintemplate) = preg_split('/,/', $get, 4);
@@ -409,14 +428,14 @@ class u {
 
     public static function sitemap($pages) {
         define('DOMAIN', $_SERVER['HTTP_HOST']);
-        $sitemap = '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
+        $sitemap = '<?phpxml version="1.0" encoding="UTF-8"?>' . "\n"
                 . "<urlset xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
                 . "  xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\"\n"
                 . "  xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n"
                 . "<url>\n"
                 . "  <loc>http://" . DOMAIN . "/</loc>\n"
                 . "</url>\n";
-        $sitemapindex = '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
+        $sitemapindex = '<?phpxml version="1.0" encoding="UTF-8"?>' . "\n"
                 . "<sitemapindex xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
                 . "  xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd\"\n"
                 . "  xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n";
@@ -598,6 +617,31 @@ class u {
           header('location: http://' . DOMAIN);
           exit;
           } */
+
+        define('FORMAT', $_GET['FORMAT'] ? $_GET['FORMAT'] : 'html');
+
+        // the control for COOKIELESS JS and CSS request!
+        if (FORMAT != 'js' && FORMAT != 'css') {
+            header("Cache-control: private");
+            if (isset($_GET['TOKEN']))
+                session_id($_GET['TOKEN']);
+            session_start();
+            define('TOKEN', session_id());
+        } elseif (FORMAT == 'css') {
+            header('Content-Type: text/css');
+        } elseif (FORMAT == 'js') {
+            header('Content-Type: text/javascript');
+        }
+
+        if (FORMAT == 'js' || FORMAT == 'css') {
+            $m = @date('D, d M Y H:i:s e', THEMEMODIFIED);
+            $e = @date('D, d M Y H:i:s e', THEMEMODIFIED + 290304000);
+            header('cache-control: public, max-age=290304000');
+            header('last-modified: ' . $m);
+            header('expires: ' . $e);
+            return;
+        }
+
         define('DOMAIN', $_SERVER['HTTP_HOST']);
 
         $headers = getallheaders();
@@ -608,7 +652,6 @@ class u {
         // THEME SESSION for THEME PREVIEW
         $_SESSION['THEME'] = $_GET['THEME'] ? $_GET['THEME'] : ($_SESSION['THEME'] ? $_SESSION['THEME'] : DEFTHEME);
         define('THEME', $_SESSION['THEME']);
-        define('FORMAT', $_GET['FORMAT'] ? $_GET['FORMAT'] : 'html');
 
         // LANGUAGES / LOCALES
         $locale = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 5);
@@ -631,15 +674,35 @@ class u {
         $project->languages = self::languages();
         define('PAGE', $_GET['PAGE'] ? $_GET['PAGE'] : DEFPAGE);
         define('PARAMS', $_GET['PARAMS'] ? $_GET['PARAMS'] : 'default');
+
+        if (!ADMIN && !APASSWORD && ($_GET['TEMPLATE'] != 'admin' || ($_GET['PARAMS'] != 'project,accounts' && $_GET['PARAMS'] != 'languages'))) {
+            $_SESSION['ACCESS'] = 3;
+            header('Location: /admin/project,accounts');
+            die;
+        }
+
         return $project;
     }
 
-    public static function page($project) {
+    public static function process($project) {
+
+        if (FORMAT == 'css') {
+            return self::css($_GET['GET']);
+        } elseif (FORMAT == 'js') {
+            return self::js($_GET['GET']);
+        }
+
         $lang = LANG;
         $deflang = DEFLANG;
         $page = @self::get('data/' . PAGE . '/content');
         define('TEMPLATE', $_GET['TEMPLATE'] ? $_GET['TEMPLATE'] : ($page->template ? $page->template : PAGE));
-        include 'templates/' . TEMPLATE . '/default.php';
+
+
+        //include 'templates/' . TEMPLATE . '/default.php';
+        $page = u::template($page, 'templates/' . TEMPLATE . '/default.php');
+        
+
+
         $project->title->$lang = $project->title->$lang ? $project->title->$lang : $project->title->$deflang;
         define('TITLE', $project->title->$lang . ($page->$lang->title ? ' / ' . $page->$lang->title : ''));
         define('DESCRIPTION', $page->$lang->description ? $page->$lang->description : $project->description->$lang);
@@ -650,20 +713,26 @@ class u {
         return $page;
     }
 
-    public static function template($page = null) {
+    private static function template($page = null, $template = null, $ob = false) {
         $lang = LANG;
-        $template = 'templates/' . TEMPLATE . '/default.html';
+        //$template = 'templates/' . $template . '/default.' . $tld;
         if (is_file($template)) {
-            ob_start();
-            include $template;
-            $contents = ob_get_contents();
-            ob_end_clean();
-            return $contents;
-        }
+            if ($ob) {
+                unset($ob);
+                ob_start();
+                include $template;
+                $page = ob_get_contents();
+                ob_end_clean();
+            } else {
+                unset($ob);
+                include $template;
+            }
+            return $page;
+        } 
         return false;
     }
 
-    public static function theme_engine($matches) {
+    private static function theme_engine($matches) {
         $lang = LANG;
         switch ($matches[1]) {
             case 'nav':
@@ -711,12 +780,12 @@ class u {
         return $r; //'||thebele'.print_r($matches,1).'||';
     }
 
-    public static function theme($project) {
+    private static function theme($project) {
         //print_r($project); exit;
         if (is_file('themes/' . THEME . '/default.html')) {
             // for admin
-            
-            $page = TEMPLATE == 'admin' ? '': PAGE;
+
+            $page = TEMPLATE == 'admin' ? '' : PAGE;
             $admintemplate = (!$project->page->page->template || TEMPLATE == $project->page->page->template ? '' : ',' . $project->page->page->template);
             $theme = file_get_contents('themes/' . THEME . '/default.html');
             $theme = str_replace(array(
@@ -762,7 +831,7 @@ class u {
                 "/\[if\[([A-z]+)]](((?!\[\[else]]).)+(\[\[else]]))?(((?!\[\[endif]]).)+)\[\[endif]]/ms"
                     //"/\[each\[([a-z]+)]]((?:[^[]|\[\[(?!endeach]]))+)\[\[endeach]]/ims",
                     //"/\[if\[([a-z]+)]]((?:[^[]|\[\[(?!endif]]))+)\[\[endif]]/ims"
-                    ), "u::theme_engine", $theme);
+                    ), "self::theme_engine", $theme);
             if (DEVELOPMENT)
                 echo $theme;
             else
@@ -781,6 +850,45 @@ class u {
             echo sprintf(u::translate('"%s" theme not found. %s click here%s to return to default theme.'), THEME, '<a href="/' . DEFTHEME . '.thm">', '</a>');
             exit;
         }
+    }
+
+    public static function response($project) {
+
+        switch (FORMAT) {
+            case 'css':
+            case 'js':
+                die($project->page);
+                break;
+            case 'captcha':
+                //$project = u::initialize();
+                u::captcha();
+                break;
+            case 'archive':
+                u::download($_GET['GET']);
+                break;
+            case 'json':
+                header('content-type: application/json');
+                die(json_encode($project->page));
+                break;
+            // HTML PAGE for XHTTP REQUESTS
+            case 'page':
+                $project->template = u::template($project->page);
+                die(
+                        '<script>' . u::js(',' . $project->page->template) . '</script>'
+                        . '<style>' . u::css(',' . $project->page->template) . '</style>'
+                        . $project->template
+                );
+                break;
+            default:
+
+                $project->template = u::template($project->page, 'templates/' . TEMPLATE . '/default.phtml', true);
+
+                // THEME
+                u::theme($project);
+                break;
+        }
+
+        return $project;
     }
 
 }
